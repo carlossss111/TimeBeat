@@ -46,9 +46,9 @@ HandlerSelector:
     inc [hl]                    ; update frame counter
 
     ld a, [wVBlankHandlerPtr]
-    ld h, a
-    ld a, [wVBlankHandlerPtr + 1]
     ld l, a
+    ld a, [wVBlankHandlerPtr + 1]
+    ld h, a
     ld bc, .ret
     push bc
     jp hl                       ; call handler function pointer
@@ -67,11 +67,10 @@ DefaultHandler::
 ; Should be called at startup to initialise member variables
 ; @uses hl
 initVBlankHandling::
-    ld hl, DefaultHandler
-    ld a, h
+    ld a, LOW(DefaultHandler)
     ld [wVBlankHandlerPtr], a
-    ld a, l
-    ld [wVBlankHandlerPtr], a   ; load the default handler
+    ld a, HIGH(DefaultHandler)
+    ld [wVBlankHandlerPtr + 1], a   ; load the default handler
 
     ld a, 0
     ld [wFrameCounter], a       ; init frame counter
@@ -89,9 +88,9 @@ SECTION "VBlankSetters", ROM0
 ; Sets the VBlankHandler
 ; @param hl: address of a VBlankHandler function
 SetVBlankHandler::
-    ld a, h
-    ld [wVBlankHandlerPtr], a
     ld a, l
+    ld [wVBlankHandlerPtr], a
+    ld a, h
     ld [wVBlankHandlerPtr + 1], a
     ret
 
