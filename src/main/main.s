@@ -22,13 +22,13 @@ SECTION "Init", ROM0
 ; @uses all registers
 EntryPoint:
     ld sp, $E000                ; set stack pointer
-
     xor a
 	ld [rNR52], a               ; turn off audio
 
     call SetVBlankInterruptOnly ; set vblank only
     ei                          ; enable interrupts
     
+    ld bc, GAME_SCENE; hl register stores the game scene
     jp Main                     ; jump to the main loop
 
 ENDSECTION
@@ -40,11 +40,44 @@ ENDSECTION
 ********************************************************/
 SECTION "MainLoop", ROM0
 
+; Scene enums
+def CASE_SIZE equ 5
+def TITLE_SCENE equ 0 * CASE_SIZE
+def OPTION_SCENE equ 1 * CASE_SIZE
+def GAME_SCENE equ 2 * CASE_SIZE
+def SWITCH_SIZE equ GAME_SCENE
+
 ; Main loop that each game state returns to upon finishing
+; @param bc: scene to load
 ; @uses all registers
 Main:
-    halt                        ; wait until a vblank interrupt
-    jp Main
+    ld a, c
+    cp a, SWITCH_SIZE + 1       ; compare if bc is within the right range
+    jr nc, .SwitchEnd           ; if bc > switch size then we skip the switch
+    
+    ld hl, .Switch
+    xor b
+    add hl, bc                  ; hl = scene enum value + switch starting location
+    jp hl                       ; jump to the correct scene via the offset
+
+.Switch:
+    call TitleEntrypoint        ; enter title loop. return new state as bc 
+    jr .SwitchEnd
+    call OptionsEntrypoint      ; enter options loop. return new state as bc 
+    jr .SwitchEnd
+    call GameEntrypoint         ; enter game loop. return new state as bc 
+    jr .SwitchEnd
+
+.SwitchEnd
+    jp Main                     ; while True
+
+
+TitleEntrypoint:
+    ret                         ; unimplemented
+OptionsEntrypoint:
+    ret                         ; unimplemented
+GameEntrypoint:
+    ret                         ; unimplemented
 
 ENDSECTION
 
