@@ -19,3 +19,9 @@ ROM0
     FLOATING 
     "VBlankHandler"
 
+    ORG $4000
+    "TitleTileData"
+
+    ORG $4250
+    "TitleTileMap"
+
