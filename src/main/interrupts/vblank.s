@@ -92,6 +92,8 @@ SetVBlankHandler::
     ld [wVBlankHandlerPtr], a
     ld a, h
     ld [wVBlankHandlerPtr + 1], a
+    xor a
+    ld [rIF], a                 ; clear pending VBlank interrupt requests (may be outdated)
     ret
 
 ; Enable the VBlank bit on the interrupt register

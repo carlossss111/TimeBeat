@@ -1,0 +1,3 @@
+
+def COLOUR_PALETTE equ %00011011
+

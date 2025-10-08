@@ -1,3 +1,6 @@
+include "hardware.inc"
+
+def VBLANK_SCANLINE equ 144
 
 /*******************************************************
 * STDLIB
@@ -9,7 +12,7 @@ SECTION "StandardLibrary", ROM0
 ; @param bc: length of the buffer
 ; @param de: source address
 ; @param hl: destination address
-Memcpy:
+Memcpy::
     ld a, [de]
     ld [hl+], a                 ; load byte from src into dest
     inc de                      ; inc source ptr
