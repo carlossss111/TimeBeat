@@ -33,13 +33,13 @@ SECTION "TitleEntrypoint", ROM0
 TitleEntrypoint::
     ; Draw the screen once with vblank handler
     call SetVBlankInterruptOnly ; set the VBlank interrupt
+    call InitRenderQueue        ; init the renderer queue
     ld hl, RenderFirst
     call SetVBlankHandler       ; set the init VBlank handler to draw the entire screen once
     ei                          ; enable interrupts
     halt                        ; wait until a VBlank then call the init handler
 
     ; Set reoccuring Vblank handler
-    call InitRenderQueue        ; init the renderer queue
     ld hl, RenderLoop
     call SetVBlankHandler       ; set the VBlank looping handler 
 
@@ -57,77 +57,14 @@ SECTION "TitleMain", ROM0
 ; Loop until the player presses start
 ; @uses all registers
 TitleLoop:
+    halt                        ; run this loop at 60fps (more is waste of battery)
+    
+    call GetCurrentKeys         ; return current keypress in register a
+    and a, JOYP_START           ; check if start
+    jp z, TitleLoop             ; if button not pressed, loop again
 
-    ; PLACEHOLDER OBVIOUSLY
-    ld b, 1
-    ld c, 1
-    ld d, $25
-    call EnqueueTilemap
-
-    halt                        ; jump to Render label on VBlank
-    halt
-    halt
-    halt
-    halt
-
-    ld b, 1
-    ld c, 1
-    ld d, $26
-    call EnqueueTilemap
-
-    halt                        ; jump to Render label on VBlank
-    halt
-    halt
-    halt
-    halt
-
-    ld b, 1
-    ld c, 1
-    ld d, $27
-    call EnqueueTilemap
-
-    halt                        ; jump to Render label on VBlank
-    halt
-    halt
-    halt
-    halt
-
-    ld b, 1
-    ld c, 1
-    ld d, $26
-    call EnqueueTilemap
-
-    halt                        ; jump to Render label on VBlank
-    halt
-    halt
-    halt
-    halt
-
-    ld b, 1
-    ld c, 1
-    ld d, $25
-    call EnqueueTilemap
-
-    halt                        ; jump to Render label on VBlank
-    halt
-    halt
-    halt
-    halt
-
-    ld b, 1
-    ld c, 1
-    ld d, $28
-    call EnqueueTilemap
-
-    halt                        ; jump to Render label on VBlank
-    halt
-    halt
-    halt
-    halt
-
-    jp TitleLoop
-
-    ld bc, TITLE_SCENE          ; set next scene
+.exit:
+    ld bc, GAME_SCENE           ; set next scene
     di                          ; disable interrupts
     ret                         ; return to main loop
 
@@ -164,7 +101,6 @@ RenderFirst:
 
 ; Render animations into VRAM using the render-queue
 RenderLoop:
-    call DequeueTilemapsToVRAM  ; transfer tilemap changes to VRAM 
     ret
 
 ENDSECTION
