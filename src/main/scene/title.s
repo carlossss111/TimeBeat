@@ -32,14 +32,24 @@ SECTION "TitleEntrypoint", ROM0
 TitleEntrypoint::
     ; Draw the screen once with vblank handler
     call SetVBlankInterruptOnly ; set the VBlank interrupt
+    ei
+
+    xor a
+    ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK01
+    ld [rLCDC], a               ; turn on LCD
+    call FadeOut
+
+    di
+.Pause:
+    jp .Pause
+
+
+
     ld hl, RenderFirst
     call SetVBlankHandler       ; set the init VBlank handler to draw the entire screen once
     ei                          ; enable interrupts
     halt                        ; wait until a VBlank then call the init handler
 
-    di
-.Pause:
-    jp .Pause
     jp TitleLoop
 
 ENDSECTION
@@ -77,9 +87,21 @@ SECTION "TitleRenderer", ROM0
 ; Load all tile and tilemap data into VRAM
 ; Should only be used to initialise and only called once
 RenderFirst:
-    xor a                 
-    ld [rLCDC], a               ; turn off the LCD since we are going to take a long time
+ 
+    xor a
+    ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK01
+    ld [rLCDC], a               ; turn on LCD
 
+    ld a, %11100100             ; black-dark-light-white
+    ld [rBGP], a                
+    ld a, %11111001             ; black-black-dark-light
+    ld [rBGP], a                
+    ld a, %11111110             ; black-black-black-dark
+    ld [rBGP], a                
+    ld a, %11111111             ; black-black-black-black
+    ld [rBGP], a                
+
+/*
     ld de, SplashData        ; load all tiles into VRAM
     ld hl, $8000
     ld bc, SplashDataEnd - SplashData
@@ -89,11 +111,7 @@ RenderFirst:
     ld hl, TILEMAP0
     ld bc, SplashTilemapEnd - SplashTilemap
     call Memcpy
-
-    ld a, LCDC_ON | LCDC_BG_ON | LCDC_OBJ_OFF | LCDC_BLOCK01
-    ld [rLCDC], a               ; turn on LCD
-    ld a, COLOUR_PALETTE
-    ld [rBGP], a                ; initialize background palette
+*/
     ret
 
 ; Render animations into VRAM using the render-queue

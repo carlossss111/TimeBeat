@@ -33,16 +33,19 @@ ENDSECTION
 * Increments a frame counter
 * Retains register states
 ********************************************************/
+SECTION "FrameCounter", HRAM
+
+    hFrameCounter:: db          ; updated every VBlank (60fps)
+
 SECTION "VBlankHandlerVars", WRAM0
 
     wVBlankHandlerPtr: dw       ; function pointer to handler
-    wFrameCounter: db           ; updated every VBlank (60fps)
     
 SECTION "VBlankHandler", ROM0
 
 ; Call the Handler function pointer
 HandlerSelector:
-    ld hl, wFrameCounter
+    ld hl, hFrameCounter
     inc [hl]                    ; update frame counter
 
     ld a, [wVBlankHandlerPtr]
@@ -73,7 +76,7 @@ initVBlankHandling::
     ld [wVBlankHandlerPtr + 1], a   ; load the default handler
 
     ld a, 0
-    ld [wFrameCounter], a       ; init frame counter
+    ld [hFrameCounter], a           ; init frame counter
     ret
 
 ENDSECTION
