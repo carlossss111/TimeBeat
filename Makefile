@@ -13,7 +13,7 @@ MAP=minesweeper.map
 ASM_FLAGS=-Wall -I $(INC_DIR) -i $(GEN_DIR)
 L_FLAGS=-Wall --linkerscript linker.ld -n $(BIN_DIR)/minesweeper.sym --dmg --wramx --tiny
 F_FLAGS=-Wall --mbc-type 0x00 --ram-size 0x00 --title 'Minesweeper' -j -v -p 0xFF
-GFX_FLAGS=-c "\#1b2a09,\#0d450b,\#496b22,\#9a9e3f;" -u 
+GFX_FLAGS=-c "\#9a9e3f,\#496b22,\#0d450b,\#1b2a09;" -u 
 
 
 # Make Functions #####
@@ -29,6 +29,14 @@ TILEMAP_FILE_LIST=$(call recursive_wildcard,$(RSC_DIR),*.tilemap)
 
 # Options #####
 
+compile: clean generate-2bpp copy-tilemaps
+	for ASM_FILE in $(SOURCE_FILE_LIST) ; do \
+		OBJ_FILE=`basename $$ASM_FILE | cut -d. -f1`.o ;\
+		rgbasm $$ASM_FILE $(ASM_FLAGS) -o $(BIN_DIR)/$$OBJ_FILE ; \
+	done
+	rgblink $(BIN_DIR)/*.o $(L_FLAGS) -o $(BIN_DIR)/$(EXE)
+	rgbfix $(BIN_DIR)/$(EXE) $(F_FLAGS)
+
 run: compile
 	emulicious $(BIN_DIR)/$(EXE)
 
@@ -38,14 +46,6 @@ sameboy: compile
 map: compile
 	rgblink $(BIN_DIR)/*.o $(L_FLAGS) -m $(BIN_DIR)/$(MAP)
 	cat $(BIN_DIR)/$(MAP)
-
-compile: clean generate-2bpp copy-tilemaps
-	for ASM_FILE in $(SOURCE_FILE_LIST) ; do \
-		OBJ_FILE=`basename $$ASM_FILE | cut -d. -f1`.o ;\
-		rgbasm $$ASM_FILE $(ASM_FLAGS) -o $(BIN_DIR)/$$OBJ_FILE ; \
-	done
-	rgblink $(BIN_DIR)/*.o $(L_FLAGS) -o $(BIN_DIR)/$(EXE)
-	rgbfix $(BIN_DIR)/$(EXE) $(F_FLAGS)
 
 clean:
 	rm $(BIN_DIR)/* 2> /dev/null || true 

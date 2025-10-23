@@ -22,5 +22,55 @@ Memcpy::
     jp nz, Memcpy               ; loop if remaining length != 0
     ret
 
+; Copy into VRAM safely 
+; @param bc: length
+; @param de: source address
+; @param hl: destination address
+VRAMCopy::
+    ldh a, [rSTAT]
+    bit 1, a
+    jr nz, VRAMCopy             ; not mode 0 or 1
+
+    ld a,[de]
+    ld [hl+], a
+    inc de 
+    dec bc
+    ld a, b
+    or a, c
+    jr nz, VRAMCopy
+    ret
+
+; Copy into VRAM safely and faster (with tradeoff of smaller length)
+; @param b: length (up to 255 obviously)
+; @param de: source address
+; @param hl: destination address
+VRAMCopyFast::
+    ld c, rSTAT & $FF
+.Loop:
+    ldh a, [$FF00+c]
+    bit 1, a
+    jr nz, .Loop                ; not mode 0 or 1
+
+    ld a,[de]
+    ld [hl+], a
+    inc de 
+    dec b
+    jr nz, .Loop
+    ret
+
+; Halt for n frames before returning
+; @param b: number of frames to halt for
+WaitForFrames::
+    xor a
+.While:
+    cp b
+    jp z, .EndWhile
+    halt                        ; wait for next frame
+    inc a
+    jp .While
+.EndWhile:
+    ret
+
+
 ENDSECTION
 

@@ -30,25 +30,31 @@ SECTION "TitleEntrypoint", ROM0
 ; Entrypoint for the title screen, initialises the screen
 ; @uses all registers
 TitleEntrypoint::
-    ; Draw the screen once with vblank handler
     call SetVBlankInterruptOnly ; set the VBlank interrupt
     ei
 
     xor a
     ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK01
-    ld [rLCDC], a               ; turn on LCD
-    call FadeOut
+    ld [rLCDC], a               ; setup LCD
+
+    call FadeOut                ; fade to black
+
+    ld de, SplashData           ; load all tiles into VRAM
+    ld hl, $8000
+    ld bc, SplashDataEnd - SplashData
+    call VRAMCopy
+
+    ld de, SplashTilemap        ; load all tilemaps into VRAM
+    ld hl, TILEMAP0
+    ld bc, SplashTilemapEnd - SplashTilemap
+    call VRAMCopy
+
+    call FadeIn                 ; fade back in after loading everything
 
     di
+    halt
 .Pause:
     jp .Pause
-
-
-
-    ld hl, RenderFirst
-    call SetVBlankHandler       ; set the init VBlank handler to draw the entire screen once
-    ei                          ; enable interrupts
-    halt                        ; wait until a VBlank then call the init handler
 
     jp TitleLoop
 
@@ -83,36 +89,6 @@ ENDSECTION
 * Performs any rendering that requires a VBlank
 ********************************************************/
 SECTION "TitleRenderer", ROM0
-
-; Load all tile and tilemap data into VRAM
-; Should only be used to initialise and only called once
-RenderFirst:
- 
-    xor a
-    ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK01
-    ld [rLCDC], a               ; turn on LCD
-
-    ld a, %11100100             ; black-dark-light-white
-    ld [rBGP], a                
-    ld a, %11111001             ; black-black-dark-light
-    ld [rBGP], a                
-    ld a, %11111110             ; black-black-black-dark
-    ld [rBGP], a                
-    ld a, %11111111             ; black-black-black-black
-    ld [rBGP], a                
-
-/*
-    ld de, SplashData        ; load all tiles into VRAM
-    ld hl, $8000
-    ld bc, SplashDataEnd - SplashData
-    call Memcpy
-
-    ld de, SplashTilemap         ; load all tilemaps into VRAM
-    ld hl, TILEMAP0
-    ld bc, SplashTilemapEnd - SplashTilemap
-    call Memcpy
-*/
-    ret
 
 ; Render animations into VRAM using the render-queue
 RenderLoop:
