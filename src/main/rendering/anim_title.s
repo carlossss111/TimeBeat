@@ -4,52 +4,77 @@ include "hardware.inc"
 
 SECTION "TitleAnimatorVars", WRAM0
 
-    DEF FRAMES_PER_ANIM EQU 8   ; must be divisble by rightshifts!
-    DEF BITSHIFTS_PER_ANIM EQU 3; bits before the divisor
+    DEF FRAMES_PER_ANIM EQU 16   ; must be divisble by rightshifts!
+    DEF BITSHIFTS_PER_ANIM EQU 4; bits before the divisor
 
-    wNextWavingFlagFrame: db
+    wNextBottleFrame: db
 
 SECTION "TitleAnimations", ROM0
 
-    DEF FLAG_TOP_LEFT  EQU $9800 + $10c
-    DEF FLAG_TOP_RIGHT EQU $9800 + $10d
-    DEF FLAG_BOTTOM_LEFT  EQU $9800 + $12c
-    DEF FLAG_BOTTOM_RIGHT EQU $9800 + $12d
-
 ; Frame 1
-WavingFlagF1:
-    ld a, $6c
-    ld [FLAG_TOP_LEFT], a 
-    ld a, $6d
-    ld [FLAG_TOP_RIGHT], a
-    ld a, $7b
-    ld [FLAG_BOTTOM_LEFT], a
-    ld a, $7c
-    ld [FLAG_BOTTOM_RIGHT], a
+BottleF1:
+    LOAD_ANIM $90, 14, 11
+    LOAD_ANIM $91, 15, 11
+    LOAD_ANIM $92, 16, 11
+    LOAD_ANIM $93, 17, 11
+    LOAD_ANIM $94, 1, 12
+    LOAD_ANIM $95, 2, 12
+    LOAD_ANIM $96, 4, 12
+    LOAD_ANIM $97, 5, 12
+    LOAD_ANIM $98, 6, 12
+    LOAD_ANIM $99, 13, 12
+    LOAD_ANIM $9a, 14, 12
+    LOAD_ANIM $9b, 15, 12
+    LOAD_ANIM $9c, 16, 12
+    LOAD_ANIM $9f, 1, 13
+    LOAD_ANIM $a0, 2, 13
+    LOAD_ANIM $a1, 3, 13
+    LOAD_ANIM $a2, 4, 13
+    LOAD_ANIM $a3, 5, 13
+    LOAD_ANIM $a4, 6, 13
+    LOAD_ANIM $aa, 1, 14
+    LOAD_ANIM $ab, 2, 14
+    LOAD_ANIM $ac, 3, 14
+    LOAD_ANIM $ad, 4, 14
     ret
 
 ; Frame 2
-WavingFlagF2:
-    ld a, $6c
-    ld [FLAG_TOP_LEFT], a 
-    ld a, $6d
-    ld [FLAG_TOP_RIGHT], a
-    ld a, $e2
-    ld [FLAG_BOTTOM_LEFT], a
-    ld a, $e3
-    ld [FLAG_BOTTOM_RIGHT], a
+BottleF2:
+    LOAD_ANIM $06, 4, 12
+    LOAD_ANIM $06, 5, 12
+    LOAD_ANIM $c8, 1, 12
+    LOAD_ANIM $c9, 2, 12
+    LOAD_ANIM $ca, 1, 13
+    LOAD_ANIM $cb, 2, 13
+    LOAD_ANIM $cc, 3, 13
+    LOAD_ANIM $cd, 4, 13
+    LOAD_ANIM $ce, 5, 13
+    LOAD_ANIM $cf, 6, 13
+    LOAD_ANIM $d0, 4, 14
+    LOAD_ANIM $d1, 15, 11
+    LOAD_ANIM $d2, 16, 11
+    LOAD_ANIM $d3, 17, 11
+    LOAD_ANIM $d4, 14, 12
+    LOAD_ANIM $d5, 15, 12
+    LOAD_ANIM $d6, 16, 12
+    LOAD_ANIM $e1, 6, 12
     ret
 
 ; Frame 3
-WavingFlagF3:
-    ld a, $ec
-    ld [FLAG_TOP_LEFT], a 
-    ld a, $ed
-    ld [FLAG_TOP_RIGHT], a
-    ld a, $f8
-    ld [FLAG_BOTTOM_LEFT], a
-    ld a, $f9
-    ld [FLAG_BOTTOM_RIGHT], a
+BottleF3:
+    LOAD_ANIM $29, 4, 14
+    LOAD_ANIM $d7, 3, 13
+    LOAD_ANIM $d8, 4, 13
+    LOAD_ANIM $d9, 5, 13
+    LOAD_ANIM $da, 6, 13
+    LOAD_ANIM $db, 14, 11
+    LOAD_ANIM $dc, 15, 11
+    LOAD_ANIM $dd, 16, 11
+    LOAD_ANIM $de, 14, 12
+    LOAD_ANIM $df, 15, 12
+    LOAD_ANIM $e0, 16, 12
+    LOAD_ANIM $e1, 6, 12
+    LOAD_ANIM $e2, 5, 12
     ret
 
 
@@ -74,17 +99,17 @@ IsAnimationFrame:
 
 ; Initialises all title animations
 InitAllTitleAnimations::
-    call InitWavingFlag
+    call InitBottle
     ret
 
-; Sets the waving flag static varibales to 0
-InitWavingFlag::
+; Sets the bottle static variables to 0
+InitBottle::
     xor a
-    ld [wNextWavingFlagFrame], a
+    ld [wNextBottleFrame], a
     ret
 
 ; Checks if we are on an animation frame, if we are, animate!
-AnimateWavingFlag::
+AnimateBottle::
     ld a, [hFrameCounter]
     ld b, BITSHIFTS_PER_ANIM
     call IsAnimationFrame
@@ -93,7 +118,7 @@ AnimateWavingFlag::
     ret                         ; otherwise return early
 
 .AnimationFrame:
-    ld a, [wNextWavingFlagFrame]
+    ld a, [wNextBottleFrame]
     ld hl, .Switch
     rla
     rla
@@ -105,32 +130,32 @@ AnimateWavingFlag::
     jp hl
     
 .Switch
-    call WavingFlagF1           ; 3 bytes
-    ld hl, wNextWavingFlagFrame ; 3 bytes
+    call BottleF1               ; 3 bytes
+    ld hl, wNextBottleFrame     ; 3 bytes
     inc [hl]                    ; 1 byte
     jr .SwitchEnd               ; 2 bytes
     FOR V, 7
         nop                     ; 7 bytes padding
     ENDR
 
-    call WavingFlagF2
-    ld hl, wNextWavingFlagFrame
+    call BottleF2
+    ld hl, wNextBottleFrame
     inc [hl]
     jr .SwitchEnd
     FOR V, 7
         nop
     ENDR
 
-    call WavingFlagF3
-    ld hl, wNextWavingFlagFrame
+    call BottleF3
+    ld hl, wNextBottleFrame
     ld [hl], 0
     jr .SwitchEnd
     FOR V, 7
         nop     
     ENDR
-    ld a, [wNextWavingFlagFrame]
+    ld a, [wNextBottleFrame]
     inc a      
-    ld [wNextWavingFlagFrame], a
+    ld [wNextBottleFrame], a
     jr .SwitchEnd
 
 .SwitchEnd

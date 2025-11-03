@@ -44,9 +44,9 @@ TitleEntrypoint::
     ld bc, 16 * 128
     call VRAMCopy
 
-    ld de, SplashData + (16 * 128)           ; load second half of tiles into VRAM
+    ld de, SplashData + (16 * 128) ; load second half of tiles into VRAM
     ld hl, $8800
-    ld bc, 16 * 72
+    ld bc, SplashDataEnd - (SplashData + 16 * 128)
     call VRAMCopy
 
     ld de, SplashTilemap        ; load all tilemaps into VRAM
@@ -56,9 +56,9 @@ TitleEntrypoint::
 
     call FadeIn                 ; fade back in after loading everything
 
-    ;call InitAllTitleAnimations
-    ;ld hl, RenderLoop
-    ;call SetVBlankHandler       ; set animations
+    call InitAllTitleAnimations
+    ld hl, RenderLoop
+    call SetVBlankHandler       ; set animations
 
     jp TitleLoop
 
@@ -96,7 +96,7 @@ SECTION "TitleRenderer", ROM0
 
 ; Render animations into VRAM using the render-queue
 RenderLoop:
-    call AnimateWavingFlag
+    call AnimateBottle
     ret
 
 ENDSECTION
