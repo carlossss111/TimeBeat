@@ -32,7 +32,7 @@ SECTION "TitleSpriteData", ROM0
 
 SECTION "TitleSpriteMap", ROM0
 
-    Sparkles1Indices: db $00, $01, $02, $03, $04, $05
+    Sparkles1Indices: INCBIN "sparkles.tilemap"
 
 SECTION "TitleMetasprites", WRAM0
     
@@ -54,16 +54,19 @@ TitleEntrypoint::
 
     call FadeOut                ; fade to black
 
+    call ClearShadowOAM         ; initialise shadow OAM
+
     xor a
-    ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK21
+    ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
     ld [rLCDC], a               ; setup LCD
 
-    call ClearShadowOAM         ; initialise shadow OAM
+    ld a, DEFAULT_PALETTE
+    ld [rOBP0], a               ; set sprite palette
 
     ld de, SpriteSheet
     ld hl, $8000
     ld bc, SpriteSheetEnd - SpriteSheet
-    call VRAMCopy
+    call VRAMCopy               ; load spritesheet
 
     ld hl, Sparkles1            ; sprite
     ld bc, ShadowOAM            ; place to shadow at
@@ -76,8 +79,8 @@ TitleEntrypoint::
     call ColourMSprite          ; set the sparkle's spritesheet
     
     ld hl, Sparkles1            ; sprite
-    ld b, 0                     ; x
-    ld c, 0                     ; y
+    ld b, 8                     ; x
+    ld c, 16                    ; y
     call PositionMSprite
 
     ld de, SplashData           ; load first half of tiles into VRAM
@@ -138,6 +141,7 @@ SECTION "TitleRenderer", ROM0
 
 ; Render animations into VRAM using the render-queue
 RenderLoop:
+    call RenderToOAM
     call AnimateBottle
     ret
 

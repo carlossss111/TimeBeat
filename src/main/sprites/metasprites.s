@@ -7,10 +7,6 @@ include "metasprites.inc"
 ********************************************************/
 SECTION "MetaSprites", ROM0
 
-; Renders to the screen using a DMA transfer
-RenderMSprite::
-    ret
-
 ; Sets the current tile indices
 ; @param hl: metasprite ptr
 ; @param bc: ptr to array of tile indices (1 byte wide)
@@ -118,8 +114,6 @@ ColourMSprite::
 .EndLoop:
     ret
 
-    ret
-
 ; Positions metasprite in shadow WRAM, moving the sprites to the correct location
 ; @param hl: metasprite ptr
 ; @param b: new x position
@@ -133,8 +127,8 @@ function(*meta, x, y) {
     j = 0
     var *sprite = meta->sprite_arr
     do {
-        sprite->x = i + meta->x
-        sprite->y = j + meta->y
+        sprite->x = (i * 8) + meta->x
+        sprite->y = (j * 8) + meta->y
         sprite++
 
         i++
@@ -158,7 +152,7 @@ PositionMSprite::
     ld d, 0
     ld e, META_Y
     add hl, de                  ; hl = metasprite.y
-    ld [hl], b                  ; meta->y = y
+    ld [hl], c                  ; meta->y = y
     pop hl
 
     push hl
@@ -181,7 +175,10 @@ PositionMSprite::
     add hl, de
     ld d, [hl]                  ; d = meta->x
     ld a, [ScratchA]            ; a = i
-    add d                       ; a = i + meta->x
+    sla a
+    sla a
+    sla a                       ; a = (i * 8)
+    add d                       ; a = (i * 8) + meta->x
     pop hl
     
     push hl
@@ -199,7 +196,10 @@ PositionMSprite::
     add hl, de
     ld d, [hl]                  ; d = meta->y
     ld a, [ScratchB]            ; a = j
-    add d                       ; a = j + meta->y
+    sla a
+    sla a
+    sla a                       ; a = (j * 8)
+    add d                       ; a = (j * 8) + meta->y
     pop hl
     
     push hl

@@ -28,8 +28,9 @@ ROM0
 ; Volatile Memory
 WRAM0
     ORG $C000
+    "ShadowOAM"
+
+    ORG $C0a0
     "Scratch"
 
-    ORG $C010
-    "ShadowOAM"
 

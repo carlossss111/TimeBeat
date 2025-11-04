@@ -33,6 +33,8 @@ EntryPoint:
     ld hl, GameMusic 
     call hUGE_init              ; set music track
 
+    call InitDMA                ; loads DMA transfer code into HRAM
+
     di                          ; disable interrupts for the main loop
     call initVBlankHandling     ; init interrupt handling vars for later
 
