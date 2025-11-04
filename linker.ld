@@ -25,3 +25,11 @@ ROM0
     ORG $4fb0
     "TitleTileMap"
 
+; Volatile Memory
+WRAM0
+    ORG $C000
+    "Scratch"
+
+    ORG $C010
+    "ShadowOAM"
+

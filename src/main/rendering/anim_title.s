@@ -2,14 +2,11 @@ include "macros.inc"
 include "hardware.inc"
 
 
-SECTION "TitleAnimatorVars", WRAM0
-
-    DEF FRAMES_PER_ANIM EQU 16   ; must be divisble by rightshifts!
-    DEF BITSHIFTS_PER_ANIM EQU 4; bits before the divisor
-
-    wNextBottleFrame: db
-
-SECTION "TitleAnimations", ROM0
+/*******************************************************
+* TITLE FRAMES
+* Frames that an index into a x,y coordinate on screen
+********************************************************/
+SECTION "TitleFrames", ROM0
 
 ; Frame 1
 BottleF1:
@@ -77,6 +74,22 @@ BottleF3:
     LOAD_ANIM $e2, 5, 12
     ret
 
+ENDSECTION
+
+
+/*******************************************************
+* ANIMATOR
+* The animator should ideally be called on every vblank.
+* It first check if the current frame is an animation frame,
+* e.g. once every N frames, and if it is it activates
+* the next frame
+********************************************************/
+SECTION "TitleAnimatorVars", WRAM0
+
+    DEF FRAMES_PER_ANIM EQU 16   ; must be divisble by rightshifts!
+    DEF BITSHIFTS_PER_ANIM EQU 4 ; bits before the divisor
+
+    wNextBottleFrame: db
 
 SECTION "TitleAnimator", ROM0
 

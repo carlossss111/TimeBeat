@@ -1,6 +1,7 @@
 include "hardware.inc"
 include "enums.inc"
 include "macros.inc"
+include "metasprites.inc"
 
 
 /*******************************************************
@@ -20,6 +21,24 @@ SECTION "TitleTileMap", ROM0
 
 ENDSECTION
 
+/*******************************************************
+* TITLE METASPRITES
+* Sprite structs
+********************************************************/
+SECTION "TitleSpriteData", ROM0
+
+    SpriteSheet: INCBIN "sparkles.2bpp"
+    SpriteSheetEnd:
+
+SECTION "TitleSpriteMap", ROM0
+
+    Sparkles1Indices: db $00, $01, $02, $03, $04, $05
+
+SECTION "TitleMetasprites", WRAM0
+    
+    Sparkles1: STRUCT_METASPRITE
+
+ENDSECTION
 
 /*******************************************************
 * TITLE ENTRYPOINT
@@ -33,11 +52,33 @@ TitleEntrypoint::
     call SetVBlankInterruptOnly ; set the VBlank interrupt
     ei
 
+    call FadeOut                ; fade to black
+
     xor a
     ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK21
     ld [rLCDC], a               ; setup LCD
 
-    call FadeOut                ; fade to black
+    call ClearShadowOAM         ; initialise shadow OAM
+
+    ld de, SpriteSheet
+    ld hl, $8000
+    ld bc, SpriteSheetEnd - SpriteSheet
+    call VRAMCopy
+
+    ld hl, Sparkles1            ; sprite
+    ld bc, ShadowOAM            ; place to shadow at
+    ld d, 2                     ; width
+    ld e, 3                     ; height
+    call InitMSprite            ; initialise a sparkle sprite
+
+    ld hl, Sparkles1            ; sprite
+    ld bc, Sparkles1Indices     ; spritesheet
+    call ColourMSprite          ; set the sparkle's spritesheet
+    
+    ld hl, Sparkles1            ; sprite
+    ld b, 0                     ; x
+    ld c, 0                     ; y
+    call PositionMSprite
 
     ld de, SplashData           ; load first half of tiles into VRAM
     ld hl, $9000
@@ -58,7 +99,8 @@ TitleEntrypoint::
 
     call InitAllTitleAnimations
     ld hl, RenderLoop
-    call SetVBlankHandler       ; set animations
+    call SetVBlankHandler       ; set background animations
+
 
     jp TitleLoop
 
