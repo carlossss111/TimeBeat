@@ -1,7 +1,7 @@
 # Alchemical Anarchy
 A Minesweeper Game for the Gameboy! Still heavily in progress!
 
-![Title Screen](demo_1.png)
+![Title Screen](demo_1.gif)
 
 This one is my most ambitious projects yet as it is written in SM83 assembly (a mix between the i8080 and the Z80) for the original Nintendo Gameboy. It is intended for a Cartridge with 32KB of ROM alone.
 

@@ -45,8 +45,8 @@ AddAnimation::
     inc hl
     ld [hl], c                  ; insert funcptr into array
 
-    inc d
-    ld a, d
+    ld a, [NumOfAnimations]
+    inc a
     ld [NumOfAnimations], a     ; array size ++
 
     ret

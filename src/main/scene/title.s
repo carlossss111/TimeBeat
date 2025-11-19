@@ -202,8 +202,13 @@ TitleEntrypoint::
 
     call InitAnimator
     call InitBottleAnimation
+    ld hl, Sparkles1
+    ld b, 6
+    call InitSparkleAnimation
 
     ld bc, AnimateBottle
+    call AddAnimation
+    ld bc, AnimateSparkle
     call AddAnimation
 
 
