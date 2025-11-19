@@ -180,7 +180,6 @@ TitleEntrypoint::
     call PositionMSprite
 
 
-
     ;; Background ;;
 
     ld de, SplashData           ; load first half of tiles into VRAM
@@ -199,6 +198,15 @@ TitleEntrypoint::
     call VRAMCopy
 
 
+    ;; Animations ;;
+
+    call InitAnimator
+    call InitBottleAnimation
+
+    ld bc, AnimateBottle
+    call AddAnimation
+
+
     ;; LCD ;;
 
     xor a
@@ -208,7 +216,6 @@ TitleEntrypoint::
 
     call FadeIn                 ; fade back in after loading everything
 
-    call InitAllTitleAnimations
     ld hl, RenderLoop
     call SetVBlankHandler       ; set background animations
 
@@ -228,9 +235,6 @@ SECTION "TitleMain", ROM0
 ; @uses all registers
 TitleLoop:
     halt                        ; run this loop at 60fps (more is waste of battery)
-
-    ld hl, Sparkles1
-    call AnimateSparkle
 
     call GetCurrentKeys         ; return current keypress in register a
     and a, JOYP_START           ; check if start
@@ -253,7 +257,7 @@ SECTION "TitleRenderer", ROM0
 ; Render animations into VRAM using the render-queue
 RenderLoop:
     call RenderToOAM
-    call AnimateBottle
+    call Animate
     ret
 
 ENDSECTION
