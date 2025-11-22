@@ -3,6 +3,10 @@ include "hardware.inc"
 include "metasprites.inc"
 
 
+/*******************************************************
+* FRAMES
+* Subroutines to be called on a given frame
+********************************************************/
 SECTION "SparkleFrames", ROM0
 
 ; Frame 1
@@ -13,7 +17,7 @@ SparkleF1:
 .Loop:
     ld a, [wMetaspriteArraySize]
     cp d
-    jp z, .EndLoop
+    jr z, .EndLoop
     
     ld a, [wMetaspriteArray]
     ld h, a
@@ -33,7 +37,7 @@ SparkleF1:
     ld a, e
     add a, META_SIZE
     ld e, a
-    jp .Loop
+    jr .Loop
 .EndLoop:
     ret
 
@@ -45,7 +49,7 @@ SparkleF2:
 .Loop:
     ld a, [wMetaspriteArraySize]
     cp d
-    jp z, .EndLoop
+    jr z, .EndLoop
     
     ld a, [wMetaspriteArray]
     ld h, a
@@ -65,10 +69,15 @@ SparkleF2:
     ld a, e
     add a, META_SIZE
     ld e, a
-    jp .Loop
+    jr .Loop
 .EndLoop:
     ret
 
+/*******************************************************
+* ANIMATION HANDLER
+* Keeps track of which frame is next, calls frame subroutines 
+* depending on that.
+********************************************************/
 SECTION "SparkleAnimationVars", WRAM0
 
     wNextFrame: db
@@ -77,6 +86,7 @@ SECTION "SparkleAnimationVars", WRAM0
 
 SECTION "SparkleAnimation", ROM0
 
+; Reinitialises the animation and loads in an array of metasprites
 ; @param hl: pointer to start of sparkle metasprite array
 ; @param b: number of metasprites
 InitSparkleAnimation::
@@ -91,6 +101,7 @@ InitSparkleAnimation::
     ld [wMetaspriteArraySize], a
     ret
 
+; Advances to the next frame of the animation
 AnimateSparkle::
     ld a, [wNextFrame]
     ld hl, .Switch

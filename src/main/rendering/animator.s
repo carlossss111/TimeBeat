@@ -9,13 +9,14 @@ DEF BITSHIFTS_PER_ANIM EQU 4    ; bits before the divisor
 /*******************************************************
 * ANIMATOR
 * Maintains a list of function pointers.
-* Call Animate() once per main loop to call them at the
-* correct time.
+* When called, the Animate() function checks which frame it
+* is and calls these func pointers if it is an animation frame.
+* Animation frames occur every FRAMES_PER_ANIM.
 ********************************************************/
 SECTION "AnimatorVars", WRAM0
 
-    Animations: ds MAX_BYTES
-    NumOfAnimations: db 
+    wAnimations: ds MAX_BYTES
+    wNumOfAnimations: db 
 
 SECTION "Animator", ROM0
 
@@ -23,20 +24,20 @@ SECTION "Animator", ROM0
 InitAnimator::
     ld bc, MAX_BYTES
     ld d, 0
-    ld hl, Animations
+    ld hl, wAnimations
     call Memset                 ; set all array content to 0
 
     xor a
-    ld [NumOfAnimations], a     ; set size variable to 0
+    ld [wNumOfAnimations], a     ; set size variable to 0
 
     ret
 
 ; Adds a function pointer to the animations list
 ; @param bc: function pointer
 AddAnimation::
-    ld hl, Animations
+    ld hl, wAnimations
     ld d, 0
-    ld a, [NumOfAnimations]
+    ld a, [wNumOfAnimations]
     sla a
     ld e, a
     add hl, de                  ; go to right place on array
@@ -45,12 +46,13 @@ AddAnimation::
     inc hl
     ld [hl], c                  ; insert funcptr into array
 
-    ld a, [NumOfAnimations]
+    ld a, [wNumOfAnimations]
     inc a
-    ld [NumOfAnimations], a     ; array size ++
+    ld [wNumOfAnimations], a     ; array size ++
 
     ret
 
+; Determines if it is an animation frame
 ; Returns 1 if the frame is divisible by FRAMES_PER_ANIM
 ; Returns 0 otherwise
 ; @param a: current frame number
@@ -68,7 +70,7 @@ IsAnimationFrame:
     ld a, TRUE
     ret
 
-; Checks if we are on an animation frame, if we are, animate!
+; Check if we are on an animation frame, if we are, animate!
 Animate::
     ld a, [hFrameCounter]
     ld b, BITSHIFTS_PER_ANIM
@@ -79,13 +81,13 @@ Animate::
     ret                         ; otherwise return early
 
 .AnimationFrameLoop
-    ld a, [NumOfAnimations]
+    ld a, [wNumOfAnimations]
     cp e
     jp z, .AnimationEnd         ; check that we havent called all animations
     push de
 
     sla e
-    ld hl, Animations
+    ld hl, wAnimations
     add hl, de
     ld d, [hl]
     inc hl

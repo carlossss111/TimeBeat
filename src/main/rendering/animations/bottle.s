@@ -2,6 +2,10 @@ include "macros.inc"
 include "hardware.inc"
 
 
+/*******************************************************
+* FRAMES
+* Subroutines to be called on a given frame
+********************************************************/
 SECTION "BottleFrames", ROM0
 
 ; Frame 1
@@ -70,17 +74,24 @@ BottleF3:
     LOAD_ANIM $e2, 5, 12
     ret
 
+/*******************************************************
+* ANIMATION HANDLER
+* Keeps track of which frame is next, calls frame subroutines 
+* depending on that.
+********************************************************/
 SECTION "BottleAnimationVars", WRAM0
 
     wNextFrame: db
 
 SECTION "BottleAnimation", ROM0
 
+; Reinitialises the animation 
 InitBottleAnimation::
     xor a
     ld [wNextFrame], a
     ret
 
+; Advances to the next frame of the animation
 AnimateBottle::
     ld a, [wNextFrame]
     ld hl, .Switch
