@@ -61,7 +61,7 @@ SECTION "TitleEntrypoint", ROM0
 ; Entrypoint for the title screen, initialises the screen
 ; @uses all registers
 TitleEntrypoint::
-    call SetVBlankInterruptOnly ; set the VBlank interrupt
+    call SetVBlankInterrupt     ; set the VBlank interrupt
     ei
 
     call FadeOut                ; fade to black
@@ -212,6 +212,16 @@ TitleEntrypoint::
     call AddAnimation
 
 
+    ;; Scanline Interrupt ;;
+    ld a, 5 
+    call ReqStatOnScanline
+
+    ld hl, StatFunction
+    call etStatHandler
+
+    call SetStatInterrupt
+
+
     ;; LCD ;;
 
     xor a
@@ -263,6 +273,19 @@ SECTION "TitleRenderer", ROM0
 RenderLoop:
     call RenderToOAM
     call Animate
+    ret
+
+ENDSECTION
+
+
+/*******************************************************
+* STAT FUNCTION
+* Does bonus fun stuff after the stat interupt
+********************************************************/
+SECTION "TitleStat", ROM0
+
+StatFunction:
+    nop
     ret
 
 ENDSECTION

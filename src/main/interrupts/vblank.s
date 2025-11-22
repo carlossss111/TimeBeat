@@ -4,8 +4,8 @@ SECTION "FillerBefore", ROM0[$0000]
     ds $40
 ENDSECTION
 
-SECTION "FillerAfter", ROM0[$0047]
-    ds $100 - $47
+SECTION "FillerAfter", ROM0[$0055]
+    ds $100 - $55
 ENDSECTION
 
 
@@ -65,7 +65,7 @@ HandlerSelector:
 
 ; Called by the VBlank Interrupt
 ; Doesn't do anything except implicitly wake up the CPU from the halt instr
-DefaultHandler::
+DefaultHandler:
     ret
 
 ; Should be called at startup to initialise member variables
