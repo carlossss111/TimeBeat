@@ -13,11 +13,29 @@ SECTION "OptionsTileData", ROM0
     OptionsData: INCBIN "options.2bpp"
     OptionsDataEnd:
 
-
 SECTION "OptionsTileMap", ROM0
 
     OptionsTilemap: INCBIN "options.tilemap"
     OptionsTilemapEnd:
+
+ENDSECTION
+
+/*******************************************************
+* TITLE METASPRITES
+* Sprite structs
+********************************************************/
+SECTION "OptionsSpriteData", ROM0
+
+    SpriteSheet: INCBIN "options_cursor.2bpp"
+    SpriteSheetEnd:
+
+SECTION "OptionsSpriteMap", ROM0
+
+    CursorSheetA: INCBIN "options_cursor.tilemap" ; 10x3 tiles
+
+SECTION "OptionsMetasprites", WRAM0
+
+    Cursor: STRUCT_METASPRITE
 
 ENDSECTION
 
@@ -44,6 +62,26 @@ OptionsEntrypoint::
     ld a, DEFAULT_PALETTE
     ld [rOBP0], a               ; set sprite palette
 
+    ld de, SpriteSheet
+    ld hl, $8000
+    ld bc, SpriteSheetEnd - SpriteSheet
+    call VRAMCopy               ; load spritesheet
+
+    ld hl, Cursor               ; sprite
+    ld bc, ShadowOAM            ; place to shadow at
+    ld d, 10                    ; width
+    ld e, 3                     ; height
+    call InitMSprite            ; initialise sprite
+
+    ld hl, Cursor               ; sprite
+    ld bc, CursorSheetA         ; spritesheet
+    call ColourMSprite          ; set the spritesheet
+    
+    ld hl, Cursor               ; sprite
+    ld b, 16                    ; x
+    ld c, 56                    ; y
+    call PositionMSprite
+ 
 
     ;; Background ;;
 
