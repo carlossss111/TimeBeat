@@ -12,11 +12,11 @@ SECTION "Input", ROM0
 ; @uses b
 UpdateInput:
     ld a, JOYP_GET_BUTTONS  ; select BUTTON read mode
-    call .onenibble         ; get button reads
+    call .OneNibble         ; get button reads
     ld b, a                 ; store in register b
 
     ld a, JOYP_GET_CTRL_PAD ; select DPAD read mode
-    call .onenibble         ; get dpad reads
+    call .OneNibble         ; get dpad reads
     swap a                  ; swap high nibble with low nibble
                             ; the high nibble will contain dpad reads and low will be 1111
     xor a, b                ; now in one byte: high nibble = dpad, low nibble = button
@@ -33,14 +33,14 @@ UpdateInput:
     ld [wCurKeys], a        ; store all currently pressed keys
     ret                     ; DONE
 
-.onenibble
+.OneNibble
     ldh [rP1], a            ; set read mode
-    call .knownret          ; waste 10 cycles
+    call .KnownRet          ; waste 10 cycles
     ld a, [rP1]
     ld a, [rP1]
     ld a, [rP1]             ; read 3 times to stabilise, 3rd time should be reliable
     or a, $F0               ; high nibble = 1111, low nibble = input reads
-.knownret
+.KnownRet
     ret
 
 ; Updates the inputs and returns current key as bc

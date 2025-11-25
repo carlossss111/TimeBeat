@@ -199,10 +199,9 @@ MoveCursor:
 OptionsMain:
     halt                        ; run this loop at 60fps (more is waste of battery)
 
-    call GetNewKeys ; return current keypress in register a
+    call GetNewKeys             ; return current keypress in register a
 
     ld b, a
-    ld a, b
     and a, JOYP_A               ; check if buttons pressed
     jr nz, .IfAPressed
     ld a, b
@@ -212,10 +211,10 @@ OptionsMain:
     and a, JOYP_SELECT
     jr nz, .IfAPressed
     ld a, b
-    and a, JOYP_UP
+    and a, JOYP_UP << 4
     jr nz, .IfUpPressed
     ld a, b
-    and a, JOYP_DOWN
+    and a, JOYP_DOWN << 4
     jr nz, .IfDownPressed
     ld a, b
     and a, JOYP_START
