@@ -24,14 +24,12 @@ SECTION "Init", ROM0
 EntryPoint:
     ld sp, StackStart           ; set stack pointer
 
-    ld a, $80
+    xor a
     ld [rAUDENA], a             ; NR52 enable audio
     ld a, $FF
     ld [rAUDTERM], a            ; NR51 set sound panning to neutral
-    ld a, $77
+    ld a, $00
     ld [rAUDVOL], a             ; NR50 set master volume
-    ld hl, GameMusic 
-    call hUGE_init              ; set music track
 
     call InitDMA                ; loads DMA transfer code into HRAM
 

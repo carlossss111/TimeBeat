@@ -72,6 +72,19 @@ TitleEntrypoint::
 
     call FadeIn                 ; fade back in after loading everything
 
+    
+    ;; Audio
+
+    di
+    ld hl, GameMusic 
+    call hUGE_init              ; set music track
+    ei
+    ld b, 3
+    call SlideUpVolume
+
+
+    ;;
+
     ld hl, RenderLoop
     call SetVBlankHandler       ; set background animations
 
@@ -86,10 +99,50 @@ ENDSECTION
 * Computes input here
 ********************************************************/
 SECTION "TitleMain", ROM0
+    ld b, 3
 
 ; Loop until the player presses start
 TitleLoop:
     halt                        ; run this loop at 60fps (more is waste of battery)
+
+    call GetCurrentKeys         ; return current keypress in register a
+    and a, JOYP_START           ; check if start
+    jr z, TitleLoop             ; if button not pressed, loop again
+
+    ld b, 3
+    call SlideDownVolume
+
+.wait:
+    call GetCurrentKeys 
+    and a, JOYP_START    
+    jr z, .wait 
+
+    di
+    ld hl, SampleTwo 
+    call hUGE_init          
+    ei
+    ld b, 3
+    call SlideUpVolume
+
+.wait2:
+    call GetCurrentKeys       
+    and a, JOYP_START          
+    jr z, .wait2 
+
+    ld b, 3
+    call SlideDownVolume
+
+.wait3:
+    call GetCurrentKeys       
+    and a, JOYP_START          
+    jr z, .wait3
+
+    di
+    ld hl, GameMusic 
+    call hUGE_init          
+    ei
+    ld b, 3
+    call SlideUpVolume
 
     jr TitleLoop             ; if button not pressed, loop again
 .EndLoop:
@@ -105,7 +158,8 @@ SECTION "TitleRenderer", ROM0
 
 ; Render animations into VRAM using the render-queue
 RenderLoop:
-    call RenderToOAM
+    call hUGE_dosound           ; play music
+    call RenderToOAM            ; render sprites
     ret
 
 ENDSECTION
