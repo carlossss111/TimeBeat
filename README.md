@@ -1,11 +1,9 @@
-# Alchemical Anarchy
-A Minesweeper Game for the Gameboy! Still heavily in progress!
+# Beatmap GB
+A Rhythm Game for the Gameboy! 
 
-![Title Screen](demo_1.gif)
+Written in SM83 assembly (a mix between the i8080 and the Z80) for the original Nintendo Gameboy. 
 
-This one is my most ambitious projects yet as it is written in SM83 assembly (a mix between the i8080 and the Z80) for the original Nintendo Gameboy. It is intended for a Cartridge with 32KB of ROM alone.
-
-The goal of the project is to write a good minesweeper game, complete with a title screen, score, art and music.
+The goal of the project is to write a good rhythm game, complete with a title screen, score, art and music.
 
 ## Compiling
 
@@ -35,14 +33,12 @@ emulicious bin/minesweeper.gb
 ```
 
 ### Real Hardware
-After running `make`, take the .gb file and load it onto a **32kb cartridge** that is compatible with **GBxCart RW**. Hey presto, you have a real game! Easy!
-
-![Real hardware](demo_2.jpg)
+After running `make`, take the .gb file and load it onto a **MBC5 Cartridge** that is compatible with **GBxCart RW**. Hey presto, you have a real game! Easy!
 
 See: https://www.gbxcart.com/
 
 ## Libraries
-I am using the hUGE library for audio because I am not a musical person.
+I am using the hUGE library for audio.
 Available here: https://nickfa.ro/wiki/hUGETracker
 
 ## Resources

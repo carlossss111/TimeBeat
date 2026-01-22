@@ -1,5 +1,5 @@
 INCLUDE "hardware.inc"
-INCLUDE "enums.inc"
+INCLUDE "scenes.inc"
 
 /*******************************************************
 * CARTRIDGE HEADER
@@ -13,6 +13,7 @@ SECTION "Header", ROM0[$0100]
 
 ENDSECTION
 
+
 /*******************************************************
 * INITIALISATION
 * Copies memory to where it needs to be
@@ -20,7 +21,6 @@ ENDSECTION
 SECTION "Init", ROM0
 
 ; Global entrypoint for the program
-; @uses all registers
 EntryPoint:
     ld sp, StackStart           ; set stack pointer
 
@@ -53,7 +53,6 @@ SECTION "MainLoop", ROM0
 
 ; Main loop that each game state returns to upon finishing
 ; @param bc: scene to load
-; @uses all registers
 Main:
     ld a, c
     cp a, SWITCH_SIZE + 1       ; compare if bc is within the right range
@@ -66,8 +65,6 @@ Main:
 
 .Switch:
     call TitleEntrypoint        ; enter title loop. return new state as bc 
-    jr .SwitchEnd
-    call OptionsEntrypoint      ; enter options loop. return new state as bc 
     jr .SwitchEnd
     call GameEntrypoint         ; enter game loop. return new state as bc 
     jr .SwitchEnd

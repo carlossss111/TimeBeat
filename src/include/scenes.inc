@@ -1,5 +1,4 @@
 
-; Scene enums
 def CASE_SIZE equ 5
 def TITLE_SCENE equ 0 * CASE_SIZE
 def OPTION_SCENE equ 1 * CASE_SIZE

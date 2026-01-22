@@ -3,7 +3,7 @@
 
 SRC_DIR=src
 INC_DIR=src/include
-RSC_DIR=src/resources
+RSC_DIR=rsc
 BIN_DIR=bin
 GEN_DIR=bin/generated
 
@@ -27,13 +27,11 @@ recursive_wildcard=$(foreach d,\
 )
 SOURCE_FILE_LIST=$(call recursive_wildcard,$(SRC_DIR),*.s)
 LIB_SOURCE_FILE_LIST=$(call recursive_wildcard,$(LIB_SRC_DIR),*.s)
-IMAGE_FILE_LIST=$(call recursive_wildcard,$(RSC_DIR),*.png)
-TILEMAP_FILE_LIST=$(call recursive_wildcard,$(RSC_DIR),*.tilemap)
 
 
-# Options #####
+# Compilation #####
 
-compile: clean generate-2bpp copy-tilemaps
+compile: clean copy-tilemaps copy-2bpp
 	for ASM_FILE in $(SOURCE_FILE_LIST) ; do \
 		OBJ_FILE=`basename $$ASM_FILE | cut -d. -f1`.o ;\
 		rgbasm $$ASM_FILE $(ASM_FLAGS) -o $(BIN_DIR)/$$OBJ_FILE ; \
@@ -58,15 +56,13 @@ map: compile
 clean:
 	rm $(BIN_DIR)/* 2> /dev/null || true 
 	rm $(GEN_DIR)/* 2> /dev/null || true
+	
 
-generate-2bpp:
-	for IMAGE_FILE in $(IMAGE_FILE_LIST) ; do \
-		GEN_FILE=`basename $$IMAGE_FILE | cut -d. -f1`.2bpp ;\
-		rgbgfx $$IMAGE_FILE $(GFX_FLAGS) -o $(GEN_DIR)/$$GEN_FILE ; \
-	done
+# Utility #####
+
+copy-2bpp:
+	cp $(RSC_DIR)/bitmaps/* $(GEN_DIR)
 
 copy-tilemaps:
-	for TILEMAP_FILE in $(TILEMAP_FILE_LIST) ; do \
-		cp $$TILEMAP_FILE $(GEN_DIR) ; \
-	done
+	cp $(RSC_DIR)/tilemaps/* $(GEN_DIR)
 
