@@ -55,6 +55,63 @@ class Square(Channel):
         self._trigger: Optional[int] = True         # 1 bit
         self._length_enable: Optional[int] = False  # 1 bit
 
+    @property
+    def rNR10(self) -> Optional[int]:
+        if (self._sweep_time is None 
+                or self._sweep_dir is None 
+                or self._sweep_size is None):
+            return None
+
+        register = 0
+        register |= (self._sweep_time << 4)
+        register |= (self._sweep_dir << 3)
+        register |= (self._sweep_size)
+        return register
+
+    @property
+    def rNR11(self) -> Optional[int]:
+        if self._duty is None or self._channel_length is None:
+            return None
+
+        register = 0
+        register |= (self._duty << 6)
+        register |= (self._channel_length)
+        return register
+
+    @property
+    def rNR12(self) -> Optional[int]:
+        if (self._initial_vol is None
+                or self._env_dir is None
+                or self._env_change is None):
+            return None
+
+        register = 0
+        register |= (self._initial_vol << 4)
+        register |= (self._env_dir << 3)
+        register |= (self._env_change)
+        return register
+        
+    @property
+    def rNR13(self) -> Optional[int]:
+        if self._period is None:
+            return None
+
+        register = (self._period & 0xFF)
+        return register
+
+    @property
+    def rNR14(self) -> Optional[int]:
+        if (self._period is None
+                or self._length_enable is None
+                or self._trigger is None):
+            return None
+
+        register = 0
+        register |= (self._trigger << 7)
+        register |= (self._length_enable << 6)
+        register |= (self._period >> 8)
+        return register
+
     # 7.8 m/s per bit
     def set_sweep_time(self, user_in: str) -> None:
         if len(user_in) == 0:
@@ -124,8 +181,8 @@ class Square(Channel):
 
         self._period = 2048 - int(float(131072)/freq)
 
-
-
+        if self._period < 0 or self._period > 0x7FF:
+            panic("Period must be 11 bits long")
 
     # print binary values
     def __repr__(self) -> str:
@@ -141,8 +198,14 @@ class Square(Channel):
             "env_change": bin(self._env_change)         if self._env_change is not None else None,
             "trigger": bin(self._trigger)               if self._trigger is not None else None,
             "length_enable": bin(self._length_enable)   if self._length_enable is not None else None,
-            "period": bin(self._period)                 if self._period is not None else None})
+            "period": bin(self._period)                 if self._period is not None else None,
+            "rNR10": bin(self.rNR10)                    if self.rNR10 is not None else None,
+            "rNR11": bin(self.rNR11)                    if self.rNR11 is not None else None,
+            "rNR12": bin(self.rNR12)                    if self.rNR12 is not None else None,
+            "rNR13": bin(self.rNR13)                    if self.rNR13 is not None else None,
+            "rNR14": bin(self.rNR14)                    if self.rNR14 is not None else None})
         
+
 def main() -> None:
     square = Square()
 
@@ -171,6 +234,30 @@ def main() -> None:
     square.set_duty(input())
 
     print(square)
+    print("")
+
+    if (square.rNR10 is None 
+        or square.rNR11 is None
+        or square.rNR12 is None
+        or square.rNR13 is None
+        or square.rNR14 is None):
+        print("Failed to generate all registers")
+        exit(1)
+
+    print(
+    f"""
+    ld a, ${hex(square.rNR10)[2:]}
+    ld [rNR10], a
+    ld a, ${hex(square.rNR11)[2:]}
+    ld [rNR11], a
+    ld a, ${hex(square.rNR12)[2:]}
+    ld [rNR12], a
+    ld a, ${hex(square.rNR13)[2:]}
+    ld [rNR13], a
+    ld a, ${hex(square.rNR14)[2:]}
+    ld [rNR14], a
+    """
+    )
 
 if __name__ == "__main__":
     main()

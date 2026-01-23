@@ -114,19 +114,20 @@ TitleLoop:
     ld c, 1                     ; mute
     call hUGE_mute_channel
 
-    ld a, $00
-    ld [rNR10], a               ; sweep = 0
-    ld a, $81
-    ld [rNR11], a               ; 50% duty cycle, short time to cut
-    ld a, $ff
-    ld [rNR12], a               ; max instant volume
-    ld a, $73
-    ld [rNR13], a               ; frequency wizardry
-    ld a, $86
-    ld [rNR14], a               ; enables channel, woaw
+    ld a, $57
+    ld [rNR10], a
+    ld a, $80
+    ld [rNR11], a
+    ld a, $f0
+    ld [rNR12], a
+    ld a, $83
+    ld [rNR13], a
+    ld a, $87
+    ld [rNR14], a
 
-    ld b, 10
-    call WaitForFrames
+    ld b, $0f
+    call WaitForFrames          ; let the effect play out
+
 
     ld b, 0                     ; channel 1
     ld c, 0                     ; release
