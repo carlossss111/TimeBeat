@@ -6,6 +6,7 @@ INC_DIR=src/include
 RSC_DIR=rsc
 BIN_DIR=bin
 GEN_DIR=bin/generated
+BEAT_DIR=src/main/audio/beats
 
 LIB_SRC_DIR=lib/hUGEDriver_src
 LIB_INC_DIR=lib/hUGEDriver_inc
@@ -31,7 +32,7 @@ LIB_SOURCE_FILE_LIST=$(call recursive_wildcard,$(LIB_SRC_DIR),*.s)
 
 # Compilation #####
 
-compile: clean copy-tilemaps copy-2bpp
+compile: clean copy-tilemaps copy-2bpp beats
 	for ASM_FILE in $(SOURCE_FILE_LIST) ; do \
 		OBJ_FILE=`basename $$ASM_FILE | cut -d. -f1`.o ;\
 		rgbasm $$ASM_FILE $(ASM_FLAGS) -o $(BIN_DIR)/$$OBJ_FILE ; \
@@ -65,4 +66,10 @@ copy-2bpp:
 
 copy-tilemaps:
 	cp $(RSC_DIR)/tilemaps/* $(GEN_DIR)
+
+beats:
+	for BEAT in $(BEAT_DIR)/*.beat; do \
+		BIN_FILE=`basename $$BEAT | cut -d. -f1 `.bin ; \
+		python scripts/export-beatmap.py $$BEAT $(GEN_DIR)/$$BIN_FILE > /dev/null ; \
+	done
 
