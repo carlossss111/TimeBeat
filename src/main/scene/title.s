@@ -76,7 +76,7 @@ TitleEntrypoint::
     ;; Audio
 
     di
-    ld hl, GameMusic 
+    ld hl, ProofOfConcept 
     call hUGE_init              ; set music track
     ei
     ld b, 3
@@ -114,26 +114,26 @@ TitleLoop:
     ld c, 1                     ; mute
     call hUGE_mute_channel
 
-    ld a, $57
+    ld a, $30
     ld [rNR10], a
     ld a, $80
     ld [rNR11], a
-    ld a, $f0
+    ld a, $f1
     ld [rNR12], a
-    ld a, $83
+    ;ld a, $e5
+    ld a, $ef
     ld [rNR13], a
-    ld a, $87
+    ;ld a, $84
+    ld a, $86
     ld [rNR14], a
 
     ld b, $0f
     call WaitForFrames          ; let the effect play out
 
-
     ld b, 0                     ; channel 1
     ld c, 0                     ; release
     call hUGE_mute_channel
 
-    
 
 /*
     ld b, 3

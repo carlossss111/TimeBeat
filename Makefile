@@ -10,8 +10,8 @@ GEN_DIR=bin/generated
 LIB_SRC_DIR=lib/hUGEDriver_src
 LIB_INC_DIR=lib/hUGEDriver_inc
 
-EXE=minesweeper.gb
-MAP=minesweeper.map
+EXE=beatmap.gb
+MAP=beatmap.map
 
 ASM_FLAGS=-Wall -I $(INC_DIR) -I $(INC_DIR)/structs -I $(LIB_INC_DIR) -i $(GEN_DIR)
 L_FLAGS=-Wall --linkerscript linker.ld -n $(BIN_DIR)/minesweeper.sym --dmg --wramx --tiny
