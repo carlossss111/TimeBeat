@@ -99,7 +99,6 @@ ENDSECTION
 * Computes input here
 ********************************************************/
 SECTION "TitleMain", ROM0
-    ld b, 3
 
 ; Loop until the player presses start
 TitleLoop:

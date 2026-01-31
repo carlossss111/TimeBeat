@@ -33,11 +33,9 @@ magick "$png_path" -background '#9bbc0f' -alpha remove -alpha off "$tmp_path"
 if [ "$2" == '-t' ] || [ "$2" == '--tilemap' ]; then
     rgbgfx "$tmp_path" -c "$COLOUR_PALETTE" -u -o "$bpp_path" -t "$map_path"
     echo "Created images/$file_name.png, bitmaps/$file_name.2bpp and tilemaps/$file_name.tilemap."
+    tilemapstudio "$map_path" "$bpp_path" dmg &
 else
     rgbgfx "$tmp_path" -c "$COLOUR_PALETTE" -u -o "$bpp_path"
     echo "Created images/$file_name.png and bitmaps/$file_name.2bpp."
 fi
-
-# Open up tilemap editor for tweaking
-tilemapstudio "$map_path" "$bpp_path" dmg &
 
