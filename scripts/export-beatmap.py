@@ -5,8 +5,11 @@ COMMENT = '#'
 CONTROL_MAP = {"A": 0x0, "B": 0x1, "LEFT": 0x2, "RIGHT": 0x3}
 HOLD_RELEASE = {"HOLD": 0x0, "RELEASE": 0x1}
 
+MIN_TICKS = 144
+MAX_TICKS = 0x3FFF
+
 def panic(problem: str):
-    print(problem)
+    print(problem, file=sys.stderr)
     exit(1)
 
 class BinaryBeatArray:
@@ -28,8 +31,10 @@ class BinaryBeatArray:
 
         # The tick time is 14 bits
         beat = int(text_arr[0])
-        if beat > 0x3FFF:
-            panic(f"Too many ticks on {line_no}! Must be 14 bits")
+        if beat > 0x3FF:
+            panic(f"Too many ticks on line {line_no}! Must be 14 bits")
+        if beat < MIN_TICKS:
+            panic(f"Too few ticks on line {line_no}! Must be more than {MIN_TICKS}")
 
         # The hold/release functionality is uppermost bit
         if len(text_arr) == 3:

@@ -85,7 +85,7 @@ FutureSceneEntrypoint::
     ;; Audio
 
     di
-    ld hl, ProofOfConcept 
+    ld hl, BeatTest
     call hUGE_init              ; set music track
     ei
     ld b, 3

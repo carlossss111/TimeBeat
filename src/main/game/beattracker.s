@@ -82,11 +82,10 @@ GetNextTick::
     inc hl                      ; low 8 bits
     ld c, [hl]
 
-    ; TODO: Need to tweak what happens if a beatmap is too early
     ld hl, -TICKS_TO_CROSS_SCREEN
     add hl, bc                  ; subtract ticks to cross screen
     jr c, .NoUnderflow
-    ld bc, 0                    ; handle underflows
+    ld bc, 0                    ; handle underflows (unlikely!)
     ret
 
 .NoUnderflow:
