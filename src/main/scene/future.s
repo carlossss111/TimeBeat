@@ -30,6 +30,15 @@ FutureSceneEntrypoint::
     call InitGameSpriteVRAM     ; set spritesheets (VRAM = $8000)
     call InitBeatSprites        ; init circular queue
 
+    ld a, PAD_A
+    call EnqueueBeatSprite
+    ld a, PAD_B
+    call EnqueueBeatSprite
+    ld a, PAD_LEFT
+    call EnqueueBeatSprite
+    ld a, PAD_RIGHT
+    call EnqueueBeatSprite
+
 
     ;; Background ;;
 
@@ -77,27 +86,7 @@ SECTION "FutureSceneMain", ROM0
 MainLoop:
     halt                        ; run this loop at 60fps (more is waste of battery)
 
-    ld a, PAD_A
-    call EnqueueBeatSprite
-    ld a, PAD_B
-    call EnqueueBeatSprite
-    ld a, PAD_LEFT
-    call EnqueueBeatSprite
-    ld a, PAD_RIGHT
-    call EnqueueBeatSprite
-    halt
-    halt
-    halt
-    halt
-
-    call DequeueBeatSprite
-    call DequeueBeatSprite
-    call DequeueBeatSprite
-    call DequeueBeatSprite
-    call DequeueBeatSprite
-
-.end
-    jp .end
+    call MoveBeatSprites
 
     jr MainLoop                 ; if button not pressed, loop again
 .EndLoop:
