@@ -1,6 +1,10 @@
+include "macros.inc"
 
 DEF HOLD_BIT EQU $80            ; high bit
 DEF TICK_BITS EQU $3F           ; all other bits
+
+DEF TICKS_TO_CROSS_SCREEN EQU $90 ; probably
+
 
 /*******************************************************
 * BEAT TRACK VARIABLES AND CONSTS
@@ -17,14 +21,14 @@ DEF TICK_BITS EQU $3F           ; all other bits
 ********************************************************/
 SECTION "BeatTracks", ROM0
 
-    FutureBeatTrack: INCBIN "example.bin.a"
-    FutureBeatTrackEnd:
+    FutureBeatTrack:: INCBIN "example.bin.a"
+    FutureBeatTrackEnd::
 
-    PresentBeatTrack:
-    PresentBeatTrackEnd:
+    PresentBeatTrack::
+    PresentBeatTrackEnd::
     
-    PastBeatTrack:
-    PastBeatTrackEnd:
+    PastBeatTrack::
+    PastBeatTrackEnd::
 
 SECTION "BeatPtrs", WRAM0
 
@@ -61,9 +65,11 @@ InitBeatTracker::
     ld [wFinishPtr + 1], a
     ret
 
-; Gets the 'ticks' value pointed to by the NextPtr
+
+; Gets the 'tick' value pointed to by the NextPtr
+; Subtracts by the time it takes to cross the screen
 ; @returns bc: next value needing to trigger a sprite change
-GetNextTicks::
+GetNextTick::
     ld a, [wNextPtr]
     ld h, a
     ld a, [wNextPtr + 1]
@@ -75,7 +81,19 @@ GetNextTicks::
     
     inc hl                      ; low 8 bits
     ld c, [hl]
+
+    ; TODO: Need to tweak what happens if a beatmap is too early
+    ld hl, -TICKS_TO_CROSS_SCREEN
+    add hl, bc                  ; subtract ticks to cross screen
+    jr c, .NoUnderflow
+    ld bc, 0                    ; handle underflows
     ret
+
+.NoUnderflow:
+    ld b, h
+    ld c, l
+    ret
+
 
 ; Gets the 'ticks' value pointed to by the CurrentPtr
 ; @returns bc: current value the player needs to hit
@@ -93,6 +111,7 @@ GetCurrent::
     ld c, [hl]
     ret
 
+
 ; Increments the NextPtr
 AdvanceNext::
     ld a, [wNextPtr]
@@ -109,6 +128,7 @@ AdvanceNext::
     ld [wNextPtr + 1], a
     ret
 
+
 ; Increments the CurrentPtr 
 AdvanceCurrent::
     ld a, [wCurrentPtr]
@@ -124,6 +144,30 @@ AdvanceCurrent::
     ld a, l
     ld [wCurrentPtr + 1], a
     ret
+
+
+; Return 1 if at end
+; @param a: TRUE or FALSE
+IsNextPtrAtEnd::
+    ld a, [wNextPtr]
+    ld h, a
+    ld a, [wNextPtr + 1]
+    ld l, a
+
+    ld a, [wFinishPtr]
+    cp h
+    jp nz, .False
+    ld a, [wFinishPtr + 1]
+    cp l
+    jp nz, .False
+.True:
+    ld a, TRUE
+    ret
+    
+.False:
+    ld a, FALSE
+    ret
+    
 
 ENDSECTION
 

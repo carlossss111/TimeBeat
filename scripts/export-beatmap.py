@@ -35,7 +35,7 @@ class BinaryBeatArray:
         if len(text_arr) == 3:
             beat |= HOLD_RELEASE[text_arr[2]] << 15
 
-        self.binary_arr += beat.to_bytes(2, "little")
+        self.binary_arr += beat.to_bytes(2, "big")
 
 def remove_comments(text: str) -> str:
     if COMMENT not in text:
