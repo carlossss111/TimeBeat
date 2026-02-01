@@ -1,4 +1,5 @@
 include "macros.inc"
+include "beattracker.inc"
 
 DEF HOLD_BIT EQU $80            ; high bit
 DEF TICK_BITS EQU $3F           ; all other bits
@@ -21,20 +22,20 @@ DEF TICKS_TO_CROSS_SCREEN EQU $90 ; probably
 ********************************************************/
 SECTION "BeatTracks", ROM0
 
-    FutureBeatTrack:: INCBIN "example.bin.a"
-    FutureBeatTrackEnd::
+    FutureBeatTrackA:: INCBIN "example.bin.a"
+    FutureBeatTrackAEnd::
+    FutureBeatTrackB:: INCBIN "example.bin.b"
+    FutureBeatTrackBEnd::
+    FutureBeatTrackLeft:: INCBIN "example.bin.l"
+    FutureBeatTrackLeftEnd::
+    FutureBeatTrackRight:: INCBIN "example.bin.r"
+    FutureBeatTrackRightEnd::
 
     PresentBeatTrack::
     PresentBeatTrackEnd::
     
     PastBeatTrack::
     PastBeatTrackEnd::
-
-SECTION "BeatPtrs", WRAM0
-
-    wCurrentPtr: dw
-    wNextPtr: dw
-    wFinishPtr: dw
 
 ENDSECTION
 
@@ -45,36 +46,44 @@ ENDSECTION
 ********************************************************/
 SECTION "BeatTracker", ROM0
 
+
 ; Initialises all the pointers and variables for the beat tracker
-; @param hl: location in memory where the beat track begins
-; @param bc: location in memory where the beat track ends
-InitBeatTracker::
-    ld a, h
-    ld [wCurrentPtr], a
-    ld a, l
-    ld [wCurrentPtr + 1], a
+; @param hl: pointer to beatstream struct
+; @param a: button type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
+; @param bc: location in memory where the beat track begins
+; @param de: location in memory where the beat track ends
+InitBeatStream::
+    ld [hl], b
+    inc hl
+    ld [hl], c
+    inc hl                      ; current_ptr = bc
 
-    ld a, h
-    ld [wNextPtr], a
-    ld a, l
-    ld [wNextPtr + 1], a
+    ld [hl], b
+    inc hl
+    ld [hl], c
+    inc hl                      ; next_ptr = bc
 
-    ld a, b
-    ld [wFinishPtr], a
-    ld a, c
-    ld [wFinishPtr + 1], a
+    ld [hl], d
+    inc hl
+    ld [hl], e                  ; finish_ptr = de
+    inc hl
+
+    ld [hl], a                  ; type = a
     ret
 
 
 ; Gets the 'tick' value pointed to by the NextPtr
 ; Subtracts by the time it takes to cross the screen
+; @param hl: pointer to beatstream struct
 ; @returns bc: next value needing to trigger a sprite change
 GetNextTick::
-    ld a, [wNextPtr]
+    ld bc, BEAT_STREAM_NEXT
+    add hl, bc
+    ld a, [hl+]
+    ld c, [hl]
     ld h, a
-    ld a, [wNextPtr + 1]
-    ld l, a
-
+    ld l, c
+    
     ld a, [hl]                  ; high 6 bits
     and a, TICK_BITS
     ld b, a
@@ -95,13 +104,16 @@ GetNextTick::
 
 
 ; Gets the 'ticks' value pointed to by the CurrentPtr
+; @param hl: pointer to beatstream struct
 ; @returns bc: current value the player needs to hit
-GetCurrent::
-    ld a, [wCurrentPtr]
+GetCurrentTick::
+    ld bc, BEAT_STREAM_CURRENT
+    add hl, bc
+    ld a, [hl+]
+    ld c, [hl]
     ld h, a
-    ld a, [wCurrentPtr + 1]
-    ld l, a
-
+    ld l, c
+ 
     ld a, [hl]                  ; high 6 bits
     and a, TICK_BITS
     ld b, a
@@ -112,52 +124,68 @@ GetCurrent::
 
 
 ; Increments the NextPtr
+; @param hl: pointer to beatstream struct
 AdvanceNext::
-    ld a, [wNextPtr]
-    ld h, a
-    ld a, [wNextPtr + 1]
-    ld l, a
-
-    inc hl                      ; 2 bytes
+    ld bc, BEAT_STREAM_NEXT
+    add hl, bc
+    push hl
+    ld b, [hl]
     inc hl
+    ld c, [hl]
+ 
+    inc bc                      ; 2 bytes
+    inc bc
 
-    ld a, h
-    ld [wNextPtr], a
-    ld a, l
-    ld [wNextPtr + 1], a
+    pop hl
+    ld [hl], b
+    inc hl
+    ld [hl], c
     ret
 
 
 ; Increments the CurrentPtr 
+; @param hl: pointer to beatstream struct
 AdvanceCurrent::
-    ld a, [wCurrentPtr]
-    ld h, a
-    ld a, [wCurrentPtr + 1]
-    ld l, a
-
-    inc hl                      ; 2 bytes
+    ld bc, BEAT_STREAM_CURRENT
+    add hl, bc
+    push hl
+    ld b, [hl]
     inc hl
+    ld c, [hl]
+ 
+    inc bc                      ; 2 bytes
+    inc bc
 
-    ld a, h
-    ld [wCurrentPtr], a
-    ld a, l
-    ld [wCurrentPtr + 1], a
+    pop hl
+    ld [hl], b
+    inc hl
+    ld [hl], c
     ret
 
 
 ; Return 1 if at end
+; @param hl: pointer to beatstream struct
 ; @param a: TRUE or FALSE
 IsNextPtrAtEnd::
-    ld a, [wNextPtr]
-    ld h, a
-    ld a, [wNextPtr + 1]
-    ld l, a
-
-    ld a, [wFinishPtr]
-    cp h
+    push hl
+    ld bc, BEAT_STREAM_NEXT
+    add hl, bc
+    ld b, [hl]
+    inc hl
+    ld c, [hl]
+ 
+    pop hl
+    ld de, BEAT_STREAM_FINISH
+    add hl, de
+    ld d, [hl]
+    inc hl
+    ld e, [hl]
+ 
+    ld a, d
+    cp b
     jp nz, .False
-    ld a, [wFinishPtr + 1]
-    cp l
+    ld a, e
+    cp c
     jp nz, .False
 .True:
     ld a, TRUE

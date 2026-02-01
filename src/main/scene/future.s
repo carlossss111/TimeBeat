@@ -1,7 +1,7 @@
 include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
-include "metasprites.inc"
+include "beattracker.inc"
 
 /*******************************************************
 * SCENE DATA
@@ -16,6 +16,13 @@ SECTION "FutureTileMap", ROM0
 
     BackgroundTilemap: INCBIN "beatmap.tilemap"
     BackgroundTilemapEnd:
+
+SECTION "FutureBeats", WRAM0
+
+    BeatStreamA: STRUCT_BEAT_STREAM
+    BeatStreamB: STRUCT_BEAT_STREAM
+    BeatStreamLeft: STRUCT_BEAT_STREAM
+    BeatStreamRight: STRUCT_BEAT_STREAM
 
 ENDSECTION
 
@@ -49,9 +56,30 @@ FutureSceneEntrypoint::
     
     ;; Game ;;
     
-    ld hl, FutureBeatTrack
-    ld bc, FutureBeatTrackEnd
-    call InitBeatTracker        ; init array of beats on the Future Track
+    ld a, PAD_A
+    ld hl, BeatStreamA
+    ld bc, FutureBeatTrackA
+    ld de, FutureBeatTrackAEnd
+    call InitBeatStream
+
+    ld a, PAD_B
+    ld hl, BeatStreamB
+    ld bc, FutureBeatTrackB
+    ld de, FutureBeatTrackBEnd
+    call InitBeatStream
+
+    ld a, PAD_LEFT
+    ld hl, BeatStreamLeft
+    ld bc, FutureBeatTrackLeft
+    ld de, FutureBeatTrackLeftEnd
+    call InitBeatStream
+
+    ld a, PAD_RIGHT
+    ld hl, BeatStreamRight
+    ld bc, FutureBeatTrackRight
+    ld de, FutureBeatTrackRightEnd
+    call InitBeatStream
+
 
 
     ;; Background ;;
@@ -60,11 +88,6 @@ FutureSceneEntrypoint::
     ld hl, $9000
     ld bc, BackgroundDataEnd - BackgroundData
     call VRAMCopy
-
-    ;ld de, SplashData + (16 * 128) ; load second half of tiles into VRAM
-    ;ld hl, $8800
-    ;ld bc, SplashDataEnd - (SplashData + 16 * 128)
-    ;call VRAMCopy
 
     ld de, BackgroundTilemap ; load all tilemaps into VRAM
     ld hl, TILEMAP0
@@ -107,28 +130,34 @@ ENDSECTION
 ********************************************************/
 SECTION "FutureSceneMain", ROM0
 
-; Loop until the player presses start
+; Spawn beats by reading the beat streams
+; @param hl: beat stream pointer
 /**
-* function(ticks){
-* 
-*     if (beat_tracker->next->ticks == ticks) {
-*         enqueue_next_sprite();
+* function(beat_stream){
+*     if (beat_stream->next->ticks == ticks) {
+*         sprite_type = beat_stream->sprite_type
+*         enqueue_next_sprite(sprite_type);
 *         beat_tracker->advance_next()
 *     }
-*     move_sprites()
 * 
-*     ticks++
 * }
 */
-MainLoop:
+SpawnBeats:
+    push hl
 
 .IfAtEndOfSprites:
+    pop hl
+    push hl
     call IsNextPtrAtEnd
+
     cp TRUE
     jp z, .EndIf                ; if at end, skip more enqueues
 
 .IfTimeForNextSprite:
+    pop hl
+    push hl
     call GetNextTick            ; bc = next tick on tracker
+
     ldh a, [hTick]              ; check if tick on current beat >= time ticks
     cp b
     jr c, .EndIf
@@ -136,14 +165,40 @@ MainLoop:
     cp c
     jr c, .EndIf
 
-    ld a, PAD_A                 ; TODO: PLACEHOLDER
+    pop hl
+    push hl
+    ld bc, BEAT_STREAM_TYPE
+    add hl, bc
+    ld a, [hl]                  ; a = sprite type
     call EnqueueBeatSprite      ; enqueue sprite
+
+    pop hl
+    push hl
     call AdvanceNext            ; advance next pointer on beatmap
 
 .EndIf:
+    pop hl
+    ret
+
+
+; Main program loop wahhey
+MainLoop:
+
+    ; Spawn the beats!
+    ld hl, BeatStreamA
+    call SpawnBeats
+    ld hl, BeatStreamB
+    call SpawnBeats
+    ld hl, BeatStreamLeft
+    call SpawnBeats
+    ld hl, BeatStreamRight
+    call SpawnBeats
+
+    ; Move all sprites
     call MoveBeatSprites        ; move all sprites
 
-    halt                        ; VSync to 60FPS
+    ; Vsync and loop
+    halt
     jr MainLoop
 .EndLoop:
 
