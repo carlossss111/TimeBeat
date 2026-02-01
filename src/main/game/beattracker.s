@@ -28,9 +28,9 @@ SECTION "BeatTracks", ROM0
 
 SECTION "BeatPtrs", WRAM0
 
-    CurrentPtr: dw
-    NextPtr: dw
-    FinishPtr: dw
+    wCurrentPtr: dw
+    wNextPtr: dw
+    wFinishPtr: dw
 
 ENDSECTION
 
@@ -46,27 +46,27 @@ SECTION "BeatTracker", ROM0
 ; @param bc: location in memory where the beat track ends
 InitBeatTracker::
     ld a, h
-    ld [CurrentPtr], a
+    ld [wCurrentPtr], a
     ld a, l
-    ld [CurrentPtr + 1], a
+    ld [wCurrentPtr + 1], a
 
     ld a, h
-    ld [NextPtr], a
+    ld [wNextPtr], a
     ld a, l
-    ld [NextPtr + 1], a
+    ld [wNextPtr + 1], a
 
     ld a, b
-    ld [FinishPtr], a
+    ld [wFinishPtr], a
     ld a, c
-    ld [FinishPtr + 1], a
+    ld [wFinishPtr + 1], a
     ret
 
 ; Gets the 'ticks' value pointed to by the NextPtr
 ; @returns bc: next value needing to trigger a sprite change
 GetNextTicks::
-    ld a, [NextPtr]
+    ld a, [wNextPtr]
     ld h, a
-    ld a, [NextPtr + 1]
+    ld a, [wNextPtr + 1]
     ld l, a
 
     ld a, [hl]                  ; high 6 bits
@@ -80,9 +80,9 @@ GetNextTicks::
 ; Gets the 'ticks' value pointed to by the CurrentPtr
 ; @returns bc: current value the player needs to hit
 GetCurrent::
-    ld a, [CurrentPtr]
+    ld a, [wCurrentPtr]
     ld h, a
-    ld a, [CurrentPtr + 1]
+    ld a, [wCurrentPtr + 1]
     ld l, a
 
     ld a, [hl]                  ; high 6 bits
@@ -95,34 +95,34 @@ GetCurrent::
 
 ; Increments the NextPtr
 AdvanceNext::
-    ld a, [NextPtr]
+    ld a, [wNextPtr]
     ld h, a
-    ld a, [NextPtr + 1]
+    ld a, [wNextPtr + 1]
     ld l, a
 
     inc hl                      ; 2 bytes
     inc hl
 
     ld a, h
-    ld [NextPtr], a
+    ld [wNextPtr], a
     ld a, l
-    ld [NextPtr + 1], a
+    ld [wNextPtr + 1], a
     ret
 
 ; Increments the CurrentPtr 
 AdvanceCurrent::
-    ld a, [CurrentPtr]
+    ld a, [wCurrentPtr]
     ld h, a
-    ld a, [CurrentPtr + 1]
+    ld a, [wCurrentPtr + 1]
     ld l, a
 
     inc hl                      ; 2 bytes
     inc hl
 
     ld a, h
-    ld [CurrentPtr], a
+    ld [wCurrentPtr], a
     ld a, l
-    ld [CurrentPtr + 1], a
+    ld [wCurrentPtr + 1], a
     ret
 
 ENDSECTION

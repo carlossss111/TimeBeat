@@ -15,8 +15,8 @@ EXE=beatmap.gb
 MAP=beatmap.map
 
 ASM_FLAGS=-Wall -I $(INC_DIR) -I $(INC_DIR)/structs -I $(LIB_INC_DIR) -i $(GEN_DIR)
-L_FLAGS=-Wall --linkerscript linker.ld -n $(BIN_DIR)/minesweeper.sym --dmg --wramx --tiny
-F_FLAGS=-Wall --mbc-type 0x00 --ram-size 0x00 --title 'Minesweeper' -j -v -p 0xFF
+L_FLAGS=-Wall --linkerscript linker.ld -n $(BIN_DIR)/beatmap.sym --dmg --wramx --tiny
+F_FLAGS=-Wall --mbc-type 0x00 --ram-size 0x00 --title 'Timebeat' -j -v -p 0xFF
 GFX_FLAGS=-u 
 
 

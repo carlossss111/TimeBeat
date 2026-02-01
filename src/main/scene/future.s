@@ -5,29 +5,6 @@ include "metasprites.inc"
 
 
 /*******************************************************
-* SCENE DATA
-* Tilemaps, tiles and beats
-********************************************************/
-SECTION "FutureSprites", ROM0
-
-    SpriteSheet: INCBIN "buttons.2bpp"
-    SpriteSheetEnd:
-
-SECTION "FutureSpriteMaps", ROM0
-
-    TileA: db $0
-    TileB: db $1
-    TileLeft: db $2
-    TileRight: db $3
-
-SECTION "FutureMetasprites", WRAM0
-
-    AButton: STRUCT_METASPRITE
-
-ENDSECTION
-
-
-/*******************************************************
 * SCENE ENTRYPOINT
 * Initialises the game scene 
 ********************************************************/
@@ -49,25 +26,9 @@ FutureSceneEntrypoint::
     ld a, DEFAULT_PALETTE
     ld [rOBP0], a               ; set sprite palette
 
-    ld de, SpriteSheet
     ld hl, $8000
-    ld bc, SpriteSheetEnd - SpriteSheet
-    call VRAMCopy
-
-    ld hl, AButton              ; sprite
-    ld bc, ShadowOAM            ; OAM location
-    ld d, 1                     ; width
-    ld e, 1                     ; height
-    call InitMSprite
-
-    ld hl, AButton              ; sprite
-    ld bc, TileA                ; tilemap
-    call ColourMSprite
-    
-    ld hl, AButton              ; sprite
-    ld b, 12                    ; x
-    ld c, 22                    ; y
-    call PositionMSprite
+    call InitGameSpriteVRAM     ; set spritesheets (VRAM = $8000)
+    call InitBeatSprites        ; init circular queue
 
 
     ;; Background ;;
@@ -115,6 +76,29 @@ SECTION "FutureSceneMain", ROM0
 ; Loop until the player presses start
 MainLoop:
     halt                        ; run this loop at 60fps (more is waste of battery)
+
+    ld a, PAD_A
+    call EnqueueBeatSprite
+    ld a, PAD_B
+    call EnqueueBeatSprite
+    ld a, PAD_LEFT
+    call EnqueueBeatSprite
+    ld a, PAD_RIGHT
+    call EnqueueBeatSprite
+    halt
+    halt
+    halt
+    halt
+
+    call DequeueBeatSprite
+    call DequeueBeatSprite
+    call DequeueBeatSprite
+    call DequeueBeatSprite
+    call DequeueBeatSprite
+
+.end
+    jp .end
+
     jr MainLoop                 ; if button not pressed, loop again
 .EndLoop:
 

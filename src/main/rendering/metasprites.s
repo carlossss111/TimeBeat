@@ -294,5 +294,41 @@ InitMSprite::
     ld [hl], c                  ; low bit of ptr to sprite arr
     ret
 
+
+; Effectively deletes a metasprite structure by setting all values to 0
+; @param hl: pointer to metasprite
+/**
+* function(*meta){
+*     meta->x = 0
+*     meta->y = 0
+*     meta->width = 0
+*     meta->height = 0
+* 
+*     sprite_ptr = meta->sprite
+*     sprite_ptr->clear()
+* }
+*/
+DeleteMSprite::
+    ld [hl], 0                  ; x position
+    inc hl
+    ld [hl], 0                  ; y position
+    inc hl
+    ld [hl], 0                  ; width
+    inc hl
+    ld [hl], 0                  ; height
+
+    inc hl                      ; now pointing to sprite arr high bits
+    ld b, [hl]
+    inc hl
+    ld c, [hl]
+    
+    ld h, b
+    ld l, c
+    ld [hl], 0
+    inc hl
+    ld [hl], 0                  ; clear value at dereferenced pointer
+
+    ret
+
 ENDSECTION
 
