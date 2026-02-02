@@ -5,11 +5,11 @@ include "hardware.inc"
 DEF SPRITE_WIDTH EQU 1          ; number of tiles
 DEF SPRITE_HEIGHT EQU 1
 
-DEF SPRITE_START_X EQU 0        ; starting x position of all sprites
-DEF A_BUTTON_START_Y EQU 32 + 16
-DEF B_BUTTON_START_Y EQU 56 + 16
-DEF LEFT_BUTTON_START_Y EQU 80 + 16
-DEF RIGHT_BUTTON_START_Y EQU 104 + 16
+DEF SPRITE_START_Y EQU 0        ; starting x position of all sprites
+DEF A_BUTTON_START_X EQU 96 + 8
+DEF B_BUTTON_START_X EQU 128 + 8
+DEF LEFT_BUTTON_START_X EQU 24 + 8
+DEF RIGHT_BUTTON_START_X EQU 56 + 8
 
 DEF SPRITE_SPEED EQU 1          ; px per frame
 
@@ -29,8 +29,8 @@ SECTION "BeatSpriteMaps", ROM0
 
     ButtonMapA: db $0
     ButtonMapB: db $1
-    ButtonMapLeft: db $2
-    ButtonMapRight: db $3
+    ButtonMapLeft: db $3
+    ButtonMapRight: db $2
 
 ENDSECTION
 
@@ -108,26 +108,26 @@ GetTileIndicesAddress:
     ld bc, ButtonMapRight
     ret
 
-; Returns a starting Y location depending on the type
+; Returns a starting X location depending on the type
 ; @param a: Sprite type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
-; @returns c: y position in pixels
-GetStartingYPosition:
+; @returns b: x position in pixels
+GetStartingXPosition:
     cp PAD_A
     jr nz, .IfB
-    ld c, A_BUTTON_START_Y
+    ld b, A_BUTTON_START_X
     ret
 .IfB:
     cp PAD_B
     jr nz, .IfLeft
-    ld c, B_BUTTON_START_Y
+    ld b, B_BUTTON_START_X
     ret
 .IfLeft:
     cp PAD_LEFT
     jr nz, .IfRight
-    ld c, LEFT_BUTTON_START_Y
+    ld b, LEFT_BUTTON_START_X
     ret
 .IfRight:
-    ld c, RIGHT_BUTTON_START_Y
+    ld b, RIGHT_BUTTON_START_X
     ret
 
 
@@ -171,9 +171,9 @@ EnqueueBeatSprite::
     ld a, [wHeadPtr + 1]  
     ld l, a
 
-    ld b, SPRITE_START_X        ; x position
     pop af
-    call GetStartingYPosition   ; y position is now in c
+    call GetStartingXPosition   ; x position is now in b
+    ld c, SPRITE_START_Y        ; y position
 
     call PositionMSprite
 
@@ -275,18 +275,18 @@ MoveBeatSprites::
 .Inner:
 
     push hl
-    ld b, SPRITE_SPEED          ; x movement
-    ld c, 0                     ; y movement
+    ld b, 0                     ; x movement
+    ld c, SPRITE_SPEED          ; y movement
     call MoveMSprite            ; takes hl as metasprite ptr
     pop hl
 
 
     push hl
 .IfOffscreen:
-    ld bc, META_X
+    ld bc, META_Y
     add hl, bc
     ld a, [hl]
-    cp SCREEN_WIDTH_PX + (SPRITE_WIDTH * 8) 
+    cp SCREEN_HEIGHT_PX + (SPRITE_HEIGHT * 16) 
     jp c, .EndIf                ; compare if position > edge of screen
 
     call DequeueBeatSprite      ; delete sprites off the screen
