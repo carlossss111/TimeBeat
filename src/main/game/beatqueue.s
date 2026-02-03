@@ -61,7 +61,7 @@ ENDSECTION
 SECTION "BeatQueue", ROM0
 
 ; Copy the sprite data into VRAM
-; @param hl: VRAM location
+; @param hl: VRAM locatio2
 InitGameSpriteVRAM::
     ld de, SpriteSheet
     ld bc, SpriteSheetEnd - SpriteSheet

@@ -2,6 +2,7 @@ include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
 include "beattracker.inc"
+include "game-charmap.inc"
 
 /*******************************************************
 * SCENE DATA
@@ -16,6 +17,14 @@ SECTION "FutureTileMap", ROM0
 
     BackgroundTilemap: INCBIN "beatmap.tilemap"
     BackgroundTilemapEnd:
+
+SECTION "FutureText", ROM0
+
+    DEF EMPTY_SPACE EQU $1f
+    PerfectStr: db "PERFECT!"
+    GoodStr: db "GOOD!"
+    OkStr: db "OK!"
+    MissStr: db "MISS"
 
 SECTION "FutureBeats", WRAM0
 
@@ -81,7 +90,6 @@ FutureSceneEntrypoint::
     call InitBeatStream
 
 
-
     ;; Background ;;
 
     ld de, BackgroundData       ; load first half of tiles into VRAM
@@ -95,11 +103,23 @@ FutureSceneEntrypoint::
     call VRAMCopy
 
 
+    ;; Window ;;
+
+    ld bc, $240 ; tilemap full height of the screen
+    ld d, EMPTY_SPACE
+    ld hl, TILEMAP1
+    call VRAMMemset
+
+    ld de, PerfectStr
+    ld b, STRLEN("Perfect!")
+    ld hl, TILEMAP1
+    call VRAMCopyFast
+
 
     ;; LCD ;;
 
     xor a
-    ld a, LCDC_ON | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
+    ld a, LCDC_ON | LCDC_WIN_OFF | LCDC_WIN_9C00 | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
     ld [rLCDC], a               ; setup LCD
 
     call FadeIn                 ; fade back in after loading everything
@@ -216,6 +236,7 @@ RenderLoop:
     call hUGE_dosound           ; play music
     call RenderToOAM            ; render sprites
     call IncTick                ; increment tick counter once every frame
+
     ret
 
 ENDSECTION

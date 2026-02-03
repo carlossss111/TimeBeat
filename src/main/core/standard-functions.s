@@ -71,6 +71,24 @@ Memset::
     jp nz, Memset               ; loop if remaining length != 0
     ret
 
+; Loads a particular byte into a block of memory, safe for VRAM
+; @param bc: size of memory
+; @param d: value to be filled
+; @param hl: desination address
+VRAMMemset::
+    ldh a, [rSTAT]
+    bit 1, a
+    jr nz, VRAMMemset           ; not mode 0 or 1
+
+    ld [hl], d
+    inc hl
+    dec bc
+    ld a, b
+    or a, c
+    jp nz, VRAMMemset           ; loop if remaining length != 0
+    ret
+
+
 ; Halt for n frames before returning
 ; @param b: number of frames to halt for
 WaitForFrames::

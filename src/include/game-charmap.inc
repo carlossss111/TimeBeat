@@ -1,0 +1,37 @@
+
+CHARMAP " ", $1f
+
+; DIGITS
+CHARMAP "0", $23
+CHARMAP "1", $24
+CHARMAP "2", $25
+CHARMAP "3", $26
+CHARMAP "4", $27
+CHARMAP "5", $28
+CHARMAP "6", $29
+CHARMAP "7", $2a
+CHARMAP "8", $2b
+CHARMAP "9", $2c
+
+; GOOD
+CHARMAP "G", $0a
+CHARMAP "O", $0b
+CHARMAP "D", $0c
+CHARMAP "!", $0d
+
+; OK
+CHARMAP "K", $0e
+
+; MISS
+CHARMAP "M", $0f
+CHARMAP "I", $10
+CHARMAP "S", $11
+
+; PERFECT
+CHARMAP "P", $19
+CHARMAP "E", $1a
+CHARMAP "R", $1b
+CHARMAP "F", $1c
+CHARMAP "C", $1d
+CHARMAP "T", $1e
+
