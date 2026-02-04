@@ -186,7 +186,7 @@ SpawnBeats:
 .IfAtEndOfSprites:
     pop hl
     push hl
-    call IsNextPtrAtEnd
+    call HasMoreSpritesToSpawn
 
     cp TRUE
     jp z, .EndIf                ; if at end, skip more enqueues
@@ -194,7 +194,7 @@ SpawnBeats:
 .IfTimeForNextSprite:
     pop hl
     push hl
-    call GetNextTick            ; bc = next tick on tracker
+    call GetSpriteTick          ; bc = next tick on tracker
 
     ldh a, [hTick]              ; check if tick on current beat >= time ticks
     cp b
@@ -208,11 +208,11 @@ SpawnBeats:
     ld bc, BEAT_STREAM_TYPE
     add hl, bc
     ld a, [hl]                  ; a = sprite type
-    call EnqueueBeatSprite      ; enqueue sprite
+    call SpawnBeatSprite        ; enqueue sprite
 
     pop hl
     push hl
-    call AdvanceNext            ; advance next pointer on beatmap
+    call NextSprite             ; advance next pointer on beatmap
 
 .EndIf:
     pop hl

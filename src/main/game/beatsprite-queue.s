@@ -130,10 +130,10 @@ GetStartingXPosition:
     ld b, RIGHT_BUTTON_START_X
     ret
 
-
+; AKA - EnqueueBeatSprite
 ; Spawn a new metasprite on the screen and increment the pointers
 ; @param a: Sprite type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
-EnqueueBeatSprite::
+SpawnBeatSprite:: 
     push af
 
     ; Init
@@ -221,7 +221,7 @@ EnqueueBeatSprite::
     ld [wOAMPtr], a
     ld a, LOW(ShadowOAM)
     ld [wOAMPtr + 1], a
-.EndIf
+.EndIf:
     ret
 
 
@@ -242,7 +242,7 @@ DequeueBeatSprite:
     ld a, l
     ld [wTailPtr + 1], a
 
-.IfEndOfArray
+.IfEndOfArray:
     ld a, [wTailPtr]
     cp HIGH(wSpriteQueueEnd)
     jr nz, .EndIf
@@ -254,7 +254,7 @@ DequeueBeatSprite:
     ld [wTailPtr], a
     ld a, LOW(wSpriteQueue)
     ld [wTailPtr + 1], a
-.EndIf
+.EndIf:
     ret
 
 

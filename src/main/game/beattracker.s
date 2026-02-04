@@ -16,13 +16,9 @@ DEF TICKS_TO_CROSS_SCREEN EQU $90 ; probably
 * The bits 0-13 represent the ticks since the start of the track.
 *
 * There are 3 pointers.
-* CurrentPtr - for pointing to the upcoming beat for the player to hit.
-* NextPtr - for pointing to the upcoming sprite for the game to spawn.
+* HitPtr - for pointing to the upcoming beat for the player to hit.
+* SpritePtr - for pointing to the upcoming sprite for the game to spawn.
 * FinishPtr - constant pointer for measuring the length of the beat track.
-
-* BEAT TRACKER
-* As described above, each beattrack can be ran through
-* and functions called depending on the value at each ptr.
 ********************************************************/
 SECTION "BeatTracker", ROM0
 
@@ -52,12 +48,12 @@ InitBeatStream::
     ret
 
 
-; Gets the 'tick' value pointed to by the NextPtr
+; Gets the 'tick' value pointed to by the SpritePtr
 ; Subtracts by the time it takes to cross the screen
 ; @param hl: pointer to beatstream struct
 ; @returns bc: next value needing to trigger a sprite change
-GetNextTick::
-    ld bc, BEAT_STREAM_NEXT
+GetSpriteTick::
+    ld bc, BEAT_STREAM_SPRITE
     add hl, bc
     ld a, [hl+]
     ld c, [hl]
@@ -83,11 +79,11 @@ GetNextTick::
     ret
 
 
-; Gets the 'ticks' value pointed to by the CurrentPtr
+; Gets the 'ticks' value pointed to by the HitPtr
 ; @param hl: pointer to beatstream struct
 ; @returns bc: current value the player needs to hit
-GetCurrentTick::
-    ld bc, BEAT_STREAM_CURRENT
+GetHitTick::
+    ld bc, BEAT_STREAM_HIT
     add hl, bc
     ld a, [hl+]
     ld c, [hl]
@@ -103,10 +99,10 @@ GetCurrentTick::
     ret
 
 
-; Increments the NextPtr
+; Increments the SpritePtr
 ; @param hl: pointer to beatstream struct
-AdvanceNext::
-    ld bc, BEAT_STREAM_NEXT
+NextSprite::
+    ld bc, BEAT_STREAM_SPRITE
     add hl, bc
     push hl
     ld b, [hl]
@@ -123,10 +119,10 @@ AdvanceNext::
     ret
 
 
-; Increments the CurrentPtr 
+; Increments the HitPtr 
 ; @param hl: pointer to beatstream struct
-AdvanceCurrent::
-    ld bc, BEAT_STREAM_CURRENT
+NextHit::
+    ld bc, BEAT_STREAM_HIT
     add hl, bc
     push hl
     ld b, [hl]
@@ -146,16 +142,16 @@ AdvanceCurrent::
 ; Return 1 if at end
 ; @param hl: pointer to beatstream struct
 ; @param a: TRUE or FALSE
-IsNextPtrAtEnd::
+HasMoreSpritesToSpawn::
     push hl
-    ld bc, BEAT_STREAM_NEXT
+    ld bc, BEAT_STREAM_SPRITE
     add hl, bc
     ld b, [hl]
     inc hl
     ld c, [hl]
  
     pop hl
-    ld de, BEAT_STREAM_FINISH
+    ld de, BEAT_STREAM_END
     add hl, de
     ld d, [hl]
     inc hl
