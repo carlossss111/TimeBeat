@@ -133,11 +133,12 @@ FutureSceneEntrypoint::
     ld hl, $9C60
     call VRAMMemset
 
+    call InitWindow             ; init the stat interrupts
 
     ;; LCD ;;
 
     xor a
-    ld a, LCDC_ON | LCDC_WIN_OFF | LCDC_WIN_9C00 | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
+    ld a, LCDC_ON | LCDC_WIN_9C00 | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
     ld [rLCDC], a               ; setup LCD
 
     call FadeIn                 ; fade back in after loading everything
@@ -232,10 +233,8 @@ MainLoop:
     ld hl, BeatStreamRight
     call SpawnBeats
 
-    ; Move all sprites
-    call MoveBeatSprites        ; move all sprites
 
-    ; Vsync and loop
+    ; Loop
     halt
     jr MainLoop
 .EndLoop:
@@ -253,7 +252,10 @@ SECTION "FutureSceneRenderer", ROM0
 RenderLoop:
     call hUGE_dosound           ; play music
     call RenderToOAM            ; render sprites
+
+    ei
     call IncTick                ; increment tick counter once every frame
+    call MoveBeatSprites        ; move all sprites
 
     ret
 
