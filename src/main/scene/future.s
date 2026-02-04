@@ -2,7 +2,6 @@ include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
 include "beattracker.inc"
-include "game-charmap.inc"
 
 /*******************************************************
 * SCENE DATA
@@ -133,7 +132,14 @@ FutureSceneEntrypoint::
     ld hl, $9C60
     call VRAMMemset
 
+    ld hl, $9C00
+    ld a, EMPTY_TILE
     call InitWindow             ; init the stat interrupts
+
+    ld b, 5
+    ld de, GoodStr 
+    call WriteText              ; TODO: example
+
 
     ;; LCD ;;
 
@@ -233,7 +239,6 @@ MainLoop:
     ld hl, BeatStreamRight
     call SpawnBeats
 
-
     ; Loop
     halt
     jr MainLoop
@@ -253,9 +258,10 @@ RenderLoop:
     call hUGE_dosound           ; play music
     call RenderToOAM            ; render sprites
 
-    ei
+    ei                          ; allow stat register
     call IncTick                ; increment tick counter once every frame
     call MoveBeatSprites        ; move all sprites
+    call ClearOldText           ; clear old text
 
     ret
 

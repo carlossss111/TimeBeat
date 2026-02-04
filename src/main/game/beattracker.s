@@ -4,7 +4,7 @@ include "beattracker.inc"
 DEF HOLD_BIT EQU $80            ; high bit
 DEF TICK_BITS EQU $3F           ; all other bits
 
-DEF TICKS_TO_CROSS_SCREEN EQU $90 ; probably
+DEF TICKS_TO_CROSS_SCREEN EQU $91 ; probably
 
 
 /*******************************************************
