@@ -19,27 +19,7 @@ DEF TICKS_TO_CROSS_SCREEN EQU $90 ; probably
 * CurrentPtr - for pointing to the upcoming beat for the player to hit.
 * NextPtr - for pointing to the upcoming sprite for the game to spawn.
 * FinishPtr - constant pointer for measuring the length of the beat track.
-********************************************************/
-SECTION "BeatTracks", ROM0
 
-    FutureBeatTrackA:: INCBIN "example.bin.a"
-    FutureBeatTrackAEnd::
-    FutureBeatTrackB:: INCBIN "example.bin.b"
-    FutureBeatTrackBEnd::
-    FutureBeatTrackLeft:: INCBIN "example.bin.l"
-    FutureBeatTrackLeftEnd::
-    FutureBeatTrackRight:: INCBIN "example.bin.r"
-    FutureBeatTrackRightEnd::
-
-    PresentBeatTrack::
-    PresentBeatTrackEnd::
-    
-    PastBeatTrack::
-    PastBeatTrackEnd::
-
-ENDSECTION
-
-/*******************************************************
 * BEAT TRACKER
 * As described above, each beattrack can be ran through
 * and functions called depending on the value at each ptr.

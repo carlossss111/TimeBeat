@@ -10,21 +10,29 @@ include "game-charmap.inc"
 ********************************************************/
 SECTION "FutureTileData", ROM0
 
-    BackgroundData: INCBIN "beatmap.2bpp"
+    BackgroundData: INCBIN "future_tiles_combined.2bpp" ; shoutout to cat
     BackgroundDataEnd:
 
 SECTION "FutureTileMap", ROM0
 
+    DEF EMPTY_TILE EQU $0
+
     BackgroundTilemap: INCBIN "beatmap.tilemap"
     BackgroundTilemapEnd:
 
-SECTION "FutureText", ROM0
+    WindowTilemap: INCBIN "window.tilemap"
+    WindowTilemapEnd:
 
-    DEF EMPTY_SPACE EQU $1f
-    PerfectStr: db "PERFECT!"
-    GoodStr: db "GOOD!"
-    OkStr: db "OK!"
-    MissStr: db "MISS"
+SECTION "FutureTracks", ROM0
+
+    BeatTrackA: INCBIN "example.bin.a"
+    BeatTrackAEnd:
+    BeatTrackB: INCBIN "example.bin.b"
+    BeatTrackBEnd:
+    BeatTrackLeft: INCBIN "example.bin.l"
+    BeatTrackLeftEnd:
+    BeatTrackRight: INCBIN "example.bin.r"
+    BeatTrackRightEnd:
 
 SECTION "FutureBeats", WRAM0
 
@@ -67,37 +75,37 @@ FutureSceneEntrypoint::
     
     ld a, PAD_A
     ld hl, BeatStreamA
-    ld bc, FutureBeatTrackA
-    ld de, FutureBeatTrackAEnd
+    ld bc, BeatTrackA
+    ld de, BeatTrackAEnd
     call InitBeatStream
 
     ld a, PAD_B
     ld hl, BeatStreamB
-    ld bc, FutureBeatTrackB
-    ld de, FutureBeatTrackBEnd
+    ld bc, BeatTrackB
+    ld de, BeatTrackBEnd
     call InitBeatStream
 
     ld a, PAD_LEFT
     ld hl, BeatStreamLeft
-    ld bc, FutureBeatTrackLeft
-    ld de, FutureBeatTrackLeftEnd
+    ld bc, BeatTrackLeft
+    ld de, BeatTrackLeftEnd
     call InitBeatStream
 
     ld a, PAD_RIGHT
     ld hl, BeatStreamRight
-    ld bc, FutureBeatTrackRight
-    ld de, FutureBeatTrackRightEnd
+    ld bc, BeatTrackRight
+    ld de, BeatTrackRightEnd
     call InitBeatStream
 
 
     ;; Background ;;
 
-    ld de, BackgroundData       ; load first half of tiles into VRAM
+    ld de, BackgroundData
     ld hl, $9000
     ld bc, BackgroundDataEnd - BackgroundData
     call VRAMCopy
 
-    ld de, BackgroundTilemap ; load all tilemaps into VRAM
+    ld de, BackgroundTilemap
     ld hl, TILEMAP0
     ld bc, BackgroundTilemapEnd - BackgroundTilemap
     call VRAMCopy
@@ -105,15 +113,25 @@ FutureSceneEntrypoint::
 
     ;; Window ;;
 
-    ld bc, $240 ; tilemap full height of the screen
-    ld d, EMPTY_SPACE
-    ld hl, TILEMAP1
-    call VRAMMemset
-
-    ld de, PerfectStr
-    ld b, STRLEN("Perfect!")
-    ld hl, TILEMAP1
+    ld b, 20
+    ld de, WindowTilemap
+    ld hl, $9C00
     call VRAMCopyFast
+
+    ld b, 20
+    ld de, WindowTilemap + 20
+    ld hl, $9C20
+    call VRAMCopyFast
+
+    ld b, 20
+    ld de, WindowTilemap + 40
+    ld hl, $9C40
+    call VRAMCopyFast
+
+    ld d, EMPTY_TILE
+    ld bc, $9FFF - $9C60
+    ld hl, $9C60
+    call VRAMMemset
 
 
     ;; LCD ;;
