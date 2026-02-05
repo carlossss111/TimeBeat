@@ -136,10 +136,6 @@ FutureSceneEntrypoint::
     ld a, EMPTY_TILE
     call InitWindow             ; init the stat interrupts
 
-    ld b, 5
-    ld de, GoodStr 
-    call WriteText              ; TODO: example
-
 
     ;; LCD ;;
 
@@ -162,6 +158,9 @@ FutureSceneEntrypoint::
     ld hl, RenderLoop
     call SetVBlankHandler       ; set background animations
 
+    xor a
+    ld b, a
+    ld c, a
     call InitTick               ; initialise tick counter
 
     jp MainLoop
@@ -226,6 +225,31 @@ SpawnBeats:
     ret
 
 
+; Handle the player input
+; @param a: actual input
+; @param b: input enum to check
+; @param hl: pointer to corresponding beatstream
+CheckInput:
+    and b
+    jr nz, .IfPressed
+    ret
+    
+.IfPressed:
+    push hl
+    call GetHitTick             ; returns beatmap tick in de
+    pop hl
+
+    ldh a, [hTick]
+    ld b, a
+    ldh a, [hTick + 1]
+    ld c, a                     ; get current tick
+
+    push hl
+    call HandleHit              ; handle the hit
+    pop hl
+    ret
+ 
+
 ; Main program loop wahhey
 MainLoop:
 
@@ -238,6 +262,31 @@ MainLoop:
     call SpawnBeats
     ld hl, BeatStreamRight
     call SpawnBeats
+
+    ; Get inputs
+    call GetNewKeys
+
+    ; Handle inputs
+    push af
+    ld b, JOYP_A
+    ld hl, BeatStreamA
+    call CheckInput
+    pop af
+    push af
+    ld b, JOYP_B
+    ld hl, BeatStreamB
+    call CheckInput
+    pop af
+    push af
+    ld b, JOYP_LEFT << 4
+    ld hl, BeatStreamLeft
+    call CheckInput
+    pop af
+    push af
+    ld b, JOYP_RIGHT << 4
+    ld hl, BeatStreamRight
+    call CheckInput
+    pop af
 
     ; Loop
     halt

@@ -10,7 +10,7 @@ SECTION "Tick", HRAM
 SECTION "TickFunctions", ROM0
 
 ; Initialises the tick counter
-; @param b: value to initialise to
+; @param bc: value to initialise to
 InitTick::
     ld a, b
     ldh [hTick], a

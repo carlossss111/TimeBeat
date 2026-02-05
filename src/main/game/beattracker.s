@@ -81,7 +81,7 @@ GetSpriteTick::
 
 ; Gets the 'ticks' value pointed to by the HitPtr
 ; @param hl: pointer to beatstream struct
-; @returns bc: current value the player needs to hit
+; @returns de: current value the player needs to hit
 GetHitTick::
     ld bc, BEAT_STREAM_HIT
     add hl, bc
@@ -92,10 +92,10 @@ GetHitTick::
  
     ld a, [hl]                  ; high 6 bits
     and a, TICK_BITS
-    ld b, a
+    ld d, a
     
     inc hl                      ; low 8 bits
-    ld c, [hl]
+    ld e, [hl]
     ret
 
 
