@@ -187,20 +187,19 @@ SECTION "FutureSceneMain", ROM0
 * }
 */
 SpawnBeats:
-    push hl
 
 .IfAtEndOfSprites:
-    pop hl
     push hl
     call HasMoreSpritesToSpawn
+    pop hl
 
     cp TRUE
     jp z, .EndIf                ; if at end, skip more enqueues
 
 .IfTimeForNextSprite:
-    pop hl
     push hl
     call GetSpriteTick          ; bc = next tick on tracker
+    pop hl
 
     ldh a, [hTick]              ; check if tick on current beat >= time ticks
     cp b
@@ -209,19 +208,23 @@ SpawnBeats:
     cp c
     jr c, .EndIf
 
-    pop hl
     push hl
-    ld bc, BEAT_STREAM_TYPE
-    add hl, bc
+    call GetSpriteBeatType      
+    ld b, a                     ; b = beat type (SINGLE/HOLD/RELEASE)
+    pop hl
+
+    push hl
+    ld de, BEAT_STREAM_TYPE
+    add hl, de 
     ld a, [hl]                  ; a = sprite type
     call SpawnBeatSprite        ; enqueue sprite
-
     pop hl
+
     push hl
     call NextSprite             ; advance next pointer on beatmap
+    pop hl
 
 .EndIf:
-    pop hl
     ret
 
 
@@ -339,8 +342,8 @@ MainLoop:
     call WaitForFrames
     call FadeOut
 
-.todo:
-    jp .todo
+    ld bc, FUTURE_SCENE         ; todo
+    ret
     ret
 
 ENDSECTION

@@ -1,11 +1,11 @@
 include "metasprites.inc"
 include "hardware.inc"
+include "beattracker.inc"
 
+DEF SPRITE_START_Y_SINGLE EQU 8        ; starting sprite positions
+DEF SPRITE_START_Y_HOLD EQU 0
+DEF SPRITE_START_Y_RELEASE EQU 8
 
-DEF SPRITE_WIDTH EQU 1          ; number of tiles
-DEF SPRITE_HEIGHT EQU 1
-
-DEF SPRITE_START_Y EQU 0        ; starting x position of all sprites
 DEF A_BUTTON_START_X EQU 96 + 8
 DEF B_BUTTON_START_X EQU 128 + 8
 DEF LEFT_BUTTON_START_X EQU 24 + 8
@@ -14,6 +14,13 @@ DEF RIGHT_BUTTON_START_X EQU 56 + 8
 DEF SPRITE_SPEED EQU 1          ; px per frame
 
 DEF QUEUE_COUNT EQU 40          ; number of metasprites
+
+DEF SPRITE_WIDTH EQU 1
+DEF SPRITE_HEIGHT EQU 1
+DEF SPR_SINGLE_WIDTH EQU 1      ; sprite sizes
+DEF SPR_SINGLE_HEIGHT EQU 1
+DEF SPR_HOLD_RELEASE_WIDTH EQU 1
+DEF SPR_HOLD_RELEASE_HEIGHT EQU 2
 
 
 /*******************************************************
@@ -29,8 +36,18 @@ SECTION "BeatSpriteMaps", ROM0
 
     ButtonMapA: db $0
     ButtonMapB: db $1
-    ButtonMapLeft: db $3
-    ButtonMapRight: db $2
+    ButtonMapLeft: db $2
+    ButtonMapRight: db $3
+
+    ButtonMapAHold: db $c, $4
+    ButtonMapBHold: db $c, $5
+    ButtonMapLeftHold: db $c, $6
+    ButtonMapRightHold: db $c, $7
+
+    ButtonMapARelease: db $8, $d
+    ButtonMapBRelease: db $9, $d
+    ButtonMapLeftRelease: db $a, $d
+    ButtonMapRightRelease: db $b, $d
 
 ENDSECTION
 
@@ -86,27 +103,107 @@ InitBeatSprites::
     ret
 
 
+; Returns tilemap size
+; @param a: type of sprite (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
+; @returns d: width
+; @returns e: height
+GetTileIndexSize:
+    cp BEAT_SINGLE
+    jr nz, .IfHoldRelease
+    ld d, SPR_SINGLE_WIDTH
+    ld e, SPR_SINGLE_HEIGHT
+    ret
+.IfHoldRelease:
+    ld d, SPR_HOLD_RELEASE_WIDTH
+    ld e, SPR_HOLD_RELEASE_HEIGHT
+    ret
+    
+
 ; Returns a tilemap address
-; @param a: Sprite type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
+; @param a: Sprite button type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
+; @param b: Sprite action type (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
 ; @returns bc: address of tilemap
 GetTileIndicesAddress:
+    ldh [hScratchA], a
+
     cp PAD_A
-    jr nz, .IfB
+    jr nz, .IfB                 ; Check if A
+
+    ld a, BEAT_HOLD             ; Return sprite of action type
+    cp b
+    jr z, .HoldA
+    ld a, BEAT_RELEASE
+    cp b
+    jr z, .ReleaseA
+.SingleA:
     ld bc, ButtonMapA
     ret
+.HoldA:
+    ld bc, ButtonMapAHold
+    ret
+.ReleaseA:
+    ld bc, ButtonMapARelease
+    ret
+
 .IfB:
+    ldh a, [hScratchA]
     cp PAD_B
     jr nz, .IfLeft
+
+    ld a, BEAT_HOLD             ; Return sprite of action type
+    cp b
+    jr z, .HoldB
+    ld a, BEAT_RELEASE
+    cp b
+    jr z, .ReleaseB
+.SingleB:
     ld bc, ButtonMapB
     ret
+.HoldB:
+    ld bc, ButtonMapBHold
+    ret
+.ReleaseB:
+    ld bc, ButtonMapBRelease
+    ret
+
 .IfLeft:
+    ldh a, [hScratchA]
     cp PAD_LEFT
     jr nz, .IfRight
+
+    ld a, BEAT_HOLD             ; Return sprite of action type
+    cp b
+    jr z, .HoldLeft
+    ld a, BEAT_RELEASE
+    cp b
+    jr z, .ReleaseLeft
+.SingleLeft:
     ld bc, ButtonMapLeft
     ret
+.HoldLeft:
+    ld bc, ButtonMapLeftHold
+    ret
+.ReleaseLeft:
+    ld bc, ButtonMapLeftRelease
+    ret
+
 .IfRight:
+    ld a, BEAT_HOLD             ; Return sprite of action type
+    cp b
+    jr z, .HoldRight
+    ld a, BEAT_RELEASE
+    cp b
+    jr z, .ReleaseRight
+.SingleRight:
     ld bc, ButtonMapRight
     ret
+.HoldRight:
+    ld bc, ButtonMapRightHold
+    ret
+.ReleaseRight:
+    ld bc, ButtonMapRightRelease
+    ret
+
 
 ; Returns a starting X location depending on the type
 ; @param a: Sprite type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
@@ -132,23 +229,25 @@ GetStartingXPosition:
 
 ; AKA - EnqueueBeatSprite
 ; Spawn a new metasprite on the screen and increment the pointers
-; @param a: Sprite type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
+; @param a: Sprite button type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
+; @param b: Sprite action type (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
 SpawnBeatSprite:: 
     push af
+    push bc
 
     ; Init
-    ld a, [wHeadPtr]         ; place in memory for metasprite
+    ld a, [wHeadPtr]            ; place in memory for metasprite
     ld h, a
     ld a, [wHeadPtr + 1]  
     ld l, a
+
+    ld a, b                     ; param = sprite action type
+    call GetTileIndexSize       ; d = width, e = height
 
     ld a, [wOAMPtr]             ; place in OAM for real sprite
     ld b, a
     ld a, [wOAMPtr + 1]
     ld c, a
-
-    ld d, SPRITE_WIDTH          ; width
-    ld e, SPRITE_HEIGHT         ; height
 
     call InitMSprite
 
@@ -158,9 +257,10 @@ SpawnBeatSprite::
     ld a, [wHeadPtr + 1]  
     ld l, a
     
+    pop bc
     pop af
-    dec sp
-    dec sp
+    push bc
+    push af
     call GetTileIndicesAddress  ; tilemap is now in BC
     
     call ColourMSprite
@@ -172,8 +272,20 @@ SpawnBeatSprite::
     ld l, a
 
     pop af
+    pop bc
+    push bc
+    push af
+    ld a, b
+    cp BEAT_HOLD                ; hold beat has to start higher up
+    jr z, .IfHoldStart
+.IfRegularStart:
+    ld c, SPRITE_START_Y_SINGLE ; y position
+    jr .EndIfStart
+.IfHoldStart:
+    ld c, SPRITE_START_Y_HOLD   ; y position
+.EndIfStart:
+    pop af
     call GetStartingXPosition   ; x position is now in b
-    ld c, SPRITE_START_Y        ; y position
 
     call PositionMSprite
 
@@ -196,8 +308,18 @@ SpawnBeatSprite::
     ld a, [wOAMPtr+ 1]  
     ld l, a
 
-    ld bc, OBJ_SIZE * (SPRITE_WIDTH * SPRITE_HEIGHT)
+    pop bc
+    ld a, BEAT_SINGLE
+    cp b
+    jr z, .IfBigSprite
+.IfBigSprite:
+    ld bc, OBJ_SIZE * (SPR_HOLD_RELEASE_WIDTH * SPR_HOLD_RELEASE_HEIGHT)
+    jr .EndIfSpr
+.IfSmallSprite:
+    ld bc, OBJ_SIZE * (SPR_SINGLE_WIDTH * SPR_SINGLE_HEIGHT)
+.EndIfSpr:
     add hl, bc                  ; increase OAM ptr by sprite size
+
 
     ld a, h
     ld [wOAMPtr], a

@@ -3,7 +3,7 @@ from typing import List
 
 COMMENT = '#'
 CONTROL_MAP = {"A": 0x0, "B": 0x1, "LEFT": 0x2, "RIGHT": 0x3}
-HOLD_RELEASE = {"HOLD": 0x0, "RELEASE": 0x1}
+HOLD_RELEASE = {"HOLD": 0x1, "RELEASE": 0x0}
 
 MIN_TICKS = 144
 MAX_TICKS = 0x3FFF
