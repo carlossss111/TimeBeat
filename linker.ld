@@ -1,36 +1,55 @@
 
-; Read Only Memory
 ROM0
-    ORG $040
+    ; Interrupts
+    ORG $0000
+    "FillerBefore"
     "VBlankInterrupt"
+    "FillerMiddle"
+    "StatInterrupt"
+    "FillerAfter"
 
-    ORG $100
+    ; Cartridge Header
+    ORG $0100
     "Header"
 
+    ; Init
     ORG $150
     "Init"
 
-    FLOATING
+    ; Main Functions
+    ORG $171
     "MainLoop"
-
-    FLOATING
     "StandardLibrary"
-
-    FLOATING 
     "VBlankHandler"
+    "StatHandler"
 
-    ORG $4000
-    "TitleTileData"
+    ; Drivers
+    ORG $786B
+    "Sound Driver"
 
-    ORG $4fb0
-    "TitleTileMap"
 
-; Volatile Memory
 WRAM0
+    ; Large Arrays
     ORG $C000
     "ShadowOAM"
+    "BeatQueueVars"
 
-    ORG $C0a0
+    ; Driver variables
+    ORG $CFfC
+    "Playback variables"
+
+    ; 4000kb Stack (way more than needed)
+    ORG $D060
+    "Stack"
+
+
+HRAM
+    ORG $FF80
+    "RenderToOAM"
+    "OAMRenderer"
     "Scratch"
+    "Tick"
 
+    ORG $FFFE
+    "FrameCounter"
 
