@@ -7,7 +7,7 @@ The goal of the project is to write a good rhythm game, complete with a title sc
 
 ## Compiling
 
-Compile into a .gb using the Makefile. This will require the [RGBDS toolchain](https://rgbds.gbdev.io/) to be installed.
+Compile into a .gb using the Makefile. This will require the [RGBDS toolchain](https://rgbds.gbdev.io/) to be installed. I am using version v1.0.x
 
 ```
 make
@@ -15,9 +15,7 @@ make
 
 ## Compatibility
 
-This game is intended for the Gameboy DMG-01, and would therefore be compatible with the CGB and the GBA.
-
-It can be treated as a 'grey cartridge'.
+This game is intended for the Gameboy DMG, and would therefore be compatible with the CGB and the GBA. It can be treated as a 'grey cartridge'.
 
 ## Usage
 
@@ -33,19 +31,18 @@ emulicious bin/minesweeper.gb
 ```
 
 ### Real Hardware
-After running `make`, take the .gb file and load it onto a **MBC5 Cartridge** that is compatible with **GBxCart RW**. Hey presto, you have a real game! Easy!
+After running `make`, take the .gb file and load it onto a **32KB Cartridge** that is compatible with **GBxCart RW** and hey presto you have the game!
 
 See: https://www.gbxcart.com/
 
-## Libraries
-I am using the hUGE library for audio.
+## Libraries and Tools
+I am using the hUGE library v6.1.x for audio.
 Available here: https://nickfa.ro/wiki/hUGETracker
 
 ## Resources
-I got a lot out of the following material helpfully provided by the community:
 * [Pan Docs](https://gbdev.io/pandocs/)
-* [Assembly Reference](https://rgbds.gbdev.io/docs/v0.9.4)
-* [GBDev Tutorial](https://gbdev.io/gb-asm-tutorial/)
+* [Assembly Reference](https://rgbds.gbdev.io/docs/master)
 * [CC0 Hardware Headerfile](https://github.com/gbdev/hardware.inc)
-* [Official Gameboy Programming Manual](https://archive.org/details/GameBoyProgManVer1.1/mode/2up)
+* [Asesprite](https://www.aseprite.org/)
+* [Tilemap Studio](https://github.com/Rangi42/tilemap-studio)
 

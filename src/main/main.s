@@ -13,6 +13,16 @@ SECTION "Header", ROM0[$0100]
 
 ENDSECTION
 
+SECTION "FillerBefore", ROM0[$0000]
+    ds $40
+
+SECTION "FillerMiddle", ROM0[$0047]
+    ds $01
+
+SECTION "FillerAfter", ROM0[$004f]
+    ds $100 - $4f
+
+ENDSECTION
 
 /*******************************************************
 * INITIALISATION

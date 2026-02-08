@@ -43,7 +43,7 @@ SECTION "HitHandler", ROM0
 * }
 */
 IsInBounds:
-    ld [wScratchA], a
+    ldh [hScratchA], a
 
     ld l, a
     xor a
@@ -60,7 +60,7 @@ IsInBounds:
     jr c, .ReturnFalse          ; return if LOW(current) > LOW(upper_bounds)
 .EndIfUpper:
 
-    ld a, [wScratchA]
+    ldh a, [hScratchA]
     ld l, a
     xor a
     ld h, a

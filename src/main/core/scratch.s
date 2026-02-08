@@ -4,11 +4,11 @@
 * Scratch variables for regular local usage
 * !! Do not use in interrupts !!
 ********************************************************/
-SECTION "Scratch", WRAM0
+SECTION "Scratch", HRAM
 
-    wScratchA:: dw 
-    wScratchB:: dw
-    wScratchC:: dw
+    hScratchA:: dw 
+    hScratchB:: dw
+    hScratchC:: dw
 
 ENDSECTION
 

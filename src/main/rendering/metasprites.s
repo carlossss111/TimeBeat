@@ -32,9 +32,9 @@ SECTION "MetaSprites", ROM0
 ColourMSprite::
 
     ld a, b
-    ld [wScratchC], a
+    ldh [hScratchC], a
     ld a, c
-    ld [wScratchC + 1], a        ; Index Ptr
+    ldh [hScratchC + 1], a        ; Index Ptr
 
     push hl
     ld d, 0
@@ -46,24 +46,24 @@ ColourMSprite::
     pop hl                      ; bc = sprite_arr
 
     xor a
-    ld [wScratchA], a            ; i = 0
-    ld [wScratchB], a            ; j = 0
+    ldh [hScratchA], a            ; i = 0
+    ldh [hScratchB], a            ; j = 0
 
 .Do:
 
     push hl
-    ld a, [wScratchC]
+    ldh a, [hScratchC]
     ld h, a
-    ld a, [wScratchC + 1]
+    ldh a, [hScratchC + 1]
     ld l, a                     ; hl = index_ptr
     ld a, [hl]                  ; a = index
 
     push af
     inc hl                      ; index++
     ld a, h
-    ld [wScratchC], a
+    ldh [hScratchC], a
     ld a, l
-    ld [wScratchC + 1], a
+    ldh [hScratchC + 1], a
     pop af
 
     pop hl
@@ -81,13 +81,13 @@ ColourMSprite::
     inc bc
     inc bc
     inc bc                      ; sprite++
-    ld a, [wScratchA]
+    ldh a, [hScratchA]
     inc a
-    ld [wScratchA], a            ; i++
+    ldh [hScratchA], a            ; i++
     
 .If:
     push hl
-    ld a, [wScratchA]
+    ldh a, [hScratchA]
     ld d, 0
     ld e, META_WIDTH
     add hl, de
@@ -95,15 +95,15 @@ ColourMSprite::
     jp nz, .EndIf
 
     xor a
-    ld [wScratchA], a            ; i = 0
-    ld a, [wScratchB]            
+    ldh [hScratchA], a            ; i = 0
+    ldh a, [hScratchB]            
     inc a
-    ld [wScratchB], a            ; j++
+    ldh [hScratchB], a            ; j++
 .EndIf:
     pop hl
     
     push hl
-    ld a, [wScratchB]            ; j
+    ldh a, [hScratchB]            ; j
     ld d, 0
     ld e, META_HEIGHT
     add hl, de
@@ -165,8 +165,8 @@ PositionMSprite::
     pop hl                      ; bc = sprite_arr
 
     xor a
-    ld [wScratchA], a            ; i = 0
-    ld [wScratchB], a            ; j = 0
+    ldh [hScratchA], a            ; i = 0
+    ldh [hScratchB], a            ; j = 0
 .Do:
     
     push hl
@@ -174,7 +174,7 @@ PositionMSprite::
     ld e, META_X
     add hl, de
     ld d, [hl]                  ; d = meta->x
-    ld a, [wScratchA]            ; a = i
+    ldh a, [hScratchA]            ; a = i
     sla a
     sla a
     sla a                       ; a = (i * 8)
@@ -195,7 +195,7 @@ PositionMSprite::
     ld e, META_Y
     add hl, de
     ld d, [hl]                  ; d = meta->y
-    ld a, [wScratchB]            ; a = j
+    ldh a, [hScratchB]            ; a = j
     sla a
     sla a
     sla a                       ; a = (j * 8)
@@ -215,13 +215,13 @@ PositionMSprite::
     inc bc
     inc bc
     inc bc                      ; sprite++
-    ld a, [wScratchA]
+    ldh a, [hScratchA]
     inc a
-    ld [wScratchA], a            ; i++
+    ldh [hScratchA], a            ; i++
     
 .If:
     push hl
-    ld a, [wScratchA]
+    ldh a, [hScratchA]
     ld d, 0
     ld e, META_WIDTH
     add hl, de
@@ -229,15 +229,15 @@ PositionMSprite::
     jp nz, .EndIf
 
     xor a
-    ld [wScratchA], a            ; i = 0
-    ld a, [wScratchB]            
+    ldh [hScratchA], a            ; i = 0
+    ldh a, [hScratchB]            
     inc a
-    ld [wScratchB], a            ; j++
+    ldh [hScratchB], a            ; j++
 .EndIf:
     pop hl
     
     push hl
-    ld a, [wScratchB]
+    ldh a, [hScratchB]
     ld d, 0
     ld e, META_HEIGHT
     add hl, de

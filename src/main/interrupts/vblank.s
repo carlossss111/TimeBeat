@@ -1,14 +1,5 @@
 INCLUDE "hardware.inc"
 
-SECTION "FillerBefore", ROM0[$0000]
-    ds $40
-ENDSECTION
-
-SECTION "FillerAfter", ROM0[$0055]
-    ds $100 - $55
-ENDSECTION
-
-
 /*******************************************************
 * VBLANK INTERRUPT
 * Called when rendering a VBlank (so LCY = 144)

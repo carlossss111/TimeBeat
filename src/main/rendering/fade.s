@@ -1,15 +1,12 @@
 include "hardware.inc"
 
+DEF TRANSITIONS EQU 3       ; 3 palette shifts
+DEF FRAMES_PER_FADE EQU 3   ; frames between a palette shift
 
 /*******************************************************
 * FADE TRANSITION
 * Used to fade-to-black and back again when transitioning VRAM
 *******************************************************/
-SECTION "FadeVars", WRAM0
-
-    DEF TRANSITIONS EQU 3       ; 3 palette shifts
-    DEF FRAMES_PER_FADE EQU 3   ; frames between a palette shift
-
 
 SECTION "Fade", ROM0
 
