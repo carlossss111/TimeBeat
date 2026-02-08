@@ -170,7 +170,39 @@ HasMoreSpritesToSpawn::
 .False:
     ld a, FALSE
     ret
+
+; Return 1 if at end
+; @param hl: pointer to beatstream struct
+; @param a: TRUE or FALSE
+HasMoreBeatsToHit::
+    push hl
+    ld bc, BEAT_STREAM_HIT 
+    add hl, bc
+    ld b, [hl]
+    inc hl
+    ld c, [hl]
+ 
+    pop hl
+    ld de, BEAT_STREAM_END
+    add hl, de
+    ld d, [hl]
+    inc hl
+    ld e, [hl]
+ 
+    ld a, d
+    cp b
+    jp nz, .False
+    ld a, e
+    cp c
+    jp nz, .False
+.True:
+    ld a, FALSE
+    ret
     
+.False:
+    ld a, TRUE
+    ret
+
 
 ENDSECTION
 

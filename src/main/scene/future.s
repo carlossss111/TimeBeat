@@ -235,10 +235,6 @@ CheckInput:
     ret
     
 .IfPressed:
-    push hl
-    call GetHitTick             ; returns beatmap tick in de
-    pop hl
-
     ldh a, [hTick]
     ld b, a
     ldh a, [hTick + 1]
@@ -288,10 +284,64 @@ MainLoop:
     call CheckInput
     pop af
 
+    ; Check for missed beats
+    ldh a, [hTick]
+    ld b, a
+    ldh a, [hTick + 1]
+    ld c, a
+
+    push bc
+    ld hl, BeatStreamA
+    call HandleMiss
+    pop bc
+    push bc
+    ld hl, BeatStreamB
+    call HandleMiss
+    pop bc
+    push bc
+    ld hl, BeatStreamLeft
+    call HandleMiss
+    pop bc
+    push bc
+    ld hl, BeatStreamRight
+    call HandleMiss
+    pop bc
+
+    ; Check if at end of beatmap
+    ld hl, BeatStreamA
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ld hl, BeatStreamB
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ld hl, BeatStreamLeft
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ld hl, BeatStreamRight
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr nz, .EndLoop
+.EndIfAtFinish:
+
     ; Loop
     halt
-    jr MainLoop
+    jp MainLoop
 .EndLoop:
+
+    ld b, 255 
+    call WaitForFrames
+    ld b, 3
+    call SlideDownVolume
+    ld b, 255 
+    call WaitForFrames
+    call FadeOut
+
+.todo:
+    jp .todo
+    ret
 
 ENDSECTION
 

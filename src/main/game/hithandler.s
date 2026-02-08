@@ -2,7 +2,7 @@ include "game-charmap.inc"
 include "macros.inc"
 
 DEF TOO_EARLY_TO_HIT EQU 50
-DEF OK_BOUND EQU 8
+DEF MISS_BOUND EQU 20
 DEF GOOD_BOUND EQU 4
 DEF PERFECT_BOUND EQU 1
 
@@ -30,17 +30,17 @@ SECTION "HitHandler", ROM0
 ; @param de: beatmap tick
 ; @returns a: true/false
 /*
-function(bounds, current_tick, beatmap_tick){
-    upper_bounds = beatmap + bound
-    if current > upper_bounds:
-        return false
-
-    lower_bounds = beatmap - bound
-    if current < lower_bounds:
-        return false
-    
-    return true
-}
+* function(bounds, current_tick, beatmap_tick){
+*     upper_bounds = beatmap + bound
+*     if current > upper_bounds:
+*         return false
+* 
+*     lower_bounds = beatmap - bound
+*     if current < lower_bounds:
+*         return false
+*     
+*     return true
+* }
 */
 IsInBounds:
     ld [wScratchA], a
@@ -93,9 +93,48 @@ IsInBounds:
 
 ; Handle the current hit
 ; @param bc: current tick
-; @param de: beatmap tick
 ; @param hl: beatmap struct
+/*
+* function(current_tick, bm_struct) {
+*      if(bm_struct->next == null):
+*         return
+*     
+*     bm_tick = bm_struct->tick
+*     if (IsInBounds(TOO_EARLY, current_tick, beatmap_tick)):
+*         return 
+* 
+*     if (IsInBounds(PERFECT, current_tick, beatmap_tick)):
+*         print("Perfect!")
+*         bm_struct->next()
+*         return
+* 
+*     if (IsInBounds(GOOD, current_tick, beatmap_tick)):
+*         print("Good")
+*         bm_struct->next()
+*         return
+* 
+*     print("OK")
+*     bm_struct->next()
+*     return
+* }
+*/
 HandleHit::
+    push bc
+    push hl
+    call HasMoreBeatsToHit
+    pop hl
+    pop bc
+.IfAtFinish:
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ret
+.EndIfAtFinish:
+
+    push bc
+    push hl
+    call GetHitTick             ; de = beatmap tick
+    pop hl
+    pop bc
 
     ; Way too early, don't treat it as a real hit
     push hl
@@ -168,42 +207,76 @@ HandleHit::
     ret
 .NotGood:
 
-    ; Check if ok
-    push hl
-    push bc
-    push de
-    ld a, OK_BOUND
-    call IsInBounds
-    pop de
-    pop bc
-    pop hl
-    .IfOk:
-    cp a, TRUE
-    jr nz, .NotOk
-
-    push hl
-    push de
-    push bc
-    ld de, OkStr
-    ld b, STRLEN("Ok")
-    call WriteText
-    pop bc
-    pop de
-    pop hl
-
-    call NextHit
-
-    ret
-    .NotOk:
-
     ; Anything else is a miss
     push hl
-    ld de, MissStr
-    ld b, STRLEN("Miss")
+    ld de, OkStr 
+    ld b, STRLEN("Ok")
     call WriteText
     pop hl
 
     call NextHit
+    ret
+
+; Check if a beat has been missed entirely and move on if so
+; @param bc: current tick
+; @param hl: beatmap struct
+/*
+* function(current_tick, bm_struct){
+*      if(bm_struct->next == null):
+*         return
+*     
+*     bm_tick = bm_struct->tick
+*     miss_bound = bm_tick + n
+*     if (current_tick <= miss_bound):
+*         return
+* 
+*     bm_struct->next()
+*     print("Miss")
+* }
+*/
+HandleMiss::
+    push bc
+    push hl
+    call HasMoreBeatsToHit
+    pop hl
+    pop bc
+.IfAtFinish:
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ret
+.EndIfAtFinish:
+
+    push hl
+    push bc
+    call GetHitTick             ; de = beatmap_tick
+    pop bc
+
+    ld h, d
+    ld l, e
+    ld de, MISS_BOUND
+    add hl, de                  ; hl = miss_bound
+
+.ReturnIfBeatmapTickLteMissBound:
+    ld a, b
+    cp h
+    jr z, .LowerBit             ; check lower if UPPER(current) == UPPER(miss_bound)
+    jr nc, .EndIf               ; skip if UPPER(current) < UPPER(miss_bound)
+    pop hl
+    ret                         ; return if UPPER(current) > UPPER(miss_bound)
+.LowerBit:
+    ld a, c
+    cp l
+    jr nc, .EndIf               ; skip if LOWER(current) <= LOWER(miss_bound)
+    pop hl
+    ret                         ; return if LOWER(current) > LOWER(miss_bound)
+.EndIf:
+
+    ld b, STRLEN("Miss")
+    ld de, MissStr
+    call WriteText              ; print text
+
+    pop hl
+    call NextHit                ; advance hit tracker
     ret
 
 
