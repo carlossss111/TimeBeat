@@ -54,6 +54,7 @@ IsInBounds:
     ld a, h
     cp b
     jr c, .ReturnFalse          ; return if HIGH(current) > HIGH(upper_bounds)
+    jr nz, .EndIfUpper          ; skip low bit if HIGH(current) != HIGH(upper_bounds)
     ld a, l
     cp c
     jr c, .ReturnFalse          ; return if LOW(current) > LOW(upper_bounds)
@@ -75,6 +76,7 @@ IsInBounds:
     ld a, b
     cp d
     jr c, .ReturnFalse          ; return if HIGH(upper_bounds) > HIGH(current)
+    jr nz, .EndIfUpper          ; skip low bit if HIGH(upper_bounds) != HIGH(current)
     ld a, c
     cp e
     jr c, .ReturnFalse          ; return if LOW(upper_bounds) > LOW(current)
