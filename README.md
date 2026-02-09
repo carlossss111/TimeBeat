@@ -1,13 +1,10 @@
 # Time // Beat
 A Rhythm Game for the Gameboy! 
 
-_The year is 2026 and music is fading from the earth and threatening to plunge humanity into NON-HEARING. To combat this, PROFESSOR PRELUDE has designed the TIMEBEAT GAMEBOY capable of saving the world._
-
-_But still, the device is yet incomplete and the technology he needs to finish it doesn't exist in the present day! He must now use his recently invented TIME MACHINE to travel to the past and future to find the missing components. In 5000 AD he must break into a spaceport to get a QUANTUM STABILISER. He must then travel to 65,000,000BC and avoid dinosaurs and find a MILLENNIUM STONE._
-
-_With both components, he can finally build the TIMEBEAT GAMEBOY and play it at the top of CHIME MOUNTAIN to save the world._
-
-_Help the PROFESSOR in his quest - or risk the end of sound!_
+>The year is 2026 and music is fading from the earth and threatening to plunge humanity into NON-HEARING. To combat this, PROFESSOR PRELUDE has designed the TIMEBEAT GAMEBOY capable of saving the world.<br/><br/>
+But still, the device is yet incomplete and the technology he needs to finish it doesn't exist in the present day! He must now use his recently invented TIME MACHINE to travel to the past and future to find the missing components. In 5000 AD he must break into a spaceport to get a QUANTUM STABILISER. He must then travel to 65,000,000BC and avoid dinosaurs and find a MILLENNIUM STONE.<br/><br/>
+With both components, he can finally build the TIMEBEAT GAMEBOY and play it at the top of CHIME MOUNTAIN to save the world.<br/><br/>
+Help the PROFESSOR in his quest - or risk the end of sound!
 
 Written in SM83 assembly (a mix between the i8080 and the Z80) for the original Nintendo Gameboy. 
 

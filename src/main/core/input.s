@@ -1,61 +1,88 @@
 include "hardware.inc"
 
-SECTION "InputVars", WRAM0
-    wCurKeys: db
-    wNewKeys: db
+
+/*******************************************************
+* INPUT HANDLING
+* Get the button and dpad presses
+********************************************************/
+SECTION "InputVars", HRAM
+
+    hCurKeys: db
+    hNewKeys: db
+    hRelKeys: db
 
 SECTION "Input", ROM0
 
-; Polls the controller for inputs
-; Stores changes in wNewKeys
-; Stores current in wCurKeys
-; @uses b
-UpdateInput:
-    ld a, JOYP_GET_BUTTONS  ; select BUTTON read mode
-    call .OneNibble         ; get button reads
-    ld b, a                 ; store in register b
-
-    ld a, JOYP_GET_CTRL_PAD ; select DPAD read mode
-    call .OneNibble         ; get dpad reads
-    swap a                  ; swap high nibble with low nibble
-                            ; the high nibble will contain dpad reads and low will be 1111
-    xor a, b                ; now in one byte: high nibble = dpad, low nibble = button
-    ld b, a                 ; move back to register b
-
-    ld a, JOYP_GET_NONE     ; select NO read mode
-    ld [rP1], a             ; release the inputs
-
-    ld a, [wCurKeys]        ; current keys ptr
-    xor a, b                ; get keys that changed state
-    and a, b                ; with that, get keys that changed to pressed only
-    ld [wNewKeys], a        ; store newly pressed keys
-    ld a, b   
-    ld [wCurKeys], a        ; store all currently pressed keys
-    ret                     ; DONE
-
-.OneNibble
+; Returns the input as LOW bits
+; @param a: button type (JOYP_GET_BUTTONS | JOYP_GET_CTRL_PAD)
+; @returns a: user input, NIBBLE_HIGH(a) = $F, NIBBLE_LOW(a) = input
+ReadInput:
     ldh [rP1], a            ; set read mode
-    call .KnownRet          ; waste 10 cycles
+    call .KnownRet          ; delay 10 cycles
     ld a, [rP1]
     ld a, [rP1]
-    ld a, [rP1]             ; read 3 times to stabilise, 3rd time should be reliable
-    or a, $F0               ; high nibble = 1111, low nibble = input reads
-.KnownRet
+    ld a, [rP1]             ; read 3 times to stabilise
+    or a, $F0  
+.KnownRet:
     ret
 
-; Updates the inputs and returns current key as bc
+
+; Polls the controller for inputs
+; Stores changes in hNewKeys
+; Stores current in hCurKeys
+UpdateInput::
+    ld a, JOYP_GET_BUTTONS
+    call ReadInput
+    ld b, a                     ; b = NIBBLE_HIGH($F) NIBBLE_LOW(button_input)
+
+    ld a, JOYP_GET_CTRL_PAD 
+    call ReadInput
+    swap a                      ; a = NIBBLE_HIGH(dpad_input) NIBBLE_LOW($F)
+                            
+    xor b                       
+    ld b, a                     ; b = NIBBLE_HIGH(dpad_input) NIBBLE_LOW(button_input)
+
+    ld a, JOYP_GET_NONE
+    ldh [rP1], a                ; release the inputs
+
+    ldh a, [hCurKeys]
+    xor b
+    and b
+    ldh [hNewKeys], a           ; hNewKeys = inputs that have changed to ON
+
+    ld a, b
+    xor $FF                     ; (eq to a NOT operation)
+    ld c, a
+    ldh a, [hCurKeys]
+    and c
+    ldh [hRelKeys], a           ; hRelKeys = inputs that have changed to OFF
+
+    ld a, b   
+    ldh [hCurKeys], a           ; hCurKeys = inputs that are ON
+
+    ret
+
+
+; Updates the inputs and returns current key
 ; @returns a: current keypress
 GetCurrentKeys::
-    call UpdateInput
-    ld a, [wCurKeys]
+    ldh a, [hCurKeys]
     ret
 
-; Updates the inputs and returns new key as bc
+
+; Updates the inputs and returns new key
 ; @returns a: new keypress
 GetNewKeys::
-    call UpdateInput
-    ld a, [wNewKeys]
+    ldh a, [hNewKeys]
     ret
+
+
+; Updates the inputs and returns released key
+; @returns a: new keypress
+GetReleasedKeys::
+    ldh a, [hRelKeys]
+    ret
+    
 
 
 ENDSECTION

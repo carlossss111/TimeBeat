@@ -251,6 +251,8 @@ CheckInput:
 
 ; Main program loop wahhey
 MainLoop:
+    ; Update button presses
+    call UpdateInput
 
     ; Spawn the beats!
     ld hl, BeatStreamA
@@ -262,10 +264,9 @@ MainLoop:
     ld hl, BeatStreamRight
     call SpawnBeats
 
-    ; Get inputs
+    ; Handle inputs
     call GetNewKeys
 
-    ; Handle inputs
     push af
     ld b, JOYP_A
     ld hl, BeatStreamA
