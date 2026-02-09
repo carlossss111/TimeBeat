@@ -1,10 +1,10 @@
 include "game-charmap.inc"
 include "macros.inc"
 
-DEF TOO_EARLY_TO_HIT EQU 50
+DEF TOO_EARLY_TO_HIT EQU 30
 DEF MISS_BOUND EQU 20
-DEF GOOD_BOUND EQU 4
-DEF PERFECT_BOUND EQU 1
+DEF GOOD_BOUND EQU 6
+DEF PERFECT_BOUND EQU 2
 
 /*******************************************************
 * HIT MESSAGES

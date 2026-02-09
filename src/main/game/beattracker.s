@@ -107,6 +107,73 @@ GetHitTick::
 ; Returns the beat type (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
 ; @param hl: pointer to beatstream struct
 ; @returns a: sprite beat type
+GetHitBeatType::
+    push hl
+    ld de, BEAT_STREAM_START
+    add hl, de
+    ld d, [hl]
+    inc hl
+    ld e, [hl]                  ; de = ptr to start beat
+    pop hl
+
+ 
+    push hl
+    ld bc, BEAT_STREAM_HIT
+    add hl, bc
+    ld b, [hl]
+    inc hl
+    ld c, [hl]                  ; bc = ptr to sprite beat
+    pop hl
+
+.IfCurrentHold:
+    ld a, [bc]
+    and HOLD_BIT
+    jr z, .EndIfCurrentHold     ; if bit is set, the sprite should be HOLD
+
+    ld a, BEAT_HOLD
+    ret
+.EndIfCurrentHold:
+
+.IfAtStart:
+    ld a, d
+    cp b
+    jr nz, .EndIfAtStart
+    ld a, e
+    cp c
+    jr nz, .EndIfAtStart        ; if first beat, then must be a SINGLE sprite
+
+    ld a, BEAT_SINGLE
+    ret
+.EndIfAtStart:
+ 
+    push bc
+    ld bc, BEAT_STREAM_HIT
+    add hl, bc
+    ld b, [hl]
+    inc hl
+    ld c, [hl]
+    ld h, b
+    ld l, c
+    dec hl
+    dec hl                      ; hl = ptr previous sprite beat
+    pop bc
+
+.IfLastWasHold:
+    ld a, [hl]
+    and HOLD_BIT                ; if last was hold this is RELEASE
+    jr z, .EndIfLastWasHold
+    
+    ld a, BEAT_RELEASE
+    ret
+.EndIfLastWasHold:
+
+    ld a, BEAT_SINGLE           ; if none of the above applies, this beat is SINGLE
+    ret
+
+
+; Returns the beat type (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
+; @param hl: pointer to beatstream struct
+; @returns a: sprite beat type
 GetSpriteBeatType::
     push hl
     ld de, BEAT_STREAM_START

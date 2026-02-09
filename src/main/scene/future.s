@@ -228,7 +228,7 @@ SpawnBeats:
     ret
 
 
-; Handle the player input
+; Handle the player pressing a key
 ; @param a: actual input
 ; @param b: input enum to check
 ; @param hl: pointer to corresponding beatstream
@@ -238,14 +238,47 @@ CheckInput:
     ret
     
 .IfPressed:
+    push hl
+    call GetHitBeatType
+    pop hl
+    cp BEAT_RELEASE             ; only HIT and HOLD beats should register here
+    jr z, .IfBeatTypeWasRelease
+ 
     ldh a, [hTick]
     ld b, a
     ldh a, [hTick + 1]
     ld c, a                     ; get current tick
-
-    push hl
     call HandleHit              ; handle the hit
+    ret
+
+.IfBeatTypeWasRelease:
+    ret
+
+
+; Handle the player releasing a key
+; @param a: actual input
+; @param b: input enum to check
+; @param hl: pointer to corresponding beatstream
+CheckRelease:
+    and b
+    jr nz, .IfPressed
+    ret
+
+.IfPressed:
+    push hl
+    call GetHitBeatType
     pop hl
+    cp BEAT_RELEASE             ; only RELEASE beats should register here
+    jr nz, .IfBeatTypeWasNotRelease
+
+    ldh a, [hTick]
+    ld b, a
+    ldh a, [hTick + 1]
+    ld c, a                     ; get current tick
+    call HandleHit              ; handle the hit
+    ret
+
+.IfBeatTypeWasNotRelease:
     ret
  
 
@@ -286,6 +319,29 @@ MainLoop:
     ld b, JOYP_RIGHT << 4
     ld hl, BeatStreamRight
     call CheckInput
+    pop af
+
+    call GetReleasedKeys
+
+    push af
+    ld b, JOYP_A
+    ld hl, BeatStreamA
+    call CheckRelease
+    pop af
+    push af
+    ld b, JOYP_B
+    ld hl, BeatStreamB
+    call CheckRelease
+    pop af
+    push af
+    ld b, JOYP_LEFT << 4
+    ld hl, BeatStreamLeft
+    call CheckRelease
+    pop af
+    push af
+    ld b, JOYP_RIGHT << 4
+    ld hl, BeatStreamRight
+    call CheckRelease
     pop af
 
     ; Check for missed beats
