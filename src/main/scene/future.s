@@ -24,13 +24,13 @@ SECTION "FutureTileMap", ROM0
 
 SECTION "FutureTracks", ROM0
 
-    BeatTrackA: INCBIN "example.bin.a"
+    BeatTrackA: INCBIN "future.bin.a"
     BeatTrackAEnd:
-    BeatTrackB: INCBIN "example.bin.b"
+    BeatTrackB: INCBIN "future.bin.b"
     BeatTrackBEnd:
-    BeatTrackLeft: INCBIN "example.bin.l"
+    BeatTrackLeft: INCBIN "future.bin.l"
     BeatTrackLeftEnd:
-    BeatTrackRight: INCBIN "example.bin.r"
+    BeatTrackRight: INCBIN "future.bin.r"
     BeatTrackRightEnd:
 
 SECTION "FutureBeats", WRAM0
@@ -149,7 +149,7 @@ FutureSceneEntrypoint::
     ;; Audio
 
     di
-    ld hl, BeatTest
+    ld hl, FutureMusic
     call hUGE_init              ; set music track
     ei
     ld b, 3

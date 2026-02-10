@@ -76,7 +76,7 @@ TitleEntrypoint::
     ;; Audio
 
     di
-    ld hl, ProofOfConcept 
+    ld hl, MenuMusic
     call hUGE_init              ; set music track
     ei
     ld b, 3
