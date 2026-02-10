@@ -8,6 +8,10 @@ DEF MIDDLE_LAST_SCANLINE EQU 120
 DEF MAX_CHARS_IN_STRING EQU 8
 DEF TIME_TO_SHOW_STRING EQU 30  ; frames
 
+DEF SCORE_SCREEN_OFFSET EQU 14 
+DEF SCORE_NUM_OF_DIGITS EQU 6
+DEF FIRST_DIGIT_VRAM EQU $5
+
 /*******************************************************
 * WINDOW RENDERING
 * Render the game top and bottom window using stat ints
@@ -87,6 +91,46 @@ BottomScreen:
     ld hl, TopScreen
     call SetStatHandler         ; set handler for next STAT interrupt
     ret
+
+
+; Write text on the top bar at the top right
+; @param de: pointer to packed binary-coded-decimal (BCD) number
+WriteScore::
+
+    ld a, [wTilemapPtr]
+    ld h, a
+    ld a, [wTilemapPtr + 1]
+    ld l, a                        ; hl = dst vram address
+    ld bc, SCORE_SCREEN_OFFSET
+    add hl, bc
+    ld b, SCORE_NUM_OF_DIGITS / 2  ; b = num bytes
+   
+.Loop:
+    ldh a, [rSTAT]
+    bit 1, a
+    jr nz, .Loop                ; not mode 0 or 1
+
+    ld a, [de]
+    and $F0
+    rra
+    rra
+    rra
+    rra
+    add a, FIRST_DIGIT_VRAM
+    ld [hl+], a                 ; copy to VRAM
+
+    ld a, [de]
+    and $0F
+    add a, FIRST_DIGIT_VRAM
+    ld [hl+], a
+    
+    inc de
+
+    dec b
+    jr nz, .Loop
+.EndLoop:
+    ret
+
 
 ; Clears text displayed to the screen
 ClearText::

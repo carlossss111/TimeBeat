@@ -176,6 +176,8 @@ HandleHit::
     
     call NextHit
 
+    call AddPerfectScore
+
     ret
 .NotPerfect:
 
@@ -204,6 +206,8 @@ HandleHit::
     
     call NextHit
 
+    call AddGoodScore
+
     ret
 .NotGood:
 
@@ -215,6 +219,9 @@ HandleHit::
     pop hl
 
     call NextHit
+
+    call AddOKScore
+
     ret
 
 ; Check if a beat has been missed entirely and move on if so

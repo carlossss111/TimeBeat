@@ -136,6 +136,8 @@ FutureSceneEntrypoint::
     ld a, EMPTY_TILE
     call InitWindow             ; init the stat interrupts
 
+    call InitScore              ; draw the score after the window
+
 
     ;; LCD ;;
 
