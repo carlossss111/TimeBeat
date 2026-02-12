@@ -140,6 +140,9 @@ StartSequence::
 ; Prints 'FIN.' to the screen
 ; This function is blocking
 EndSequence::
+    ld b, 100                   ; extra frames incase sprites still being cleaned up
+    call WaitForFrames
+
     call PrintFinish
 
     ld b, FINISH_FRAMES
