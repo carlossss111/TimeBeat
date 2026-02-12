@@ -399,12 +399,10 @@ MainLoop:
     jp MainLoop
 .EndLoop:
 
-    ld b, 255 
-    call WaitForFrames
+    call EndSequence 
+
     ld b, 3
     call SlideDownVolume
-    ld b, 255 
-    call WaitForFrames
     call FadeOut
 
     ld bc, FUTURE_SCENE         ; todo

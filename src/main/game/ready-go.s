@@ -1,6 +1,6 @@
 include "metasprites.inc"
 
-DEF SHADOWOAM_START_LOCATION EQU 80
+DEF SHADOWOAM_OFFSET EQU 80
 
 DEF READY_WIDTH EQU 9
 DEF READY_HEIGHT EQU 2
@@ -16,10 +16,11 @@ DEF GO_X EQU 74
 DEF GO_Y EQU 75
 DEF GO_FRAMES EQU 200
 
-DEF FINISH_WIDTH EQU 0
-DEF FINISH_HEIGHT EQU 0
-DEF FINISH_X EQU 40
-DEF FINISH_Y EQU 40
+DEF FINISH_WIDTH EQU 4
+DEF FINISH_HEIGHT EQU 2
+DEF FINISH_X EQU 74
+DEF FINISH_Y EQU 75
+DEF FINISH_FRAMES EQU 200
 
 /*******************************************************
 * READY, GO, FINISH TEXT
@@ -29,11 +30,13 @@ SECTION "ReadyGoFinishTiles", ROM0
     
     ReadyTiles: INCBIN "ready.tilemap"
     GoTiles: INCBIN "go.tilemap"
+    FinishTiles: INCBIN "finish.tilemap"
 
 SECTION "ReadyGoFinishStructs", WRAM0
 
     ReadySprite: STRUCT_METASPRITE
     GoSprite: STRUCT_METASPRITE
+    FinishSprite: STRUCT_METASPRITE
 
 SECTION "ReadyGoFinish", ROM0
 
@@ -41,7 +44,7 @@ SECTION "ReadyGoFinish", ROM0
 ; @returns hl: pointer to sprite struct
 PrintReady:
     ld hl, ReadySprite
-    ld bc, ShadowOAM + SHADOWOAM_START_LOCATION 
+    ld bc, ShadowOAM + SHADOWOAM_OFFSET 
     ld d, READY_WIDTH 
     ld e, READY_HEIGHT
     call InitMSprite
@@ -64,7 +67,7 @@ PrintReady:
 ; @returns hl: pointer to sprite struct
 PrintGo:
     ld hl, GoSprite
-    ld bc, ShadowOAM + SHADOWOAM_START_LOCATION 
+    ld bc, ShadowOAM + SHADOWOAM_OFFSET 
     ld d, GO_WIDTH
     ld e, GO_HEIGHT
     call InitMSprite
@@ -86,6 +89,23 @@ PrintGo:
 ; Prints the 'FINISH' to the screen
 ; @returns hl: pointer to sprite struct
 PrintFinish:
+    ld hl, FinishSprite
+    ld bc, ShadowOAM + SHADOWOAM_OFFSET 
+    ld d, FINISH_WIDTH
+    ld e, FINISH_HEIGHT
+    call InitMSprite
+
+    ld hl, FinishSprite
+    ld bc, FinishTiles
+    call ColourMSprite
+    
+    ld hl, FinishSprite 
+    ld b, FINISH_X
+    ld c, FINISH_Y
+    push hl
+    call PositionMSprite
+    pop hl
+
     ret
 
 
@@ -115,6 +135,19 @@ StartSequence::
 
     call DeleteMSprite
     ret
+
+
+; Prints 'FIN.' to the screen
+; This function is blocking
+EndSequence::
+    call PrintFinish
+
+    ld b, FINISH_FRAMES
+    call WaitForFrames
+    call WaitForFrames
+
+    ret
+    
     
 ENDSECTION
 
