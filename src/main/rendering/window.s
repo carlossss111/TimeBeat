@@ -106,26 +106,32 @@ WriteScore::
     ld b, SCORE_NUM_OF_DIGITS / 2  ; b = num bytes
    
 .Loop:
-    ldh a, [rSTAT]
-    bit 1, a
-    jr nz, .Loop                ; not mode 0 or 1
-
     ld a, [de]
     and $F0
-    rra
-    rra
-    rra
-    rra
+    swap a
     add a, FIRST_DIGIT_VRAM
+    push af
+.HBlank1:
+    ldh a, [rSTAT]
+    bit 1, a
+    jr nz, .HBlank1; not mode 0 or 1
+
+    pop af
     ld [hl+], a                 ; copy to VRAM
 
     ld a, [de]
     and $0F
     add a, FIRST_DIGIT_VRAM
-    ld [hl+], a
-    
-    inc de
+    push af
+.HBlank2:
+    ldh a, [rSTAT]
+    bit 1, a
+    jr nz, .HBlank2             ; not mode 0 or 1
 
+    pop af
+    ld [hl+], a
+
+    inc de
     dec b
     jr nz, .Loop
 .EndLoop:

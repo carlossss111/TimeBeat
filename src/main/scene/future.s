@@ -165,6 +165,12 @@ FutureSceneEntrypoint::
     ld c, a
     call InitTick               ; initialise tick counter
 
+
+    ;; Start text
+
+    call StartSequence
+
+
     jp MainLoop
 
 ENDSECTION

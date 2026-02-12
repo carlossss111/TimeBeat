@@ -29,7 +29,7 @@ DEF SPR_HOLD_RELEASE_HEIGHT EQU 2
 *******************************************************/
 SECTION "BeatSprites", ROM0
 
-    SpriteSheet: INCBIN "buttons.2bpp"
+    SpriteSheet: INCBIN "game_sprites_combined.2bpp"
     SpriteSheetEnd:
 
 SECTION "BeatSpriteMaps", ROM0

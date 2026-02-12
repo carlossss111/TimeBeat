@@ -313,8 +313,10 @@ DeleteMSprite::
     inc hl
     ld [hl], 0                  ; y position
     inc hl
+    ld d, [hl]                  ; d = width
     ld [hl], 0                  ; width
     inc hl
+    ld e, [hl]                  ; e = height
     ld [hl], 0                  ; height
 
     inc hl                      ; now pointing to sprite arr high bits
@@ -323,10 +325,33 @@ DeleteMSprite::
     ld c, [hl]
     
     ld h, b
-    ld l, c
+    ld l, c                     ; dereference ptr
+    ld a, e
+    push af
+.LoopOuter
+    ld a, d                     ; a = width
+.LoopWidth:
     ld [hl], 0
     inc hl
     ld [hl], 0                  ; clear value at dereferenced pointer
+    inc hl
+    ld [hl], 0
+    inc hl
+    ld [hl], 0
+    inc hl
+
+    dec a
+    cp 0
+    jr nz, .LoopWidth
+
+.LoopHeight:
+
+    pop af                      ; a = height
+    dec a
+    push af
+    cp 0
+    jr nz, .LoopOuter
+    pop af
 
     ret
 
