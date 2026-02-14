@@ -247,6 +247,10 @@ CheckInput:
     
 .IfPressed:
     push hl
+    call DrawButtonEffect       ; draw on the window
+    pop hl
+
+    push hl
     call GetHitBeatType
     pop hl
     cp BEAT_RELEASE             ; only HIT and HOLD beats should register here
@@ -269,10 +273,14 @@ CheckInput:
 ; @param hl: pointer to corresponding beatstream
 CheckRelease:
     and b
-    jr nz, .IfPressed
+    jr nz, .IfReleased
     ret
 
-.IfPressed:
+.IfReleased:
+    push hl
+    call ClearButtonEffect       ; draw on the window
+    pop hl
+
     push hl
     call GetHitBeatType
     pop hl
@@ -284,6 +292,7 @@ CheckRelease:
     ldh a, [hTick + 1]
     ld c, a                     ; get current tick
     call HandleHit              ; handle the hit
+
     ret
 
 .IfBeatTypeWasNotRelease:
@@ -398,6 +407,8 @@ MainLoop:
     halt
     jp MainLoop
 .EndLoop:
+
+    call ClearAllButtonEffects
 
     call EndSequence 
 

@@ -10,7 +10,16 @@ DEF TIME_TO_SHOW_STRING EQU 30  ; frames
 
 DEF SCORE_SCREEN_OFFSET EQU 14 
 DEF SCORE_NUM_OF_DIGITS EQU 6
-DEF FIRST_DIGIT_VRAM EQU $5
+DEF FIRST_DIGIT_VRAM EQU $7
+
+DEF LEFT_BTN_POS EQU $43
+DEF RIGHT_BTN_POS EQU $47
+DEF B_BTN_POS EQU $4c
+DEF A_BTN_POS EQU $50
+
+DEF BLANK_EFFECT EQU $0
+DEF BTN_EFFECT_LEFT EQU $5
+DEF BTN_EFFECT_RIGHT EQU $6
 
 /*******************************************************
 * WINDOW RENDERING
@@ -185,6 +194,109 @@ ClearOldText::
     ld [wTextFade], a           ; reset counter
 .EndIf:
     ret
+
+ENDSECTION
+
+
+/*******************************************************
+* BUTTON PRESS EFFECTS
+* Draw on the window if a button is pressed/released
+********************************************************/
+SECTION "ButtonPressEffects", ROM0
+
+; Draws on the two tiles left and right of a button tile on the window
+; @param b: Input enum (JOYP_A | JOYP_B | JOYP_LEFT << 4 | JOYP_RIGHT << 4)
+; @param d: Tile to draw on the left (BLANK_EFFECT | BTN_EFFECT_LEFT)
+; @param e: Tile to draw on the right (BLANK_EFFECT | BTN_EFFECT_LEFT)
+RenderButtonEffect:
+    ld a, [wTilemapPtr]
+    ld h, a
+    ld a, [wTilemapPtr + 1]
+    ld l, a
+
+.CheckA:
+    ld a, JOYP_A
+    cp b
+    jr nz, .CheckB
+
+    ld bc, A_BTN_POS - 1
+    add hl, bc                  ; hl = left of A button tile
+    jr .Render
+
+.CheckB:
+    ld a, JOYP_B
+    cp b
+    jr nz, .CheckLeft
+
+    ld bc, B_BTN_POS - 1
+    add hl, bc                  ; hl = left of B button tile
+    jr .Render
+
+.CheckLeft:
+    ld a, JOYP_LEFT << 4
+    cp b
+    jr nz, .Right
+
+    ld bc, LEFT_BTN_POS - 1
+    add hl, bc                  ; hl = left of LEFT button tile
+    jr .Render
+
+.Right:
+    ld bc, RIGHT_BTN_POS - 1
+    add hl, bc                  ; hl = left of RIGHT button tile
+
+.Render:
+    ld c, rSTAT & $FF
+.WaitForBlank:
+    ldh a, [$FF00+c]
+    bit 1, a
+    jr nz, .WaitForBlank        ; not mode 0 or 1
+
+    ld a, d
+    ld [hl], a                  ; effect added to the left
+
+    inc hl
+    inc hl
+    ld a, e
+    ld [hl], a                  ; effect added to the right
+
+    ret
+
+
+; Draws an effect around a button
+; @param b: Input enum (JOYP_A | JOYP_B | JOYP_LEFT << 4 | JOYP_RIGHT << 4)
+DrawButtonEffect::
+    ld d, BTN_EFFECT_LEFT
+    ld e, BTN_EFFECT_RIGHT
+    jr RenderButtonEffect       ; immediate return
+
+
+; Clears an effect around a button
+; @param b: Input enum (JOYP_A | JOYP_B | JOYP_LEFT << 4 | JOYP_RIGHT << 4)
+ClearButtonEffect::
+    ld d, BLANK_EFFECT
+    ld e, BLANK_EFFECT
+    jr RenderButtonEffect       ; immediate return
+
+
+; Clears all effects around a button
+ClearAllButtonEffects::
+    ld d, BLANK_EFFECT
+    ld e, BLANK_EFFECT
+
+    ld b, JOYP_A
+    call RenderButtonEffect
+
+    ld b, JOYP_B
+    call RenderButtonEffect
+
+    ld b, JOYP_LEFT << 4
+    call RenderButtonEffect
+
+    ld b, JOYP_RIGHT << 4
+    call RenderButtonEffect
+    ret
+
 
 ENDSECTION
 
