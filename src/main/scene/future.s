@@ -109,6 +109,8 @@ FutureSceneEntrypoint::
     ld bc, BackgroundTilemapEnd - BackgroundTilemap
     call VRAMCopy
 
+    call InitBackgroundScroll
+
 
     ;; Window ;;
 
@@ -438,6 +440,7 @@ RenderLoop:
     call IncTick                ; increment tick counter once every frame
     call MoveBeatSprites        ; move all sprites
     call ClearOldText           ; clear old text
+    call ScrollBackground
 
     ret
 
