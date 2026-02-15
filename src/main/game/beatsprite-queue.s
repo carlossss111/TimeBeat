@@ -1,4 +1,4 @@
-include "metasprites.inc"
+include "metasprite.inc"
 include "hardware.inc"
 include "beattracker.inc"
 

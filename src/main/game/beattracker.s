@@ -104,10 +104,16 @@ GetHitTick::
     ret
 
 
-; Returns the beat type (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
+; Returns the beat type (BEAT_SINGLE | BEAT_HOLD | BEAT_RELEASE)
+; @param bc: Type of pointer (BEAT_STREAM_SPRITE | BEAT_STREAM_HIT)
 ; @param hl: pointer to beatstream struct
 ; @returns a: sprite beat type
-GetHitBeatType::
+GetBeatType:
+    ld a, b
+    ld [hScratchA], a
+    ld a, c
+    ld [hScratchA + 1], a
+
     push hl
     ld de, BEAT_STREAM_START
     add hl, de
@@ -116,10 +122,8 @@ GetHitBeatType::
     ld e, [hl]                  ; de = ptr to start beat
     pop hl
 
- 
     push hl
-    ld bc, BEAT_STREAM_HIT
-    add hl, bc
+    add hl, bc                  ; bc = BEAT_STREAM_SPRITE | BEAT_STREAM_HIT
     ld b, [hl]
     inc hl
     ld c, [hl]                  ; bc = ptr to sprite beat
@@ -147,7 +151,10 @@ GetHitBeatType::
 .EndIfAtStart:
  
     push bc
-    ld bc, BEAT_STREAM_HIT
+    ld a, [hScratchA]
+    ld b, a
+    ld a, [hScratchA + 1]
+    ld c, a                     ; bc = BEAT_STREAM_SPRITE | BEAT_STREAM_HIT
     add hl, bc
     ld b, [hl]
     inc hl
@@ -169,72 +176,41 @@ GetHitBeatType::
 
     ld a, BEAT_SINGLE           ; if none of the above applies, this beat is SINGLE
     ret
+
+
+; Returns the beat type (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
+; @param hl: pointer to beatstream struct
+; @returns a: sprite beat type
+GetHitBeatType::
+    ld bc, BEAT_STREAM_HIT
+    jp GetBeatType              ; fast return
 
 
 ; Returns the beat type (BEAT_SINGLE, BEAT_HOLD, BEAT_RELEASE)
 ; @param hl: pointer to beatstream struct
 ; @returns a: sprite beat type
 GetSpriteBeatType::
-    push hl
-    ld de, BEAT_STREAM_START
-    add hl, de
-    ld d, [hl]
-    inc hl
-    ld e, [hl]                  ; de = ptr to start beat
-    pop hl
-
- 
-    push hl
     ld bc, BEAT_STREAM_SPRITE
+    jp GetBeatType              ; fast return
+
+
+; Increments one of the pointers
+; @param bc: Type of pointer (BEAT_STREAM_SPRITE | BEAT_STREAM_HIT)
+; @param hl: pointer to beatstream struct
+Next:
     add hl, bc
-    ld b, [hl]
-    inc hl
-    ld c, [hl]                  ; bc = ptr to sprite beat
-    pop hl
-
-.IfCurrentHold:
-    ld a, [bc]
-    and HOLD_BIT
-    jr z, .EndIfCurrentHold     ; if bit is set, the sprite should be HOLD
-
-    ld a, BEAT_HOLD
-    ret
-.EndIfCurrentHold:
-
-.IfAtStart:
-    ld a, d
-    cp b
-    jr nz, .EndIfAtStart
-    ld a, e
-    cp c
-    jr nz, .EndIfAtStart        ; if first beat, then must be a SINGLE sprite
-
-    ld a, BEAT_SINGLE
-    ret
-.EndIfAtStart:
- 
-    push bc
-    ld bc, BEAT_STREAM_SPRITE
-    add hl, bc
+    push hl
     ld b, [hl]
     inc hl
     ld c, [hl]
-    ld h, b
-    ld l, c
-    dec hl
-    dec hl                      ; hl = ptr previous sprite beat
-    pop bc
+ 
+    inc bc                      ; 2 bytes
+    inc bc
 
-.IfLastWasHold:
-    ld a, [hl]
-    and HOLD_BIT                ; if last was hold this is RELEASE
-    jr z, .EndIfLastWasHold
-    
-    ld a, BEAT_RELEASE
-    ret
-.EndIfLastWasHold:
-
-    ld a, BEAT_SINGLE           ; if none of the above applies, this beat is SINGLE
+    pop hl
+    ld [hl], b
+    inc hl
+    ld [hl], c
     ret
 
 
@@ -242,106 +218,63 @@ GetSpriteBeatType::
 ; @param hl: pointer to beatstream struct
 NextSprite::
     ld bc, BEAT_STREAM_SPRITE
-    add hl, bc
-    push hl
-    ld b, [hl]
-    inc hl
-    ld c, [hl]
- 
-    inc bc                      ; 2 bytes
-    inc bc
-
-    pop hl
-    ld [hl], b
-    inc hl
-    ld [hl], c
-    ret
+    jr Next                     ; fast return
 
 
 ; Increments the HitPtr 
 ; @param hl: pointer to beatstream struct
 NextHit::
     ld bc, BEAT_STREAM_HIT
-    add hl, bc
+    jr Next                     ; fast return
+
+
+; Return TRUE if there are more beats after the pointer
+; @param bc: Type of pointer (BEAT_STREAM_SPRITE | BEAT_STREAM_HIT)
+; @param hl: pointer to beatstream struct
+; @returns a: TRUE or FALSE
+HasMore:
     push hl
+    add hl, bc
     ld b, [hl]
     inc hl
     ld c, [hl]
- 
-    inc bc                      ; 2 bytes
-    inc bc
-
     pop hl
-    ld [hl], b
+
+    ld de, BEAT_STREAM_END
+    add hl, de
+    ld d, [hl]
     inc hl
-    ld [hl], c
+    ld e, [hl]
+ 
+    ld a, d
+    cp b
+    jp nz, .False
+    ld a, e
+    cp c
+    jp nz, .False
+.True:
+    ld a, FALSE
+    ret
+    
+.False:
+    ld a, TRUE
     ret
 
 
-; Return 1 if at end
+; Return TRUE if there are more beats after the pointer
 ; @param hl: pointer to beatstream struct
-; @param a: TRUE or FALSE
+; @returns a: TRUE or FALSE
 HasMoreSpritesToSpawn::
-    push hl
     ld bc, BEAT_STREAM_SPRITE
-    add hl, bc
-    ld b, [hl]
-    inc hl
-    ld c, [hl]
- 
-    pop hl
-    ld de, BEAT_STREAM_END
-    add hl, de
-    ld d, [hl]
-    inc hl
-    ld e, [hl]
- 
-    ld a, d
-    cp b
-    jp nz, .False
-    ld a, e
-    cp c
-    jp nz, .False
-.True:
-    ld a, TRUE
-    ret
-    
-.False:
-    ld a, FALSE
-    ret
+    jr HasMore                  ; fast return
 
-; Return 1 if at end
+
+; Return TRUE if there are more beats after the pointer
 ; @param hl: pointer to beatstream struct
-; @param a: TRUE or FALSE
+; @returns a: TRUE or FALSE
 HasMoreBeatsToHit::
-    push hl
     ld bc, BEAT_STREAM_HIT 
-    add hl, bc
-    ld b, [hl]
-    inc hl
-    ld c, [hl]
- 
-    pop hl
-    ld de, BEAT_STREAM_END
-    add hl, de
-    ld d, [hl]
-    inc hl
-    ld e, [hl]
- 
-    ld a, d
-    cp b
-    jp nz, .False
-    ld a, e
-    cp c
-    jp nz, .False
-.True:
-    ld a, FALSE
-    ret
-    
-.False:
-    ld a, TRUE
-    ret
-
+    jr HasMore                  ; fast return
 
 ENDSECTION
 

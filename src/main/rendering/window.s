@@ -246,19 +246,28 @@ RenderButtonEffect:
     add hl, bc                  ; hl = left of RIGHT button tile
 
 .Render:
+    di
     ld c, rSTAT & $FF
-.WaitForBlank:
+.WaitForBlank1:
     ldh a, [$FF00+c]
     bit 1, a
-    jr nz, .WaitForBlank        ; not mode 0 or 1
+    jr nz, .WaitForBlank1       ; not mode 0 or 1
 
-    ld a, d
-    ld [hl], a                  ; effect added to the left
+    ld [hl], d                  ; effect added to the left
+    ei
 
     inc hl
     inc hl
-    ld a, e
-    ld [hl], a                  ; effect added to the right
+
+    di
+    ld c, rSTAT & $FF
+.WaitForBlank2:
+    ldh a, [$FF00+c]
+    bit 1, a
+    jr nz, .WaitForBlank2       ; not mode 0 or 1
+
+    ld [hl], e                  ; effect added to the right
+    ei
 
     ret
 

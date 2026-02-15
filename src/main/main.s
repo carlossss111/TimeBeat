@@ -85,6 +85,8 @@ Main:
 
 OptionsEntrypoint:
     ret                         ; unimplemented
+TitleEntrypoint:
+    ret                         ; unimplemented
 
 ENDSECTION
 

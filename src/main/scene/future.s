@@ -202,7 +202,7 @@ SpawnBeats:
     pop hl
 
     cp TRUE
-    jp z, .EndIf                ; if at end, skip more enqueues
+    jp nz, .EndIf               ; if at end, skip more enqueues
 
 .IfTimeForNextSprite:
     push hl

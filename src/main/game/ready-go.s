@@ -1,4 +1,4 @@
-include "metasprites.inc"
+include "metasprite.inc"
 
 DEF SHADOWOAM_OFFSET EQU 80
 
