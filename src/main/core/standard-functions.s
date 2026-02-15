@@ -28,16 +28,20 @@ Memcpy::
 ; @param hl: destination address
 VRAMCopy::
     ldh a, [rSTAT]
+    di
     bit 1, a
     jr nz, VRAMCopy             ; not mode 0 or 1
 
     ld a,[de]
+    ei
+
     ld [hl+], a
     inc de 
     dec bc
     ld a, b
     or a, c
     jr nz, VRAMCopy
+
     ret
 
 ; Copy into VRAM safely and faster (with tradeoff of smaller length)
@@ -48,14 +52,17 @@ VRAMCopyFast::
     ld c, rSTAT & $FF
 .Loop:
     ldh a, [$FF00+c]
+    di
     bit 1, a
     jr nz, .Loop                ; not mode 0 or 1
 
     ld a,[de]
+    ei
     ld [hl+], a
     inc de 
     dec b
     jr nz, .Loop
+    
     ret
 
 ; Loads a particular byte into a block of memory
@@ -77,15 +84,18 @@ Memset::
 ; @param hl: desination address
 VRAMMemset::
     ldh a, [rSTAT]
+    di                          ; disable interrupts, else the PPU might lock!
     bit 1, a
     jr nz, VRAMMemset           ; not mode 0 or 1
 
     ld [hl], d
+    ei
     inc hl
     dec bc
     ld a, b
     or a, c
     jp nz, VRAMMemset           ; loop if remaining length != 0
+
     ret
 
 
