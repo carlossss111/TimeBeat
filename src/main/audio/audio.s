@@ -67,5 +67,23 @@ SlideUpVolume::
 
     ret
 
+; Set the volume to quiet
+Quiet::
+    ld b, 3
+    ld a, $80
+    ld [rAUDENA], a
+    ld a, $FF
+    ld [rAUDTERM], a
+
+    ld a, $00
+    ld [rAUDVOL], a
+    call WaitForFrames
+    ld a, $11
+    ld [rAUDVOL], a
+    call WaitForFrames
+    ld a, $22
+    ld [rAUDVOL], a
+    ret
+ 
 ENDSECTION
 

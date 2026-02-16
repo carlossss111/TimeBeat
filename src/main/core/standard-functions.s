@@ -1,6 +1,8 @@
 include "hardware.inc"
 
 def VBLANK_SCANLINE equ 144
+def SCREEN_TILE_WIDTH equ 20
+def SCREEN_TILE_HEIGHT equ 18
 
 /*******************************************************
 * STDLIB
@@ -43,6 +45,48 @@ VRAMCopy::
     jr nz, VRAMCopy
 
     ret
+
+; Copy a 20x18 tilemap into VRAM safely
+; @param bc: length
+; @param de: source address
+; @param hl: destination address
+VRAMCopy20x18::
+    ld a, SCREEN_TILE_WIDTH
+    push af                     ; a = tile width
+
+.Blank:
+    ldh a, [rSTAT]
+    di
+    bit 1, a
+    jr nz, .Blank               ; not mode 0 or 1
+
+    ld a,[de]
+    ei
+
+    ld [hl+], a                 ; copy into VRAM
+
+    pop af
+    push bc
+    dec a
+    cp 0
+    jr nz, .Skip
+.AddToDest:
+    ld bc, 12
+    add hl, bc                  ; go to next line
+    ld a, SCREEN_TILE_WIDTH
+.Skip:
+    pop bc
+    push af
+
+    inc de 
+    dec bc
+    ld a, b
+    or a, c
+    jr nz, .Blank
+
+    pop af
+    ret
+
 
 ; Copy into VRAM safely and faster (with tradeoff of smaller length)
 ; @param b: length (up to 255 obviously)

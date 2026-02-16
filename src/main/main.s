@@ -74,9 +74,9 @@ Main:
 .Switch:
     call TitleEntrypoint        ; enter title loop. return new state as bc 
     jr .SwitchEnd
-    call OptionsEntrypoint 
-    jr .SwitchEnd
     call FutureSceneEntrypoint  ; enter game loop. return new state as bc 
+    jr .SwitchEnd
+    call SummarySceneEntrypoint ; scorecard
     jr .SwitchEnd
 
 .SwitchEnd

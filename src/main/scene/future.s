@@ -418,8 +418,11 @@ MainLoop:
     call SlideDownVolume
     call FadeOut
 
-    ld bc, FUTURE_SCENE         ; todo
-    ret
+    call UnsetStatInterrupt
+    call UnsetVBlankInterrupt
+    call InitBackgroundScroll
+
+    ld bc, SUMMARY_SCENE
     ret
 
 ENDSECTION

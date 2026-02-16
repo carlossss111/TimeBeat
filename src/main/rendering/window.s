@@ -55,7 +55,6 @@ InitWindow::
 TopScreen:
     ldh a, [rSTAT]
     and %00000011
-    or STAT_HBLANK
     jr nz, TopScreen            ; wait for hblank
 
     ld a, MIDDLE_FIRST_SCANLINE 
@@ -69,7 +68,6 @@ TopScreen:
 MiddleScreen:
     ldh a, [rSTAT]
     and %00000011
-    or STAT_HBLANK
     jr nz, MiddleScreen         ; wait for hblank
 
     ldh a, [rLCDC]
@@ -87,7 +85,6 @@ MiddleScreen:
 BottomScreen:
     ldh a, [rSTAT]
     and %00000011
-    or STAT_HBLANK
     jr nz, BottomScreen         ; wait for hblank
 
     ldh a, [rLCDC]
