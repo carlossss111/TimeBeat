@@ -1,0 +1,248 @@
+Order Row 1:
+(none)
+
+Order Row 2:
+0	A
+12	B
+16	A
+24	L
+32	A
+44	B
+48 	R(hold)
+52 	R(release)
+56	B
+58	B
+60	L
+62	L
+
+Order Row 3:
+0	A
+2	L
+5	A
+7	B
+9	R
+11	A
+13	B
+16	A
+18	L
+21	A
+23	B
+25	R
+27	A
+29	B
+32	A
+34	L
+37	A
+39	B
+41	R
+43	A
+45	B
+48	A
+50	L
+53	A
+56	R
+60	L
+
+Order Row 4:
+0	A(hold)
+8	A(release) & B(hold)
+12	B(release) & L(hold)
+16	L(release) & R(hold)
+22	R(release) & L
+24	R(hold)
+32	A
+34	B
+36	R
+37	L
+39	R
+41	L
+42	R
+44	B
+46	A
+48	A
+50	B
+52	R
+53	L
+55	R
+57	L
+58	R
+60	B
+62	B
+
+Order Row 5:
+0	A(hold)
+8	A(release) & B(hold)
+12	B(release) & L(hold)
+16	L(release) & R(hold)
+22	R(release) & L
+24	R & B
+26 	R & B
+28	L & A
+30	R & B
+32	A
+34	B
+36	R
+37	L
+39	R
+41	L
+42	R
+44	B
+46	A
+48	A
+50	B
+52	R
+53	L
+55	R
+57	L
+58	R
+60	B
+62	B
+
+Order Row 6:
+16	A & L
+18	A & R
+20	A & L
+22	A & R
+24	A & L
+26	A & R
+28	A & L
+32	R
+36	B
+40	A
+44	L
+48	A & L
+50	A & R
+52	A & L
+54	A & R
+56	B
+58	R
+60	L
+
+Order Row 7:
+0	A & R
+2	A & R
+4	B & L
+6	B & L
+8	A & R
+10	A & R
+12	B & L
+16	A & L
+18	A & R
+20	A & L
+22	A & R
+24	A & L
+26	A & R
+28	A & L
+32	R
+36	B
+40	A
+44	L
+48	A & L
+50	A & R
+52	A & L
+54	A & R
+56	B
+58	R
+60	L
+
+Order Row 8:
+0	A & R
+2	A & R
+4	B & L
+6	B & L
+8	A & R
+10	A & R
+12	B & L
+16	A & R
+18	A & R
+20	B & L
+22	B & L
+24	A & R
+26	A & R
+28	B & L
+32	A & R
+34	A & R
+36	A & R
+38	A & R
+40	A & R
+42	A & R
+44	A & R
+46	A & R
+48	A & R
+50	A & R
+52	A & R
+54	A & R
+56	B & L
+60	L(hold)
+
+Order Row 9:
+0	L(release) & A(hold)
+16	A(release & B(hold)
+32	B(release) & R(hold)
+48	R(release) & L
+50	L
+52	L
+54	L
+56	R(hold)
+60	R(release) & L(hold)
+
+Order Row 10:
+0	L(release) & A(hold)
+16	A(release & B(hold)
+32	B(release) & R(hold)
+48	R(release) & L
+52	L
+56	L(hold)
+60	L(release)
+
+Order Row 11:
+0	A
+4	A
+8	A
+10	L
+12	R
+14	B
+16	A
+20	A
+24	L(hold)
+28	L(release) & R(hold)
+32	R(release) & A
+36	A
+40	L(hold)
+44	L(release) & R(hold)
+48	A
+52	A
+56	R(hold)
+60	R(release) & B(hold)
+
+Order Row 12:
+0	B(release) & A
+4	A
+8	A
+10	L
+12	R
+14	B
+16	A
+20	A
+24	L(hold)
+28	L(release) & R(hold)
+32	R(release) & A
+34	B
+36	A
+38	B
+40	L
+42	R
+44	L
+46	R(hold)
+48	R(release) & A
+50	B
+52	A
+54	B
+56	L
+58	R
+60	B(hold)
+
+Order Row 13:
+0	B(release) & A(hold)
+16	A(release)
+

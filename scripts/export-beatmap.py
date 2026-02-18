@@ -31,7 +31,8 @@ class BinaryBeatArray:
 
         # The tick time is 14 bits
         beat = int(text_arr[0])
-        if beat > 0x3FF:
+        print(beat)
+        if beat > 0x3FFF:
             panic(f"Too many ticks on line {line_no}! Must be 14 bits")
         if beat < MIN_TICKS:
             panic(f"Too few ticks on line {line_no}! Must be more than {MIN_TICKS}")

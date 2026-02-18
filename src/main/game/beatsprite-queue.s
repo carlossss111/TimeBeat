@@ -319,31 +319,36 @@ SpawnBeatSprite::
     ld bc, OBJ_SIZE * (SPR_SINGLE_WIDTH * SPR_SINGLE_HEIGHT)
 .EndIfSpr:
     add hl, bc                  ; increase OAM ptr by sprite size
-
-
     ld a, h
     ld [wOAMPtr], a
     ld a, l
     ld [wOAMPtr + 1], a
 
-.IfEndOfArray
+.IfEndOfSpriteQueue:
     ld a, [wHeadPtr]
-    cp HIGH(wSpriteQueueEnd)
-    jr nz, .EndIf
+    cp HIGH(wSpriteQueueEnd)    ; check if at end of queue
+    jr nz, .EndIfQueue
     ld a, [wHeadPtr + 1]  
     cp LOW(wSpriteQueueEnd)
-    jr nz, .EndIf
-
+    jr nz, .EndIfQueue
     ld a, HIGH(wSpriteQueue)    ; set enqueue to start of array 
     ld [wHeadPtr], a
     ld a, LOW(wSpriteQueue)
     ld [wHeadPtr + 1], a
+.EndIfQueue:
 
+.IfEndOfOAM:
+    ld a, [wOAMPtr]
+    cp HIGH(ShadowOAMEnd)       ; check if at end of shadow OAM
+    jr nz, .EndIfOAM
+    ld a, [wOAMPtr + 1]
+    cp LOW(ShadowOAMEnd)
+    jr nz, .EndIfOAM
     ld a, HIGH(ShadowOAM)       ; set shadow oam ptr to start of OAM
     ld [wOAMPtr], a
     ld a, LOW(ShadowOAM)
     ld [wOAMPtr + 1], a
-.EndIf:
+.EndIfOAM:
     ret
 
 
@@ -412,11 +417,23 @@ MoveBeatSprites::
     jp c, .EndIf                ; compare if position > edge of screen
 
     call DequeueBeatSprite      ; delete sprites off the screen
+
 .EndIf:
     pop hl
 
     ld bc, META_SIZE
     add hl, bc                  ; hl++
+
+
+    ld a, h
+    cp HIGH(wSpriteQueueEnd)
+    jr nz, .While
+    ld a, l
+    cp LOW(wSpriteQueueEnd)
+    jr nz, .While               ; Check that we don't need to roll over to the start of the queue
+
+    ld hl, wSpriteQueue         ; If we do, roll over
+    
     jr .While
 .EndWhile:
     ret

@@ -422,7 +422,8 @@ MainLoop:
     call UnsetVBlankInterrupt
     call InitBackgroundScroll
 
-    ld bc, SUMMARY_SCENE
+    ld bc, FUTURE_SCENE
+    ;ld bc, SUMMARY_SCENE
     ret
 
 ENDSECTION

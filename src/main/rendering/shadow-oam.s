@@ -7,7 +7,7 @@ include "hardware.inc"
 SECTION "ShadowOAM", WRAM0 [$C000]
 
     ShadowOAM:: ds 160
-    ShadowOAMEnd:
+    ShadowOAMEnd::
 
 ENDSECTION
 
