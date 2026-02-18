@@ -295,7 +295,7 @@ SpawnBeatSprite::
     ld a, [wHeadPtr + 1]  
     ld l, a
 
-    ld bc, META_SIZE            ; increment OAM ptr by 6
+    ld bc, META_SIZE            ; increment queue ptr by 6
     add hl, bc
 
     ld a, h
@@ -311,7 +311,7 @@ SpawnBeatSprite::
     pop bc
     ld a, BEAT_SINGLE
     cp b
-    jr z, .IfBigSprite
+    jr z, .IfSmallSprite
 .IfBigSprite:
     ld bc, OBJ_SIZE * (SPR_HOLD_RELEASE_WIDTH * SPR_HOLD_RELEASE_HEIGHT)
     jr .EndIfSpr
@@ -342,8 +342,9 @@ SpawnBeatSprite::
     cp HIGH(ShadowOAMEnd)       ; check if at end of shadow OAM
     jr nz, .EndIfOAM
     ld a, [wOAMPtr + 1]
-    cp LOW(ShadowOAMEnd)
-    jr nz, .EndIfOAM
+    cp LOW(ShadowOAMEnd) - 4    ; 2 bytes, so check the OAM before too
+    jr c, .EndIfOAM
+    ld a, HIGH(ShadowOAM)       ; set shadow oam ptr to start of OAM
     ld a, HIGH(ShadowOAM)       ; set shadow oam ptr to start of OAM
     ld [wOAMPtr], a
     ld a, LOW(ShadowOAM)
