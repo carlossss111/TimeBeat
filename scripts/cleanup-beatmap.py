@@ -37,6 +37,10 @@ def main():
             # Ampersand
             rest_of_str = rest_of_str.replace("& ",f"\n{acc_num}\t")
 
+            # Left/Right
+            rest_of_str = rest_of_str.replace("L", "LEFT")
+            rest_of_str = rest_of_str.replace("R", "RIGHT")
+
             # Hold release
             rest_of_str = rest_of_str.replace("(hold)"," HOLD")
             rest_of_str = rest_of_str.replace("(release)"," RELEASE")
