@@ -49,6 +49,10 @@ SummarySceneEntrypoint::
     ld bc, BackgroundTilemapEnd - BackgroundTilemap
     call VRAMCopy20x18
 
+    ld hl, TILEMAP0
+    call InitScoreCard
+    call PrintScoreCard
+
 
     ;; LCD ;;
 
@@ -70,11 +74,6 @@ SummarySceneEntrypoint::
 
     ;;
     
-    ld hl, TILEMAP0
-    call InitScoreCard
-    call PrintScoreCard
-
-
     jp MainLoop
 
 ENDSECTION
@@ -91,9 +90,11 @@ MainLoop:
     call UpdateInput
     call GetNewKeys
 
+
     ; Loop
     halt
-    jp MainLoop
+    cp 0
+    jr z, MainLoop
 
 .EndLoop:
 

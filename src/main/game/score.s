@@ -120,6 +120,9 @@ PrintScoreCard::
     ld a, [wPerfectCount + 1]
     ld c, a
     call PrintScoreCardPerfect
+    
+    ld bc, hScore
+    call PrintScoreCardTotal
 
     ret
 
