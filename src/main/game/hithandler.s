@@ -284,6 +284,8 @@ HandleMiss::
 
     pop hl
     call NextHit                ; advance hit tracker
+
+    call AddMissScore           ; add miss count
     ret
 
 

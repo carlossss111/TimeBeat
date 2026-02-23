@@ -69,6 +69,10 @@ SummarySceneEntrypoint::
 
 
     ;;
+    
+    ld hl, TILEMAP0
+    call InitScoreCard
+    call PrintScoreCard
 
 
     jp MainLoop
