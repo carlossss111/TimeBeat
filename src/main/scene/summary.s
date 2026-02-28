@@ -64,19 +64,8 @@ SummarySceneEntrypoint::
 
    
     ;; Audio
-
-    di
-
-	xor a
-	ldh [hUGE_MutedChannels], a
-    xor a
-    ldh [hIsMusicReady], a
-    ld de, FutureMusic
-    call hUGE_SelectSong        ; start music
-    ld a, 1
-    ldh [hIsMusicReady], a
-
-    ei
+    
+    ; (Maintain the pervious music track but make it quieter)
 
     call Quiet
 

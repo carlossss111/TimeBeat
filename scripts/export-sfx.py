@@ -1,3 +1,12 @@
+#!/usr/bin/python
+
+# =====================================================================================
+# Exports a noise into assembly code
+#
+# Usage: python export-sfx.py
+# Author: Daniel R 2026
+# =====================================================================================
+
 from enum import Enum
 from typing import Optional
 

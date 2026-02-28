@@ -1,8 +1,11 @@
 #!/bin/bash
 
+# =====================================================================================
+# Exports images created in asesprites to bitmaps and DMG tilemaps
 #
-#  Exports images created in asesprites to bitmaps and DMG tilemaps
-#
+# Usage: ./export-image.sh <images/file_name.ase> [-t|--tilemap]
+# Author: Daniel R 2026
+# =====================================================================================
 
 set -e
 

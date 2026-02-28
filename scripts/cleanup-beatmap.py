@@ -1,3 +1,12 @@
+#!/usr/bin/python
+
+# =====================================================================================
+# Cleans up raw beatmap files my composer gives me so that they can be parsed.
+#
+# Usage: python <script> <read_path> <write_path> <tempo>
+# Author: Daniel R 2026
+# =====================================================================================
+
 import sys
 
 NUM_OF_BEATS_IN_ORDER = 64

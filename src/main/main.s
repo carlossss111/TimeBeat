@@ -47,7 +47,8 @@ EntryPoint:
     call initVBlankHandling     ; init interrupt handling vars for later
     call initStatHandling       ; init stat handling too
 
-    ld bc, FUTURE_SCENE         ; first scene to load on program startup
+    ld bc, PAST_SCENE
+    ;ld bc, FUTURE_SCENE         ; first scene to load on program startup
     jp Main                     ; jump to the main loop
 
 ENDSECTION
@@ -75,6 +76,8 @@ Main:
     call TitleEntrypoint        ; enter title loop. return new state as bc 
     jr .SwitchEnd
     call FutureSceneEntrypoint  ; enter game loop. return new state as bc 
+    jr .SwitchEnd
+    call PastSceneEntrypoint
     jr .SwitchEnd
     call SummarySceneEntrypoint ; scorecard
     jr .SwitchEnd

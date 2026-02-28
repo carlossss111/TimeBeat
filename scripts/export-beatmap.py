@@ -1,3 +1,12 @@
+#!/usr/bin/python
+
+# =====================================================================================
+# Parses .beat files into an array of 2 byte datastructures
+#
+# Usage: python export-beatmap.py <input_file.txt> <output_file.bin>
+# Author: Daniel R 2026
+# =====================================================================================
+
 import sys
 from typing import List
 
