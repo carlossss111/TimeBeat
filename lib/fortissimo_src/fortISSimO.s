@@ -130,7 +130,7 @@ ELSE
 	redef FORTISSIMO_LOG equs ",{FORTISSIMO_LOG},"
 ENDC
 MACRO fO_log ; <category:name>, <message:dbg_str> [, <condition:dbg_expr>]
-	IF STRIN("{FORTISSIMO_LOG}", ",\1,")
+	IF STRFIND("{FORTISSIMO_LOG}", ",\1,")
 		shift
 		dbg_log \#
 	ENDC
