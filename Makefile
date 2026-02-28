@@ -8,8 +8,8 @@ BIN_DIR=bin
 GEN_DIR=bin/generated
 BEAT_DIR=src/main/audio/beats
 
-LIB_SRC_DIR=lib/hUGEDriver_src
-LIB_INC_DIR=lib/hUGEDriver_inc
+LIB_SRC_DIR=lib/fortissimo_src
+LIB_INC_DIR=lib/fortissimo_inc
 
 EXE=beatmap.gb
 MAP=beatmap.map

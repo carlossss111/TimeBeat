@@ -1,658 +1,116 @@
-include "hUGE.inc"
+; Generated from /home/daniel/Repos/timebeat/rsc/music/menu.uge on 2026-02-28 10:50:34 UTC
+; Song: 
+; Artist: 
+; Comment: 
+; Expected playback method: VBlank
 
-SECTION "MenuMusic Song Data", ROMX
+REDEF fortISSimO_VERSION equs /* Generated with teNOR version: */ "1.0.5"
+INCLUDE "fortISSimO.inc"
 
-MenuMusic::
-db 5
-dw order_cnt
-dw order1, order2, order3, order4
-dw duty_instruments, wave_instruments, noise_instruments
-dw routines
-dw waves
+SECTION "MenuMusicTrack", ROM0
 
-order_cnt: db 8
-order1: dw P0,P4,P4,P4
-order2: dw P1,P1,P1,P1
-order3: dw P0,P0,P10,P14
-order4: dw P3,P3,P3,P3
+menu::
+	db 5 ; Tempo (ticks/row)
+	db (4 - 1) * 2 ; Max index into order "columns"
+	dw .dutyInstrs, .waveInstrs, .noiseInstrs
+	dw .routine
+	dw .waves
+	db HIGH(.mainCellCatalog), HIGH(.subpatCellCatalog)
 
-P0:
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
-
-P1:
- dn A#5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn A#5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn C_5,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn F_5,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn A#5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn G_5,9,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_4,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#4,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn D#5,9,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
-
-P3:
- dn G_6,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_6,1,$000
- dn ___,0,$000
- dn G_6,1,$C08
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_6,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_6,1,$C08
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn G_6,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_6,1,$000
- dn ___,0,$000
- dn G_6,1,$C08
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_6,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_6,1,$C08
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$000
- dn A_7,2,$000
- dn ___,0,$E00
-
-P4:
- dn A#4,8,$000
- dn ___,0,$000
- dn G_4,8,$000
- dn ___,0,$000
- dn D#5,8,$000
- dn ___,0,$000
- dn C_5,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#4,8,$000
- dn ___,0,$000
- dn G_4,8,$000
- dn ___,0,$000
- dn D#5,8,$000
- dn ___,0,$000
- dn C_5,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn F_4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_3,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#3,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn D#4,8,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
-
-P10:
- dn A#4,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn C_3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn C_3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn C_3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$11A
- dn F_3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn A#4,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn D#3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
-
-P14:
- dn A#4,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn C_3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn C_3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn C_3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$11A
- dn F_3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn A#4,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn A#3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_3,1,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn G_3,1,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn ___,0,$000
- dn A#3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
- dn D#3,1,$000
- dn ___,0,$000
- dn ___,0,$E00
- dn ___,0,$000
-
-itNoiseSP1:
- dn ___,0,$000
- dn 22,2,$000
- dn 5,0,$000
- dn 5,0,$000
- dn 5,0,$000
- dn 5,0,$000
- dn 5,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,1,$000
-
-itNoiseSP2:
- dn ___,0,$000
- dn 26,2,$000
- dn 44,0,$000
- dn 44,0,$000
- dn 44,0,$000
- dn 44,0,$000
- dn 44,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,0,$000
- dn ___,1,$000
-
-duty_instruments:
-itSquareinst1:
-db 8
-db 0
-db 240
-dw 0
-db 128
-
-itSquareinst2:
-db 8
-db 64
-db 240
-dw 0
-db 128
-
-itSquareinst3:
-db 8
-db 128
-db 240
-dw 0
-db 128
-
-itSquareinst4:
-db 8
-db 192
-db 240
-dw 0
-db 128
-
-itSquareinst5:
-db 8
-db 0
-db 241
-dw 0
-db 128
-
-itSquareinst6:
-db 8
-db 64
-db 241
-dw 0
-db 128
-
-itSquareinst7:
-db 8
-db 128
-db 241
-dw 0
-db 128
-
-itSquareinst8:
-db 8
-db 192
-db 241
-dw 0
-db 128
-
-itSquareinst9:
-db 44
-db 140
-db 243
-dw 0
-db 192
+.ch1  dw .dutyPtrn0 , .dutyPtrn4 , .dutyPtrn8 , .dutyPtrn12,
+.ch2  dw .dutyPtrn1 , .dutyPtrn5 , .dutyPtrn9 , .dutyPtrn13,
+.ch3  dw .wavePtrn2 , .wavePtrn6 , .wavePtrn10, .wavePtrn14,
+.ch4  dw .noisePtrn3 , .noisePtrn7 , .noisePtrn11, .noisePtrn15,
 
 
+.dutyPtrn1
+.dutyPtrn5
+.dutyPtrn13
+.dutyPtrn9
+	db   5, 21, 14, 21,  5, 21, 14, 21, 14, 21,  4, 21, 14, 21,  4, 21,  4, 21, 21, 21,  7, 21, 21, 21,  4, 21, 21, 21, 25, 21, 21, 21,  5, 21, 14, 21,  5, 21, 14, 21, 14, 21,  4, 21, 14, 21,  4, 21,  4, 21, 21, 21, 24, 21, 21, 21, 19, 21, 21, 21,  4
+.dutyPtrn0
+.wavePtrn2
+.wavePtrn6
+	db  21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21
+.noisePtrn15
+.noisePtrn11
+.noisePtrn7
+.noisePtrn3
+	db   1, 21, 21, 21, 15, 21, 21, 21,  1, 21, 22, 21, 15, 21, 21, 21,  1, 21, 21, 21, 15, 21, 21, 21, 21, 21, 22, 21, 15, 21, 15, 21,  1, 21, 21, 21, 15, 21, 21, 21,  1, 21, 22, 21, 15, 21, 21, 21,  1, 21, 21, 21, 15, 21, 21, 21, 21, 21, 22, 21, 15, 21, 15, 10
+.dutyPtrn8
+.dutyPtrn4
+.dutyPtrn12
+	db  16, 21,  2, 21, 17, 21, 11, 21, 21, 21, 16, 21, 21, 21, 16, 21, 21, 21, 21, 21, 16, 21, 21, 21, 16, 21, 21, 21, 16, 21, 21, 21, 16, 21,  2, 21, 17, 21, 11, 21, 21, 21, 20, 21, 21, 21,  2, 21, 21, 21, 21, 21,  8, 21, 21, 21,  6, 21, 21, 21, 23, 21, 21, 21
+.wavePtrn14
+	db  19, 21, 21, 21, 21, 21, 21, 21, 13, 21, 21, 21, 21, 21, 21, 21,  9, 21, 10, 21,  9, 21, 10, 21,  9, 21, 21, 18, 12, 21, 10, 21, 19, 21, 21, 21, 21, 21, 21, 21, 13, 21, 21, 21, 21, 21, 21, 21,  0, 21, 21, 21,  0, 10, 21, 21, 13, 21, 10, 21,  3, 21, 10, 21
+.wavePtrn10
+	db  19, 21, 21, 21, 21, 21, 21, 21, 13, 21, 21, 21, 21, 21, 21, 21,  9, 21, 10, 21,  9, 21, 10, 21,  9, 21, 21, 18, 12, 21, 10, 21, 19, 21, 21, 21, 21, 21, 21, 21, 13, 21, 21, 21, 21, 21, 21, 21,  0, 21, 21, 21, 21, 21, 21, 21, 13, 21, 10, 21,  3, 21, 10, 21
 
-wave_instruments:
-itWaveinst1:
-db 0
-db 64
-db 1
-dw 0
-db 128
+	ds align[8]
+.mainCellCatalog
+	db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$1a,$00,$00,$00,$80,$00,$00,$00,
+	ds align[8]
+	db $10,$10,$20,$10,$10,$10,$20,$10,$20,$10,$0e,$20,$10,$10,$10,$20,$20,$20,$01,$10,$20,$00,$1c,$20,$10,$10,
+	ds align[8]
+	db $07,$2b,$13,$03,$1b,$22,$0a,$18,$07,$00,$5a,$18,$05,$0a,$1f,$39,$16,$1b,$5a,$16,$11,$5a,$2b,$0f,$13,$1d,
 
+.noiseInst2Subpattern
+	db   2,  1
+.noiseInst1Subpattern
+	db   2,  0
 
+	ds align[8]
+.subpatCellCatalog
+	db $00,$00,$00,
+	ds align[8]
+	db $10,$10,$10,
+	ds align[8]
+	db $2c,$34,$b4,
 
-noise_instruments:
-itNoiseinst1:
-db 177
-dw itNoiseSP1
-db 112
-ds 2
+assert LAST_NOTE == 72, "LAST_NOTE == {LAST_NOTE}"
+assert PATTERN_LENGTH == 64, "PATTERN_LENGTH == {PATTERN_LENGTH}"
 
-itNoiseinst2:
-db 99
-dw itNoiseSP2
-db 0
-ds 2
+.dutyInstrs
+:; Duty instrument 9: Arp
+	db 2 << 4 | 1 << 3 | 4 ; Sweep (NR10)
+	db %10 << 6 | 12 ; Duty & length (NRx1)
+	db 15 << 4 | 0 << 3 | 3 ; Volume & envelope (NRx2)
+	dw 0 ; Subpattern pointer
+	db $80 | 1 << 6 ; Retrigger bit, and length enable (NRx4)
+assert DUTY_INSTR_SIZE == 6 && @ - :- == 6
+:; Duty instrument 8: Duty 75% plink
+	db 0 << 4 | 1 << 3 | 0 ; Sweep (NR10)
+	db %11 << 6 | 0 ; Duty & length (NRx1)
+	db 15 << 4 | 0 << 3 | 1 ; Volume & envelope (NRx2)
+	dw 0 ; Subpattern pointer
+	db $80 | 0 << 6 ; Retrigger bit, and length enable (NRx4)
+assert DUTY_INSTR_SIZE == 6 && @ - :- == 6
 
+.waveInstrs
+:; Wave instrument 1: Bass
+	db 0 ; Length (NR31)
+	db %10 << 5 ; Output level (NR32)
+	dw 0 ; Subpattern pointer
+	db $80 | 0 << 6 ; Retrigger bit, and length enable (NRx4)
+	db 0 << 4 ; Wave ID
+assert WAVE_INSTR_SIZE == 6 && @ - :- == 6
 
+.noiseInstrs
+:; Noise instrument 1: Kick
+	db 11 << 4 | 0 << 3 | 1 ; Volume & envelope (NR42)
+	dw .noiseInst1Subpattern ; Subpattern pointer
+	db 0 << 7 | 1 << 6 | 48 ; LFSR width (NR43), length enable (NR44), and length (NR41)
+assert NOISE_INSTR_SIZE == 4 && @ - :- == 4
+:; Noise instrument 2: Snare
+	db 6 << 4 | 0 << 3 | 3 ; Volume & envelope (NR42)
+	dw .noiseInst2Subpattern ; Subpattern pointer
+	db 0 << 7 | 0 << 6 | 0 ; LFSR width (NR43), length enable (NR44), and length (NR41)
+assert NOISE_INSTR_SIZE == 4 && @ - :- == 4
 
-routines:
-__hUGE_Routine_0:
+.waves
+	db $00,$00,$00,$00,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff, ; Originally #1
 
-__end_hUGE_Routine_0:
-ret
+.routine
 
-__hUGE_Routine_1:
-
-__end_hUGE_Routine_1:
-ret
-
-__hUGE_Routine_2:
-
-__end_hUGE_Routine_2:
-ret
-
-__hUGE_Routine_3:
-
-__end_hUGE_Routine_3:
-ret
-
-__hUGE_Routine_4:
-
-__end_hUGE_Routine_4:
-ret
-
-__hUGE_Routine_5:
-
-__end_hUGE_Routine_5:
-ret
-
-__hUGE_Routine_6:
-
-__end_hUGE_Routine_6:
-ret
-
-__hUGE_Routine_7:
-
-__end_hUGE_Routine_7:
-ret
-
-__hUGE_Routine_8:
-
-__end_hUGE_Routine_8:
-ret
-
-__hUGE_Routine_9:
-
-__end_hUGE_Routine_9:
-ret
-
-__hUGE_Routine_10:
-
-__end_hUGE_Routine_10:
-ret
-
-__hUGE_Routine_11:
-
-__end_hUGE_Routine_11:
-ret
-
-__hUGE_Routine_12:
-
-__end_hUGE_Routine_12:
-ret
-
-__hUGE_Routine_13:
-
-__end_hUGE_Routine_13:
-ret
-
-__hUGE_Routine_14:
-
-__end_hUGE_Routine_14:
-ret
-
-__hUGE_Routine_15:
-
-__end_hUGE_Routine_15:
-ret
-
-waves:
-wave0: db 0,0,255,255,255,255,255,255,255,255,255,255,255,255,255,255
-wave1: db 0,0,0,0,255,255,255,255,255,255,255,255,255,255,255,255
+ENDSECTION
 

@@ -153,9 +153,18 @@ FutureSceneEntrypoint::
     ;; Audio
 
     di
-    ld hl, FutureMusic
-    call hUGE_init              ; set music track
+
+	xor a
+	ldh [hUGE_MutedChannels], a
+    xor a
+    ldh [hIsMusicReady], a
+    ld de, FutureMusic
+    call hUGE_SelectSong        ; start music
+    ld a, 1
+    ldh [hIsMusicReady], a
+
     ei
+
     ld b, 3
     call SlideUpVolume
 
@@ -436,7 +445,10 @@ SECTION "FutureSceneRenderer", ROM0
 
 ; Render animations into VRAM using the render-queue
 RenderLoop:
-    call hUGE_dosound           ; play music
+    ldh a, [hIsMusicReady]
+    and a
+    call nz, hUGE_TickSound     ; play music
+
     call RenderToOAM            ; render sprites
 
     ei                          ; allow stat register

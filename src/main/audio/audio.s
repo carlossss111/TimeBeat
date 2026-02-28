@@ -4,6 +4,10 @@ include "hardware.inc"
 * AUDIO FUNCTIONS
 * Simple multi-purpose audio functions
 ********************************************************/
+SECTION "AudioVars", HRAM
+
+    hIsMusicReady:: db
+
 SECTION "AudioFunctions", ROM0
 
 ; Fade the volume out until its muted

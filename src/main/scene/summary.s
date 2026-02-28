@@ -66,9 +66,18 @@ SummarySceneEntrypoint::
     ;; Audio
 
     di
-    ld hl, FutureMusic
-    call hUGE_init              ; set music track
+
+	xor a
+	ldh [hUGE_MutedChannels], a
+    xor a
+    ldh [hIsMusicReady], a
+    ld de, FutureMusic
+    call hUGE_SelectSong        ; start music
+    ld a, 1
+    ldh [hIsMusicReady], a
+
     ei
+
     call Quiet
 
 
@@ -112,7 +121,9 @@ SECTION "SummarySceneRenderer", ROM0
 
 ; Vram
 RenderLoop:
-    call hUGE_dosound           ; play music
+    ldh a, [hIsMusicReady]
+    and a
+    call nz, hUGE_TickSound     ; play music
     reti
 
 ENDSECTION

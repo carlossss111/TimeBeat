@@ -24,7 +24,7 @@ ROM0
     "StatHandler"
 
     ; Drivers
-    ORG $786B
+    ORG $794A
     "Sound Driver"
 
 
@@ -35,10 +35,10 @@ WRAM0
     "BeatQueueVars"
 
     ; Driver variables
-    ORG $CFfC
-    "Playback variables"
+    ORG $D017
+    "Music driver RAM"
 
-    ; 4000kb Stack (way more than needed)
+    ; 4kb Stack (way more than needed)
     ORG $D060
     "Stack"
 
