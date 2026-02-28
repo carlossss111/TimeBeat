@@ -9,7 +9,7 @@ INCLUDE "fortISSimO.inc"
 
 SECTION "MenuMusicTrack", ROM0
 
-menu::
+MenuMusic::
 	db 5 ; Tempo (ticks/row)
 	db (4 - 1) * 2 ; Max index into order "columns"
 	dw .dutyInstrs, .waveInstrs, .noiseInstrs

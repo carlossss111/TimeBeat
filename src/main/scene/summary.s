@@ -96,7 +96,7 @@ MainLoop:
 
 .EndLoop:
 
-    ld bc, FUTURE_SCENE
+    ld bc, MENU_SCENE
     ret
 
 ENDSECTION

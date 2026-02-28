@@ -145,10 +145,13 @@ EndSequence::
 
     call PrintFinish
 
+    push hl
     ld b, FINISH_FRAMES
     call WaitForFrames
     call WaitForFrames
+    pop hl
 
+    call DeleteMSprite
     ret
     
     
