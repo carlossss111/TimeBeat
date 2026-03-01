@@ -28,9 +28,9 @@ SECTION "FrameCounter", HRAM
 
     hFrameCounter:: db          ; updated every VBlank (60fps)
 
-SECTION "VBlankHandlerVars", WRAM0
+SECTION "VBlankHandlerVars", HRAM
 
-    wVBlankHandlerPtr: dw       ; function pointer to handler
+    hVBlankHandlerPtr: dw       ; function pointer to handler
     
 SECTION "VBlankHandler", ROM0
 
@@ -39,14 +39,50 @@ HandlerSelector:
     ld hl, hFrameCounter
     inc [hl]                    ; update frame counter
 
-    ld a, [wVBlankHandlerPtr]
+    ldh a, [hScratchA]
+    ld h, a
+    ldh a, [hScratchA + 1]
     ld l, a
-    ld a, [wVBlankHandlerPtr + 1]
+    push hl
+
+    ldh a, [hScratchB]
+    ld h, a
+    ldh a, [hScratchB + 1]
+    ld l, a
+    push hl
+
+    ldh a, [hScratchC]
+    ld h, a
+    ldh a, [hScratchC + 1]
+    ld l, a
+    push hl
+
+    ldh a, [hVBlankHandlerPtr]
+    ld l, a
+    ldh a, [hVBlankHandlerPtr + 1]
     ld h, a
     ld bc, .ret
     push bc
     jp hl                       ; call handler function pointer
 .ret
+    pop hl
+    ld a, h
+    ldh [hScratchC], a
+    ld a, l
+    ldh [hScratchC + 1], a
+
+    pop hl
+    ld a, h
+    ldh [hScratchB], a
+    ld a, l
+    ldh [hScratchB + 1], a
+
+    pop hl
+    ld a, h
+    ldh [hScratchA], a
+    ld a, l
+    ldh [hScratchA + 1], a
+
     pop hl                      ; restore all register states
     pop de
     pop bc
@@ -61,11 +97,11 @@ DefaultHandler:
 
 ; Should be called at startup to initialise member variables
 ; @uses hl
-initVBlankHandling::
+InitVBlankHandling::
     ld a, LOW(DefaultHandler)
-    ld [wVBlankHandlerPtr], a
+    ldh [hVBlankHandlerPtr], a
     ld a, HIGH(DefaultHandler)
-    ld [wVBlankHandlerPtr + 1], a   ; load the default handler
+    ldh [hVBlankHandlerPtr + 1], a   ; load the default handler
 
     ld a, 0
     ld [hFrameCounter], a           ; init frame counter
@@ -85,9 +121,9 @@ SECTION "VBlankSetters", ROM0
 SetVBlankHandler::
     di
     ld a, l
-    ld [wVBlankHandlerPtr], a
+    ldh [hVBlankHandlerPtr], a
     ld a, h
-    ld [wVBlankHandlerPtr + 1], a
+    ldh [hVBlankHandlerPtr + 1], a
     xor a
     ld [rIF], a                 ; clear pending VBlank interrupt requests (may be outdated)
     reti
@@ -109,7 +145,7 @@ SetVBlankInterruptOnly::
 ; Disable the VBlank bit on the interrupt register
 UnsetVBlankInterrupt::
     ld a, [rIE]
-    and a, !IE_VBLANK           ; unsets the VBlank bit
+    and a, ~IE_VBLANK           ; unsets the VBlank bit
     ldh [rIE], a                ; disables the VBlank interrupt flag
     ret
 

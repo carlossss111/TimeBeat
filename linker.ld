@@ -17,7 +17,7 @@ ROM0
     "Init"
 
     ; Main Functions
-    ORG $174
+    ORG $177
     "MainLoop"
     "StandardLibrary"
     "VBlankHandler"
@@ -47,7 +47,7 @@ HRAM
     ORG $FF80
     "RenderToOAM"
     "OAMRenderer"
-    "Scratch"
+    "ScratchVars"
     "Tick"
 
     ORG $FFFE

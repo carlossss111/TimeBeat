@@ -29,8 +29,8 @@ Memcpy::
 ; @param de: source address
 ; @param hl: destination address
 VRAMCopy::
-    ldh a, [rSTAT]
     di
+    ldh a, [rSTAT]
     bit 1, a
     jr nz, VRAMCopy             ; not mode 0 or 1
 
@@ -55,8 +55,8 @@ VRAMCopy20x18::
     push af                     ; a = tile width
 
 .Blank:
-    ldh a, [rSTAT]
     di
+    ldh a, [rSTAT]
     bit 1, a
     jr nz, .Blank               ; not mode 0 or 1
 
@@ -95,8 +95,8 @@ VRAMCopy20x18::
 VRAMCopyFast::
     ld c, rSTAT & $FF
 .Loop:
-    ldh a, [$FF00+c]
     di
+    ldh a, [$FF00+c]
     bit 1, a
     jr nz, .Loop                ; not mode 0 or 1
 

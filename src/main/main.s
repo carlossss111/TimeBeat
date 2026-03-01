@@ -43,10 +43,11 @@ EntryPoint:
 
     call InitDMA                ; loads DMA transfer code into HRAM
     call InitInput              ; initialise input vars
+    call InitScratchMemory      ; initialise scratch variables
 
     di                          ; disable interrupts for the main loop
-    call initVBlankHandling     ; init interrupt handling vars for later
-    call initStatHandling       ; init stat handling too
+    call InitVBlankHandling     ; init interrupt handling vars for later
+    call InitStatHandling       ; init stat handling too
 
     ld bc, MENU_SCENE         ; first scene to load on program startup
     jp Main                     ; jump to the main loop

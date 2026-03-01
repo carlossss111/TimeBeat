@@ -25,22 +25,58 @@ ENDSECTION
 * Calls a function pointer on every STAT interrupt
 * Retains register states
 ********************************************************/
-SECTION "StatHandlerVars", WRAM0
+SECTION "StatHandlerVars", HRAM
 
-    wStatHandlerPtr: dw       ; function pointer to handler
+    hStatHandlerPtr: dw       ; function pointer to handler
     
 SECTION "StatHandler", ROM0
 
 ; Call the Handler function pointer
 HandlerSelector:
-    ld a, [wStatHandlerPtr]
+    ldh a, [hScratchA]
+    ld h, a
+    ldh a, [hScratchA + 1]
     ld l, a
-    ld a, [wStatHandlerPtr + 1]
+    push hl
+
+    ldh a, [hScratchB]
+    ld h, a
+    ldh a, [hScratchB + 1]
+    ld l, a
+    push hl
+
+    ldh a, [hScratchC]
+    ld h, a
+    ldh a, [hScratchC + 1]
+    ld l, a
+    push hl
+   
+    ldh a, [hStatHandlerPtr]
+    ld l, a
+    ldh a, [hStatHandlerPtr + 1]
     ld h, a
     ld bc, .ret
     push bc
     jp hl                       ; call handler function pointer
 .ret
+    pop hl
+    ld a, h
+    ldh [hScratchC], a
+    ld a, l
+    ldh [hScratchC + 1], a
+
+    pop hl
+    ld a, h
+    ldh [hScratchB], a
+    ld a, l
+    ldh [hScratchB + 1], a
+
+    pop hl
+    ld a, h
+    ldh [hScratchA], a
+    ld a, l
+    ldh [hScratchA + 1], a
+
     pop hl                      ; restore all register states
     pop de
     pop bc
@@ -54,11 +90,11 @@ DefaultHandler:
 
 ; Should be called at startup to initialise member variables
 ; @uses hl
-initStatHandling::
+InitStatHandling::
     ld a, LOW(DefaultHandler)
-    ld [wStatHandlerPtr], a
+    ldh [hStatHandlerPtr], a
     ld a, HIGH(DefaultHandler)
-    ld [wStatHandlerPtr + 1], a ; load the default handler
+    ldh [hStatHandlerPtr + 1], a ; load the default handler
 
     xor a
     ld [rSTAT], a               ; clear STAT register
@@ -78,9 +114,9 @@ SECTION "StatSetters", ROM0
 SetStatHandler::
     di
     ld a, l
-    ld [wStatHandlerPtr], a
+    ldh [hStatHandlerPtr], a
     ld a, h
-    ld [wStatHandlerPtr + 1], a
+    ldh [hStatHandlerPtr + 1], a
     xor a
     ld [rIF], a                 ; clear pending interrupt requests (may be outdated)
     reti
