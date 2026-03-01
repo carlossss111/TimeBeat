@@ -42,6 +42,7 @@ EntryPoint:
     ld [rAUDVOL], a             ; NR50 set master volume
 
     call InitDMA                ; loads DMA transfer code into HRAM
+    call InitInput              ; initialise input vars
 
     di                          ; disable interrupts for the main loop
     call initVBlankHandling     ; init interrupt handling vars for later

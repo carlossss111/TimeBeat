@@ -127,8 +127,8 @@ Memset::
 ; @param d: value to be filled
 ; @param hl: desination address
 VRAMMemset::
-    ldh a, [rSTAT]
     di                          ; disable interrupts, else the PPU might lock!
+    ldh a, [rSTAT]
     bit 1, a
     jr nz, VRAMMemset           ; not mode 0 or 1
 

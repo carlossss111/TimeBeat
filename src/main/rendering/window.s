@@ -48,6 +48,9 @@ InitWindow::
     ld a, WINDOW_Y_OFFSET       ; good for the vibes
     ld [rWY], a
 
+    ld a, TIME_TO_SHOW_STRING
+    ld [wTextFade], a
+
     call MiddleScreen
     ret
 
