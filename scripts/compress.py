@@ -15,9 +15,6 @@ import sys
 MAX_REPEAT_SIZE = 0x7F
 SINGLES_FLAG = 0x80
 
-def preprend_length(compressed_bytes: bytes) -> bytes:
-    return len(compressed_bytes).to_bytes(2) + compressed_bytes
-
 def second_pass(runlength_bytes: bytes, word_length: int) -> bytes:
     singles_size: int = 0
     out_subs: bytes = b""
@@ -49,7 +46,7 @@ def second_pass(runlength_bytes: bytes, word_length: int) -> bytes:
             out_subs += pair["word"]
             singles_size += 1
 
-    if singles_size > 0: out_stream += singles_size.to_bytes() + out_subs
+    if singles_size > 0: out_stream += (singles_size | SINGLES_FLAG).to_bytes() + out_subs
 
     return out_stream
 
@@ -61,9 +58,6 @@ def compress(fp: BufferedReader, word_length: int) -> bytes:
     fp.seek(0)
 
     while(byte_in := fp.read(word_length)):
-
-        if byte_in == b"\n" or byte_in == b"\r":
-            continue
 
         if byte_in == last_byte and repeat_size != MAX_REPEAT_SIZE:
             repeat_size += 1
@@ -89,8 +83,6 @@ def main():
         compressed_bytes: bytes = compress(rfp, word_length)
 
     compressed_bytes = second_pass(compressed_bytes, word_length)
-
-    compressed_bytes = preprend_length(compressed_bytes)
 
     with open(output_path, "wb") as wfp:
         wfp.write(compressed_bytes)

@@ -18,16 +18,9 @@ SECTION "Compression", ROM0
 
 ; Copy a compressed buffer from one location to another and decompress
 ; @param de: source address
+; @param bc: source address end
 ; @param hl: destination address
 RlCopy::
-    ld a, [de]
-    ld b, a
-    inc de
-    ld a, [de]
-    ld c, a
-    inc de                      ; bc = uncompressed length
-
-.Loop:
     ld a, [de]                  ; a = indicator byte
     push af
     and SINGLES_BIT
@@ -54,14 +47,12 @@ RlCopy::
 
     inc de                      ; de = ptr to next pair
 
-    dec bc
-    dec bc                      ; bc -= 2 bytes
     ld a, b
-    cp 0
-    jr nz, .Loop
+    cp d
+    jr nz, RlCopy
     ld a, c
-    cp 0
-    jr nz, .Loop
+    cp e
+    jr nz, RlCopy
     jr .EndIf
 
 .Else:
@@ -82,24 +73,12 @@ RlCopy::
 
     pop bc
 
-    push de
-    ldh a, [hScratchA]          ; e = memory decremented by
-    ld e, a
-    ld a, c
-    sub e
-    ld c, a
     ld a, b
-    sbc 0
-    ld b, a 
-    dec bc                      ; bc -= n bytes
-    pop de
-
-    ld a, b
-    cp 0
-    jr nz, .Loop
+    cp d
+    jr nz, RlCopy
     ld a, c
-    cp 0
-    jr nz, .Loop
+    cp e
+    jr nz, RlCopy
     ;jr .Endif
 
 .EndIf:

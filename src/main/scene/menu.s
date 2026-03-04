@@ -18,7 +18,7 @@ DEF ARROW_Y_2 EQU $60
 ********************************************************/
 SECTION "MenuTileData", ROM0
 
-    BackgroundData: INCBIN "menu.2bpp"
+    BackgroundData: INCBIN "menu.2bpp.rl"
     BackgroundDataEnd:
 
 SECTION "MenuTileMap", ROM0
@@ -91,9 +91,9 @@ MenuSceneEntrypoint::
     ;; Background ;;
 
     ld de, BackgroundData
+    ld bc, BackgroundDataEnd
     ld hl, $9000
-    ld bc, BackgroundDataEnd - BackgroundData
-    call VRAMCopy
+    call RlCopy
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0
