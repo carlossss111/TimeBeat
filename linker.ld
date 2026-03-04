@@ -19,7 +19,7 @@ ROM0
     ; Main Functions
     ORG $177
     "MainLoop"
-    "StandardLibrary"
+    "MemoryFunctions"
     "VBlankHandler"
     "StatHandler"
 

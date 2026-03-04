@@ -87,10 +87,8 @@ def main():
 
     with open(input_path, "rb") as rfp:
         compressed_bytes: bytes = compress(rfp, word_length)
-        print(len(compressed_bytes))
 
     compressed_bytes = second_pass(compressed_bytes, word_length)
-    print(compressed_bytes)
 
     compressed_bytes = preprend_length(compressed_bytes)
 

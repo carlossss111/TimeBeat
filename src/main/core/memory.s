@@ -5,10 +5,10 @@ def SCREEN_TILE_WIDTH equ 20
 def SCREEN_TILE_HEIGHT equ 18
 
 /*******************************************************
-* STDLIB
+* MEMORY TRANSFER
 * While there is no 'stdlib', here are general util funcs
 ********************************************************/
-SECTION "StandardLibrary", ROM0
+SECTION "MemoryFunctions", ROM0
 
 ; Copy a buffer from one location to another
 ; @param bc: length of the buffer
@@ -141,21 +141,6 @@ VRAMMemset::
     jp nz, VRAMMemset           ; loop if remaining length != 0
 
     ret
-
-
-; Halt for n frames before returning
-; @param b: number of frames to halt for
-WaitForFrames::
-    xor a
-.While:
-    cp b
-    jp z, .EndWhile
-    halt                        ; wait for next frame
-    inc a
-    jp .While
-.EndWhile:
-    ret
-
 
 ENDSECTION
 
