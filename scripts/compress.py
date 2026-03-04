@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 # =====================================================================================
-# Compresses the bytes in a file with simple run-length compression
+# Compresses the bytes in a file with custom run-length compression
+# E.g. 'AAABBCDEAAAAA' ==> '[3]A [2]B [0x80|3]CDE [5]A
 #
 # Usage: python ./compress.py <input_file.bin> <output_file.bin> [word length]
 # Author: Daniel R 2026
@@ -11,7 +12,46 @@ from io import BufferedReader
 import os
 import sys
 
-MAX_REPEAT_SIZE = 0xFF
+MAX_REPEAT_SIZE = 0x7F
+SINGLES_FLAG = 0x80
+
+def preprend_length(compressed_bytes: bytes) -> bytes:
+    return len(compressed_bytes).to_bytes(2) + compressed_bytes
+
+def second_pass(runlength_bytes: bytes, word_length: int) -> bytes:
+    singles_size: int = 0
+    out_subs: bytes = b""
+    out_stream: bytes = b""
+
+    if len(runlength_bytes) % (word_length + 1) != 0:
+        print("Error: the second pass did not have a valid run-length input")
+        sys.exit(1)
+
+    for pair_raw in (runlength_bytes[pos:pos + word_length+1] for pos in range(0, len(runlength_bytes), word_length+1)):
+        pair = { "num": pair_raw[0], "word": pair_raw[1:word_length+1] }
+
+        # Max size
+        if singles_size > MAX_REPEAT_SIZE:
+            out_stream += singles_size.to_bytes() + out_subs
+            out_subs = b""
+            singles_size = 0
+
+        # Normal Pair
+        if pair["num"] > 1:
+            if singles_size > 0: out_stream += (singles_size | SINGLES_FLAG).to_bytes() + out_subs
+            
+            out_subs = b""
+            out_stream += pair_raw
+            singles_size = 0
+
+        # Singles
+        else:
+            out_subs += pair["word"]
+            singles_size += 1
+
+    if singles_size > 0: out_stream += singles_size.to_bytes() + out_subs
+
+    return out_stream
 
 def compress(fp: BufferedReader, word_length: int) -> bytes:
     out_stream: bytes = b""
@@ -47,6 +87,12 @@ def main():
 
     with open(input_path, "rb") as rfp:
         compressed_bytes: bytes = compress(rfp, word_length)
+        print(len(compressed_bytes))
+
+    compressed_bytes = second_pass(compressed_bytes, word_length)
+    print(compressed_bytes)
+
+    compressed_bytes = preprend_length(compressed_bytes)
 
     with open(output_path, "wb") as wfp:
         wfp.write(compressed_bytes)
