@@ -8,7 +8,7 @@ include "macros.inc"
 ********************************************************/
 SECTION "SummaryTileData", ROM0
 
-    BackgroundData: INCBIN "summary.2bpp"
+    BackgroundData: INCBIN "summary.2bpp.rl"
     BackgroundDataEnd:
 
 SECTION "SummaryTileMap", ROM0
@@ -41,8 +41,8 @@ SummarySceneEntrypoint::
 
     ld de, BackgroundData
     ld hl, $9000
-    ld bc, BackgroundDataEnd - BackgroundData
-    call VRAMCopy
+    ld bc, BackgroundDataEnd
+    call RlCopy
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0

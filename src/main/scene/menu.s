@@ -30,7 +30,7 @@ SECTION "MenuTileMap", ROM0
 
 SECTION "MenuSpritesheet", ROM0
 
-    ArrowData: INCBIN "menu_arrow.2bpp"
+    ArrowData: INCBIN "menu_arrow.2bpp.rl"
     ArrowDataEnd:
 
     ArrowSpritesheet: db $0, $1
@@ -68,8 +68,8 @@ MenuSceneEntrypoint::
 
     ld de, ArrowData
     ld hl, $8000
-    ld bc, ArrowDataEnd - ArrowData 
-    call VRAMCopy               ; load spritesheet
+    ld bc, ArrowDataEnd
+    call RlCopy                 ; load spritesheet
 
     ld hl, ArrowStruct
     ld bc, ShadowOAM

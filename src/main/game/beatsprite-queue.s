@@ -29,7 +29,7 @@ DEF SPR_HOLD_RELEASE_HEIGHT EQU 2
 *******************************************************/
 SECTION "BeatSprites", ROM0
 
-    SpriteSheet: INCBIN "game_sprites_combined.2bpp"
+    SpriteSheet: INCBIN "game_sprites_combined.2bpp.rl"
     SpriteSheetEnd:
 
 SECTION "BeatSpriteMaps", ROM0
@@ -78,11 +78,11 @@ ENDSECTION
 SECTION "BeatQueue", ROM0
 
 ; Copy the sprite data into VRAM
-; @param hl: VRAM locatio2
+; @param hl: VRAM location
 InitGameSpriteVRAM::
     ld de, SpriteSheet
-    ld bc, SpriteSheetEnd - SpriteSheet
-    call VRAMCopy
+    ld bc, SpriteSheetEnd
+    call RlCopy
     ret
 
 

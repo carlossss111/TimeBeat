@@ -9,7 +9,7 @@ include "beattracker.inc"
 ********************************************************/
 SECTION "PastTileData", ROM0
 
-    BackgroundData: INCBIN "future_tiles_combined.2bpp" ; shoutout to cat
+    BackgroundData: INCBIN "future_tiles_combined.2bpp.rl" 
     BackgroundDataEnd:
 
 SECTION "PastTileMap", ROM0
@@ -101,8 +101,8 @@ PastSceneEntrypoint::
 
     ld de, BackgroundData
     ld hl, $9000
-    ld bc, BackgroundDataEnd - BackgroundData
-    call VRAMCopy
+    ld bc, BackgroundDataEnd
+    call RlCopy
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0

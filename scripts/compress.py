@@ -28,8 +28,8 @@ def second_pass(runlength_bytes: bytes, word_length: int) -> bytes:
         pair = { "num": pair_raw[0], "word": pair_raw[1:word_length+1] }
 
         # Max size
-        if singles_size > MAX_REPEAT_SIZE:
-            out_stream += singles_size.to_bytes() + out_subs
+        if singles_size >= MAX_REPEAT_SIZE:
+            out_stream += (singles_size | SINGLES_FLAG).to_bytes() + out_subs
             out_subs = b""
             singles_size = 0
 
