@@ -15,7 +15,7 @@ SECTION "SummaryTileMap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    BackgroundTilemap: INCBIN "summary.tilemap"
+    BackgroundTilemap: INCBIN "summary.tilemap.rl"
     BackgroundTilemapEnd:
 
 ENDSECTION
@@ -46,8 +46,8 @@ SummarySceneEntrypoint::
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0
-    ld bc, BackgroundTilemapEnd - BackgroundTilemap
-    call VRAMCopy20x18
+    ld bc, BackgroundTilemapEnd
+    call RlCopy
 
     ld hl, TILEMAP0
     call InitScoreCard

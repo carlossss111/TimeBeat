@@ -46,48 +46,6 @@ VRAMCopy::
 
     ret
 
-; Copy a 20x18 tilemap into VRAM safely
-; @param bc: length
-; @param de: source address
-; @param hl: destination address
-VRAMCopy20x18::
-    ld a, SCREEN_TILE_WIDTH
-    push af                     ; a = tile width
-
-.Blank:
-    di
-    ldh a, [rSTAT]
-    bit 1, a
-    jr nz, .Blank               ; not mode 0 or 1
-
-    ld a,[de]
-    ei
-
-    ld [hl+], a                 ; copy into VRAM
-
-    pop af
-    push bc
-    dec a
-    cp 0
-    jr nz, .Skip
-.AddToDest:
-    ld bc, 12
-    add hl, bc                  ; go to next line
-    ld a, SCREEN_TILE_WIDTH
-.Skip:
-    pop bc
-    push af
-
-    inc de 
-    dec bc
-    ld a, b
-    or a, c
-    jr nz, .Blank
-
-    pop af
-    ret
-
-
 ; Copy into VRAM safely and faster (with tradeoff of smaller length)
 ; @param b: length (up to 255 obviously)
 ; @param de: source address
@@ -141,6 +99,28 @@ VRAMMemset::
     jp nz, VRAMMemset           ; loop if remaining length != 0
 
     ret
+
+; Copy into VRAM incrementally
+; @param b: length 
+; @param d: value to start with and increment from
+; @param hl: destination address
+VRAMStairsCopy::
+    ld c, rSTAT & $FF
+.Loop:
+    di
+    ldh a, [$FF00+c]
+    bit 1, a
+    jr nz, .Loop                ; not mode 0 or 1
+
+    ld [hl], d
+    inc d                       ; increment d !!!!
+    ei
+    inc hl
+    dec b
+    jr nz, .Loop
+
+    ret
+
 
 ENDSECTION
 

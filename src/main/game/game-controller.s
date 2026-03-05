@@ -12,32 +12,18 @@ SECTION "GameWindowTilemap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    WindowTilemap: INCBIN "window.tilemap"
+    WindowTilemap: INCBIN "window.tilemap.rl"
     WindowTilemapEnd:
 
 SECTION "GameController", ROM0
 
 ; Init the score window
 InitGameWindow::
-    ld b, 20
+
     ld de, WindowTilemap
     ld hl, $9C00
-    call VRAMCopyFast
-
-    ld b, 20
-    ld de, WindowTilemap + 20
-    ld hl, $9C20
-    call VRAMCopyFast
-
-    ld b, 20
-    ld de, WindowTilemap + 40
-    ld hl, $9C40
-    call VRAMCopyFast
-
-    ld d, EMPTY_TILE
-    ld bc, $9FFF - $9C60
-    ld hl, $9C60
-    call VRAMMemset
+    ld bc, WindowTilemapEnd
+    call RlCopy
 
     ld hl, $9C00
     ld a, EMPTY_TILE

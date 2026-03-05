@@ -12,8 +12,60 @@ from io import BufferedReader
 import os
 import sys
 
-MAX_REPEAT_SIZE = 0x7F
+MAX_REPEAT_SIZE = 0x3F
 SINGLES_FLAG = 0x80
+STAIRS_FLAG = 0x40
+
+def create_stairs(singles: bytes) -> bytes:
+    prev = None
+    substr = b""
+    byte_list = []
+
+    for byte_in in singles:
+        if prev == None or byte_in == prev + 1:
+            substr += byte_in.to_bytes()
+
+        else:
+            byte_list.append(substr)
+            substr = byte_in.to_bytes()
+
+        prev = byte_in
+
+    if len(substr) > 0: byte_list.append(substr)
+
+    substr = b""
+    outstr = b""
+    for item in byte_list:
+        if len(item) > 1:
+            if len(substr) > 0:
+                outstr += ((len(substr)) | SINGLES_FLAG).to_bytes() + substr
+                substr = b""
+
+            outstr += (len(item) | STAIRS_FLAG).to_bytes() + item[0].to_bytes()
+        else:
+            substr += item
+
+    if len(substr) > 0: 
+        outstr += ((len(substr)) | SINGLES_FLAG).to_bytes() + substr
+
+    return outstr
+
+def third_pass(passed_bytes: bytes) -> bytes:
+    outstr = b""
+
+    i = 0
+    while i != len(passed_bytes):
+        byte_in = passed_bytes[i]
+
+        if byte_in & SINGLES_FLAG == 0: # regular runlength
+            outstr += passed_bytes[i:i+2]
+            i += 2
+        else: # singles runlength
+            singles_len = int(byte_in & ~SINGLES_FLAG)
+            outstr += create_stairs(passed_bytes[i+1:i+singles_len+1])
+            i += singles_len+ 1
+
+    return outstr
 
 def second_pass(runlength_bytes: bytes, word_length: int) -> bytes:
     singles_size: int = 0
@@ -83,6 +135,9 @@ def main():
         compressed_bytes: bytes = compress(rfp, word_length)
 
     compressed_bytes = second_pass(compressed_bytes, word_length)
+
+    if word_length == 1:
+        compressed_bytes = third_pass(compressed_bytes)
 
     with open(output_path, "wb") as wfp:
         wfp.write(compressed_bytes)

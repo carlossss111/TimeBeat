@@ -25,7 +25,7 @@ SECTION "MenuTileMap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    BackgroundTilemap: INCBIN "menu.tilemap"
+    BackgroundTilemap: INCBIN "menu.tilemap.rl"
     BackgroundTilemapEnd:
 
 SECTION "MenuSpritesheet", ROM0
@@ -66,6 +66,12 @@ MenuSceneEntrypoint::
     call ClearShadowOAM
     call InitDMA
 
+
+    ld a, DEFAULT_PALETTE
+    ld [rOBP0], a               ; set sprite palette
+
+    ld hl, $8000
+
     ld de, ArrowData
     ld hl, $8000
     ld bc, ArrowDataEnd
@@ -97,8 +103,8 @@ MenuSceneEntrypoint::
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0
-    ld bc, BackgroundTilemapEnd - BackgroundTilemap
-    call VRAMCopy20x18
+    ld bc, BackgroundTilemapEnd
+    call RlCopy
 
 
     ;; LCD ;;

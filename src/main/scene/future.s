@@ -16,7 +16,7 @@ SECTION "FutureTileMap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    BackgroundTilemap: INCBIN "beatmap.tilemap"
+    BackgroundTilemap: INCBIN "beatmap.tilemap.rl"
     BackgroundTilemapEnd:
 
 SECTION "FutureTracks", ROM0
@@ -106,8 +106,8 @@ FutureSceneEntrypoint::
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0
-    ld bc, BackgroundTilemapEnd - BackgroundTilemap
-    call VRAMCopy
+    ld bc, BackgroundTilemapEnd
+    call RlCopy
 
     call InitBackgroundScroll
 
