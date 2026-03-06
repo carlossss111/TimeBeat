@@ -1,0 +1,225 @@
+
+# Order Row 1:
+
+# Order Row 2:
+0 A(hold)
+8 A(release) & L(hold)
+16 L(release) & B(hold)
+24 B(release) & R(hold)
+36 L(release) & L
+40 R
+44 B
+48 A(hold)
+
+# Order Row 3:
+8 A(release) & L
+16 R
+24 L
+32 A
+36 B
+40 L
+44 R
+48 L
+56 B(hold)
+
+# Order Row 4:
+16 B(release) & A(hold)
+32 A(release) & B
+36 A
+40 L(hold)
+48 L(release) & R(hold)
+56 R(release) & B(hold)
+
+# Order Row 5:
+0 B(release) & A(hold)
+8 A(release) & L(hold)
+16 L(release) & B(hold)
+24 B(release) & R(hold)
+36 R(release) & L
+40 R
+44 B
+48 A(hold)
+
+# Order Row 6:
+8 A(release) & L
+16 R
+24 L
+32 A
+36 B
+40 L
+44 R
+48 L
+56 B(hold)
+
+# Order Row 7:
+16 B(release) & A(hold)
+32 A(release) & B
+36 A
+40 L(hold)
+48 L(release) & R(hold)
+56 R(release) & B(hold)
+
+# Order Row 8:
+0 B(release) & L
+4 R
+24 L
+28 R
+48 L
+52 R
+56 B
+
+# Order Row 9:
+0 A
+8 B
+16 A
+24 B
+32 A
+40 B
+48 A
+52 A
+56 A
+60 A
+
+# Order Row 10:
+0 A
+8 B
+16 L
+20 R
+24 B
+28 R
+32 A
+40 B
+48 A
+52 A
+56 A
+60 A
+
+# Order Row 11:
+0 A
+8 B
+16 L
+20 R
+24 B
+28 R
+32 A
+40 B
+48 A
+52 A
+56 A
+60 A
+
+# Order Row 12:
+0 A
+8 B
+16 L
+20 R
+24 B
+28 R
+32 A
+40 B
+48 A
+52 A
+56 A
+60 A
+
+# Order Row 13:
+0 L(hold)
+8 L(release) & B(hold)
+16 B(release) & A
+20 B
+24 R
+28 L
+32 L(hold)
+40 L(release) & B(hold)
+48 B(release) & L(hold)
+52 L(release) & A(hold)
+56 A(release) & L(hold)
+60 L(release) & A(hold)
+
+# Order Row 14:
+0 A(release) & L(hold)
+8 L(release) & B(hold)
+16 B(release) & A
+18 R
+20 A
+22 R
+24 B
+28 L
+32 L(hold)
+36 L(release) & B
+40 B
+44 R
+48 L(hold)
+52 L(release) & A(hold)
+56 A(release) & L(hold)
+
+# Order Row 15:
+0 L(release) & B(hold)
+6 B(release) & L
+10 B(hold)
+16 B(release) & A
+20 A
+24 L
+28 L
+32 B
+36 B
+38 B
+42 B
+44 B
+48 A
+52 A
+56 R(hold)
+
+# Order Row 16:
+0 R(release) & B(hold)
+6 B(release) & L
+10 B(hold)
+16 B(release) & A
+20 R
+24 A
+28 R
+32 B
+36 L
+38 B
+42 L
+44 B
+48 A
+52 L
+56 R(hold)
+
+# Order Row 17:
+32 R(release) & A
+40 A
+48 A
+56 A
+
+# Order Row 18:
+0 L
+8 L
+16 L
+24 L
+32 R
+40 R
+48 R
+56 R
+
+# Order Row 19:
+0 B
+8 B
+16 B
+24 B
+32 B
+40 B
+48 B
+56 B
+
+# Order Row 20:
+0 A
+8 B
+16 A
+24 B
+32 A
+40 B
+48 A
+56 B
+
