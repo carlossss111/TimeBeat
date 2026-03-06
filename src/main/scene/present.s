@@ -153,6 +153,7 @@ PresentSceneEntrypoint::
 
     ;; Start text
 
+    ;TODO FIX
     ;call StartSequence
 
 
