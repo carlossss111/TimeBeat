@@ -82,6 +82,8 @@ Main:
     jr .SwitchEnd
     call PastSceneEntrypoint
     jr .SwitchEnd
+    call PresentSceneEntrypoint
+    jr .SwitchEnd
     call SummarySceneEntrypoint
     jr .SwitchEnd
 

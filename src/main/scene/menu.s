@@ -6,10 +6,12 @@ include "metasprite.inc"
 
 DEF ARROW_WIDTH EQU 2
 DEF ARROW_HEIGHT EQU 1
-DEF ARROW_X_1 EQU $30
-DEF ARROW_Y_1 EQU $40
-DEF ARROW_X_2 EQU $38
-DEF ARROW_Y_2 EQU $60
+DEF ARROW_X_0 EQU $30
+DEF ARROW_Y_0 EQU $40
+DEF ARROW_X_1 EQU $38
+DEF ARROW_Y_1 EQU $60
+DEF ARROW_X_2 EQU $28
+DEF ARROW_Y_2 EQU $80
 
 
 /*******************************************************
@@ -88,8 +90,8 @@ MenuSceneEntrypoint::
     call ColourMSprite          ; set the spritesheet
     
     ld hl, ArrowStruct
-    ld b, ARROW_X_1
-    ld c, ARROW_Y_1
+    ld b, ARROW_X_0
+    ld c, ARROW_Y_0
     call PositionMSprite
  
 
@@ -152,6 +154,74 @@ SECTION "MenuSceneVars", WRAM0
 
 SECTION "MenuSceneMain", ROM0
 
+; Arrow up
+GoUp:
+    ld hl, ArrowStruct
+    ld bc, META_Y
+    add hl, bc
+    ld a, [hl]
+
+    cp ARROW_Y_1
+    jr z, .ToTop
+    cp ARROW_Y_2
+    jr z, .ToMiddle
+    ret
+
+.ToMiddle:
+    ld a, PAST_SCENE
+    ld [wSelected], a
+
+    ld hl, ArrowStruct
+    ld b, ARROW_X_1
+    ld c, ARROW_Y_1
+    call PositionMSprite
+    ret
+
+.ToTop:
+    ld a, FUTURE_SCENE
+    ld [wSelected], a
+
+    ld hl, ArrowStruct
+    ld b, ARROW_X_0
+    ld c, ARROW_Y_0
+    call PositionMSprite
+    ret
+
+
+
+; Arrow down
+GoDown:
+    ld hl, ArrowStruct
+    ld bc, META_Y
+    add hl, bc
+    ld a, [hl]
+
+    cp ARROW_Y_0
+    jr z, .ToMiddle
+    cp ARROW_Y_1
+    jr z, .ToBottom
+    ret
+
+.ToMiddle:
+    ld a, PAST_SCENE
+    ld [wSelected], a
+
+    ld hl, ArrowStruct
+    ld b, ARROW_X_1
+    ld c, ARROW_Y_1
+    call PositionMSprite
+    ret
+
+.ToBottom:
+    ld a, PRESENT_SCENE
+    ld [wSelected], a
+
+    ld hl, ArrowStruct
+    ld b, ARROW_X_2
+    ld c, ARROW_Y_2
+    call PositionMSprite
+    ret
+
 ; Main program 
 MainLoop:
     call UpdateInput
@@ -164,13 +234,7 @@ MainLoop:
     and b
     jr z, .EndIfUp
 .IfUp:
-    ld a, FUTURE_SCENE
-    ld [wSelected], a
-
-    ld hl, ArrowStruct
-    ld b, ARROW_X_1
-    ld c, ARROW_Y_1
-    call PositionMSprite
+    call GoUp
 .EndIfUp:
     pop af
 
@@ -180,13 +244,7 @@ MainLoop:
     and b
     jr z, .EndIfDown
 .IfDown:
-    ld a, PAST_SCENE
-    ld [wSelected], a
-
-    ld hl, ArrowStruct
-    ld b, ARROW_X_2
-    ld c, ARROW_Y_2
-    call PositionMSprite
+    call GoDown
 .EndIfDown:
     pop af
 
