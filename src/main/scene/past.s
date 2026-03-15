@@ -9,14 +9,14 @@ include "beattracker.inc"
 ********************************************************/
 SECTION "PastTileData", ROM0
 
-    BackgroundData: INCBIN "future_tiles_combined.2bpp.rl" 
+    BackgroundData: INCBIN "past_combined.2bpp" 
     BackgroundDataEnd:
 
 SECTION "PastTileMap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    BackgroundTilemap: INCBIN "beatmap.tilemap.rl"
+    BackgroundTilemap: INCBIN "past.tilemap.rl"
     BackgroundTilemapEnd:
 
 SECTION "PastTracks", ROM0
@@ -101,8 +101,13 @@ PastSceneEntrypoint::
 
     ld de, BackgroundData
     ld hl, $9000
-    ld bc, BackgroundDataEnd
-    call RlCopy
+    ld bc, $97FF - $9000
+    call VRAMCopy
+
+    ld de, BackgroundData + $800
+    ld hl, $8800
+    ld bc, $8FFF - $8800
+    call VRAMCopy
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0
