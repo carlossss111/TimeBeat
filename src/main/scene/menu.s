@@ -6,12 +6,12 @@ include "metasprite.inc"
 
 DEF ARROW_WIDTH EQU 2
 DEF ARROW_HEIGHT EQU 1
-DEF ARROW_X_0 EQU $30
+DEF ARROW_X_0 EQU $58
 DEF ARROW_Y_0 EQU $40
-DEF ARROW_X_1 EQU $38
-DEF ARROW_Y_1 EQU $60
-DEF ARROW_X_2 EQU $28
-DEF ARROW_Y_2 EQU $80
+DEF ARROW_X_1 EQU $58
+DEF ARROW_Y_1 EQU $5c
+DEF ARROW_X_2 EQU $58
+DEF ARROW_Y_2 EQU $78
 
 
 /*******************************************************
@@ -20,8 +20,10 @@ DEF ARROW_Y_2 EQU $80
 ********************************************************/
 SECTION "MenuTileData", ROM0
 
-    BackgroundData: INCBIN "menu.2bpp.rl"
-    BackgroundDataEnd:
+    BgdDataFirstHalf: INCBIN "menu[first].2bpp.rl"
+    BgdDataFirstHalfEnd:
+    BgdDataSecondHalf: INCBIN "menu[second].2bpp.rl"
+    BgdDataSecondHalfEnd:
 
 SECTION "MenuTileMap", ROM0
 
@@ -98,9 +100,14 @@ MenuSceneEntrypoint::
 
     ;; Background ;;
 
-    ld de, BackgroundData
-    ld bc, BackgroundDataEnd
+    ld de, BgdDataFirstHalf
     ld hl, $9000
+    ld bc, BgdDataFirstHalfEnd
+    call RlCopy
+
+    ld de, BgdDataSecondHalf
+    ld hl, $8800
+    ld bc, BgdDataSecondHalfEnd
     call RlCopy
 
     ld de, BackgroundTilemap

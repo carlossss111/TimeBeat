@@ -8,7 +8,8 @@
 # How to prepare tilemap files
 1. Export to a 2bpp file: `./export-image.sh <image.ase> -t`
 2. Shift the Tile IDs by $1e if they are game tiles (i.e. if the window tiles are loaded before in VRAM)
-3. Compress: `./compress.py <image.tilemap> <image.tilemap.rl>
-4. Include in the code and use the `RlCopy` function
-5. Profit
+3. Resize to 32x32
+4. Compress: `./compress.py <image.tilemap> <image.tilemap.rl>
+5. Include in the code and use the `RlCopy` function
+6. Profit
 

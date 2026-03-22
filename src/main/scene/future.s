@@ -6,7 +6,7 @@ include "beattracker.inc"
 /*******************************************************
 * SCENE DATA
 * Tilemap and tiles
-********************************************************/
+*******************************************************/
 SECTION "FutureTileData", ROM0
 
     BackgroundData: INCBIN "future_tiles_combined.2bpp.rl" ; shoutout to cat
