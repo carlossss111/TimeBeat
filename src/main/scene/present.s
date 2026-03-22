@@ -9,14 +9,16 @@ include "beattracker.inc"
 ********************************************************/
 SECTION "PresentTileData", ROM0
 
-    BackgroundData: INCBIN "future_tiles_combined.2bpp.rl" 
-    BackgroundDataEnd:
+    BgdDataFirstHalf: INCBIN "present[first].2bpp.rl"
+    BgdDataFirstHalfEnd:
+    BgdDataSecondHalf: INCBIN "present[second].2bpp.rl"
+    BgdDataSecondHalfEnd:
 
 SECTION "PresentTileMap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    BackgroundTilemap: INCBIN "beatmap.tilemap.rl"
+    BackgroundTilemap: INCBIN "present.tilemap.rl"
     BackgroundTilemapEnd:
 
 SECTION "PresentTracks", ROM0
@@ -99,9 +101,19 @@ PresentSceneEntrypoint::
 
     ;; Background ;;
 
-    ld de, BackgroundData
+    ld de, WindowTiles
     ld hl, $9000
-    ld bc, BackgroundDataEnd
+    ld bc, WindowTilesEnd
+    call RlCopy
+
+    ld de, BgdDataFirstHalf
+    ld hl, $9000 + 480
+    ld bc, BgdDataFirstHalfEnd
+    call RlCopy
+
+    ld de, BgdDataSecondHalf
+    ld hl, $8800
+    ld bc, BgdDataSecondHalfEnd
     call RlCopy
 
     ld de, BackgroundTilemap
