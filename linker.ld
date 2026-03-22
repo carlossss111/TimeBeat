@@ -1,12 +1,10 @@
 
 ROM0
     ; Interrupts
-    ORG $0000
-    "FillerBefore"
+    ORG $0040
     "VBlankInterrupt"
-    "FillerMiddle"
+    ORG $0048
     "StatInterrupt"
-    "FillerAfter"
 
     ; Cartridge Header
     ORG $0100

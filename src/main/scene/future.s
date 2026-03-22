@@ -128,19 +128,14 @@ FutureSceneEntrypoint::
    
     ;; Audio
 
-    di
-
-	xor a
-	ldh [hUGE_MutedChannels], a
     ld de, FutureMusic
-    call hUGE_SelectSong        ; start music
-    ld a, 1
-    ldh [hIsMusicReady], a
-
-    ei
+    call PlayTrack
 
     ld b, 3
     call SlideUpVolume
+
+    
+    ;;
 
     ld hl, RenderLoop
     call SetVBlankHandler       ; set background animations

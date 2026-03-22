@@ -4,11 +4,18 @@ include "hardware.inc"
 * AUDIO FUNCTIONS
 * Simple multi-purpose audio functions
 ********************************************************/
-SECTION "AudioVars", HRAM
+SECTION "AudioHigherVars", HRAM
 
     hIsMusicReady:: db
 
-SECTION "AudioFunctions", ROM0
+SECTION "AudioVars", WRAM0
+
+    wLastTrackPlayed:: dw
+
+/*******************************************************
+* VOLUME
+********************************************************/
+SECTION "VolumeFunctions", ROM0
 
 ; Fade the volume out until its muted
 ; @param b: frames between volume decrease (speed)
@@ -87,6 +94,91 @@ Quiet::
     call WaitForFrames
     ld a, $22
     ld [rAUDVOL], a
+    ret
+
+ENDSECTION 
+
+/*******************************************************
+* MUSIC WRAPPERS
+********************************************************/
+
+SECTION "MusicFunctions", ROM0
+
+; Play a music track using the fortiSSIMo library
+; @param de: music track to play
+PlayTrack::
+    ld a, d
+    ld [wLastTrackPlayed], a
+    ld a, e
+    ld [wLastTrackPlayed + 1], a
+
+    di
+	xor a
+	ldh [hUGE_MutedChannels], a
+    call hUGE_SelectSong        ; start music
+
+    ld a, 1
+    ldh [hIsMusicReady], a
+    reti
+
+ReloadTrack::
+    ld a, [wLastTrackPlayed]
+    ld d, a
+    ld a, [wLastTrackPlayed + 1]
+    ld e, a
+
+    call PlayTrack
+    ret
+
+ENDSECTION
+
+/*******************************************************
+* SOUND EFFECTS
+********************************************************/
+
+SECTION "SFXFunctions", ROM0
+
+; Make a menu transition SFX
+MenuTransitionSound::
+    ld a, hUGE_CH1_MASK
+    ld [hUGE_MutedChannels], a
+    ld a, $37
+    ld [rNR10], a
+    ld a, $80
+    ld [rNR11], a
+    ld a, $f1
+    ld [rNR12], a
+    ld a, $ba
+    ld [rNR13], a
+    ld a, $87
+    ld [rNR14], a
+
+    ld a, 10   
+    call WaitForFrames
+
+    xor a
+    ld [hUGE_MutedChannels], a
+
+    ret
+
+; Make a menu select SFX
+MenuSelectSound::
+    ld a, hUGE_CH1_MASK
+    ld [hUGE_MutedChannels], a
+    ld a, $8
+    ld [rNR10], a
+    ld a, $80
+    ld [rNR11], a
+    ld a, $f1
+    ld [rNR12], a
+    ld a, $97
+    ld [rNR13], a
+    ld a, $87
+    ld [rNR14], a
+
+    xor a
+    ld [hUGE_MutedChannels], a
+
     ret
  
 ENDSECTION

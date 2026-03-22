@@ -60,6 +60,10 @@ SECTION "MenuSceneEntrypoint", ROM0
 MenuSceneEntrypoint::
     xor a
     ldh [hIsMusicReady], a
+    xor a
+    ld [wTitleYPosition], a
+    ld a, TITLE_FRAMES
+    ld [wTitleFrames], a
 
     ld hl, RenderLoop
     call SetVBlankHandler       ; set background animations
@@ -123,11 +127,6 @@ MenuSceneEntrypoint::
     ;; Animation ;;
 
     xor a
-    ld [wTitleYPosition], a
-    ld a, TITLE_FRAMES
-    ld [wTitleFrames], a
-
-    xor a
     call ReqStatOnScanline
     ld hl, ScreenYRaise
     call SetStatHandler
@@ -145,19 +144,12 @@ MenuSceneEntrypoint::
    
     ;; Audio
 
-    di
-
-	xor a
-	ldh [hUGE_MutedChannels], a
     ld de, MenuMusic
-    call hUGE_SelectSong        ; start music
-    ld a, 1
-    ldh [hIsMusicReady], a
-
-    ei
+    call PlayTrack
 
     ld b, 3
     call SlideUpVolume
+
 
     ;;
     
@@ -189,7 +181,7 @@ GoUp:
     jr z, .ToTop
     cp ARROW_Y_2
     jr z, .ToMiddle
-    ret
+    jr .End
 
 .ToMiddle:
     ld a, PAST_SCENE
@@ -199,7 +191,7 @@ GoUp:
     ld b, ARROW_X_1
     ld c, ARROW_Y_1
     call PositionMSprite
-    ret
+    jr .End
 
 .ToTop:
     ld a, FUTURE_SCENE
@@ -209,8 +201,11 @@ GoUp:
     ld b, ARROW_X_0
     ld c, ARROW_Y_0
     call PositionMSprite
-    ret
+    ;jr .End
 
+.End:
+    call MenuSelectSound
+    ret
 
 
 ; Arrow down
@@ -224,7 +219,7 @@ GoDown:
     jr z, .ToMiddle
     cp ARROW_Y_1
     jr z, .ToBottom
-    ret
+    jr .End
 
 .ToMiddle:
     ld a, PAST_SCENE
@@ -234,7 +229,7 @@ GoDown:
     ld b, ARROW_X_1
     ld c, ARROW_Y_1
     call PositionMSprite
-    ret
+    jr .End
 
 .ToBottom:
     ld a, PRESENT_SCENE
@@ -244,7 +239,12 @@ GoDown:
     ld b, ARROW_X_2
     ld c, ARROW_Y_2
     call PositionMSprite
+    ;jr .End
+
+.End:
+    call MenuSelectSound
     ret
+
 
 ; Main program 
 MainLoop:
@@ -281,9 +281,10 @@ MainLoop:
     jr z, MainLoop
 
 .EndLoop:
+    call MenuTransitionSound
 
     ld b, 0
-    ld a, [wSelected]
+    ld a, [wSelected]           ; reinit
     ld c, a
     ret
 

@@ -65,8 +65,7 @@ SummarySceneEntrypoint::
    
     ;; Audio
     
-    ; (Maintain the pervious music track but make it quieter)
-
+    call ReloadTrack            ; Maintain the pervious music track but make it quieter
     call Quiet
 
 
@@ -95,6 +94,8 @@ MainLoop:
     jr z, MainLoop
 
 .EndLoop:
+
+    call MenuTransitionSound
 
     ld bc, MENU_SCENE
     ret
