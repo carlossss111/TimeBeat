@@ -13,6 +13,10 @@ DEF ARROW_Y_1 EQU $5c
 DEF ARROW_X_2 EQU $58
 DEF ARROW_Y_2 EQU $78
 
+DEF LINES_TO_RAISE_BY EQU 2
+DEF TOP_SCANLINE_TO_RAISE EQU 0
+DEF BOTTOM_SCANLINE_TO_RAISE EQU 40
+DEF TITLE_FRAMES EQU 20
 
 /*******************************************************
 * SCENE DATA
@@ -60,6 +64,7 @@ MenuSceneEntrypoint::
     ld hl, RenderLoop
     call SetVBlankHandler       ; set background animations
     call SetVBlankInterrupt
+    call SetStatInterrupt
     ei
 
     call FadeOut                ; fade to black
@@ -115,6 +120,18 @@ MenuSceneEntrypoint::
     ld bc, BackgroundTilemapEnd
     call RlCopy
 
+    ;; Animation ;;
+
+    xor a
+    ld [wTitleYPosition], a
+    ld a, TITLE_FRAMES
+    ld [wTitleFrames], a
+
+    xor a
+    call ReqStatOnScanline
+    ld hl, ScreenYRaise
+    call SetStatHandler
+    
 
     ;; LCD ;;
 
@@ -277,6 +294,11 @@ ENDSECTION
 * RENDER LOOP
 * Performs any rendering that requires a VBlank
 ********************************************************/
+SECTION "MenuSceneRednererVars", WRAM0
+
+    wTitleYPosition: db
+    wTitleFrames: db
+
 SECTION "MenuSceneRenderer", ROM0
 
 ; Vram
@@ -287,7 +309,71 @@ RenderLoop:
 
     call RenderToOAM            ; draw sprites
 
+    ld a, [wTitleFrames]
+    cp a, 0
+    jr nz, .Skip                ; every n frames...
+
+    ld a, [wTitleYPosition]
+    cp a, 0
+    jr nz, .Lower               ; check position of the title
+.Raise:
+    ld a, LINES_TO_RAISE_BY     ; either raise it
+    ld [wTitleYPosition], a
+    jr .EndIf
+
+.Lower:
+    xor a
+    ld [wTitleYPosition], a     ; or lower it
+    ;jr .EndIf
+
+.EndIf:
+    ld a, TITLE_FRAMES
+    ld [wTitleFrames], a
+
+.Skip:
+    dec a
+    ld [wTitleFrames], a
     reti
+
+
+; Raises screen up a bit, called as a STAT interrupt handler
+; Sets the place for the next STAT handler
+ScreenYRaise:
+    ldh a, [rSTAT]
+    and %00000011
+    or STAT_HBLANK
+    jr nz, ScreenYRaise         ; wait for HBlank
+
+    ld a, [wTitleYPosition]
+    ld [rSCY], a                ; raise screen Y
+
+    ld a, BOTTOM_SCANLINE_TO_RAISE
+    call ReqStatOnScanline      ; set scanline for next STAT interrupt
+
+    ld hl, ScreenYLower
+    call SetStatHandler         ; set handler for next STAT interrupt
+
+    ret
+
+
+; Lowers screen down, called as a STAT interrupt handler
+; Sets the place for the next STAT handler
+ScreenYLower:
+    ldh a, [rSTAT]
+    and %00000011
+    or STAT_HBLANK
+    jr nz, ScreenYLower         ; wait for HBlank
+
+    xor a
+    ld [rSCY], a                ; lower screen Y
+
+    ld a, TOP_SCANLINE_TO_RAISE
+    call ReqStatOnScanline      ; set scanline for next STAT interrupt
+
+    ld hl, ScreenYRaise
+    call SetStatHandler         ; set handler for next STAT interrupt
+
+    ret
 
 ENDSECTION
 
