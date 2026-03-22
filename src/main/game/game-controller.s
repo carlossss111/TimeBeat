@@ -8,6 +8,11 @@ include "beattracker.inc"
 * GAME CONTROLLER
 * Shared controller logic between all of the game scenes
 ********************************************************/
+SECTION "GameWindowTiles", ROM0
+
+    WindowTiles:: INCBIN "window_full.2bpp.rl"
+    WindowTilesEnd::
+
 SECTION "GameWindowTilemap", ROM0
 
     DEF EMPTY_TILE EQU $0

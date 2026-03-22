@@ -9,8 +9,10 @@ include "beattracker.inc"
 ********************************************************/
 SECTION "PastTileData", ROM0
 
-    BackgroundData: INCBIN "past_combined.2bpp" 
-    BackgroundDataEnd:
+    BgdDataFirstHalf: INCBIN "past[first].2bpp.rl"
+    BgdDataFirstHalfEnd:
+    BgdDataSecondHalf: INCBIN "past[second].2bpp.rl"
+    BgdDataSecondHalfEnd:
 
 SECTION "PastTileMap", ROM0
 
@@ -99,15 +101,20 @@ PastSceneEntrypoint::
 
     ;; Background ;;
 
-    ld de, BackgroundData
+    ld de, WindowTiles
     ld hl, $9000
-    ld bc, $97FF - $9000
-    call VRAMCopy
+    ld bc, WindowTilesEnd
+    call RlCopy
 
-    ld de, BackgroundData + $800
+    ld de, BgdDataFirstHalf
+    ld hl, $9000 + 480
+    ld bc, BgdDataFirstHalfEnd
+    call RlCopy
+
+    ld de, BgdDataSecondHalf
     ld hl, $8800
-    ld bc, $8FFF - $8800
-    call VRAMCopy
+    ld bc, BgdDataSecondHalfEnd
+    call RlCopy
 
     ld de, BackgroundTilemap
     ld hl, TILEMAP0
