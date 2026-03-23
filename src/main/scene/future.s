@@ -3,6 +3,8 @@ include "scenes.inc"
 include "macros.inc"
 include "beattracker.inc"
 
+DEF START_ANIM_LENGTH EQU 150
+
 /*******************************************************
 * SCENE DATA
 * Tilemap and tiles
@@ -148,6 +150,9 @@ FutureSceneEntrypoint::
 
     ;; Start text
 
+    ld a, START_ANIM_LENGTH
+    ld b, START_ANIM_LENGTH
+    ld c, START_ANIM_LENGTH
     call StartSequence
 
 

@@ -3,6 +3,8 @@ include "scenes.inc"
 include "macros.inc"
 include "beattracker.inc"
 
+DEF START_ANIM_LENGTH EQU 60
+
 /*******************************************************
 * SCENE DATA
 * Tilemap and tiles
@@ -157,8 +159,10 @@ PresentSceneEntrypoint::
 
     ;; Start text
 
-    ;TODO FIX
-    ;call StartSequence
+    ld a, START_ANIM_LENGTH
+    ld b, START_ANIM_LENGTH
+    ld c, START_ANIM_LENGTH
+    call StartSequence
 
 
     jp MainLoop

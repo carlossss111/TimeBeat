@@ -6,15 +6,11 @@ DEF READY_WIDTH EQU 9
 DEF READY_HEIGHT EQU 2
 DEF READY_X EQU 55
 DEF READY_Y EQU 75
-DEF READY_FRAMES EQU 200
-
-DEF MIDDLE_FRAMES EQU 255
 
 DEF GO_WIDTH EQU 4
 DEF GO_HEIGHT EQU 2
 DEF GO_X EQU 74
 DEF GO_Y EQU 75
-DEF GO_FRAMES EQU 150
 
 DEF FINISH_WIDTH EQU 4
 DEF FINISH_HEIGHT EQU 2
@@ -111,24 +107,39 @@ PrintFinish:
 
 ; Prints 'READY' and 'GO' to the screen on a timer
 ; This function is blocking
+; @param a: Frames to READY for
+; @param b: Frames to WAIT for
+; @param c: Frames to GO for
 StartSequence::
+    push af
+    push bc
     call PrintReady             ; Ready?
+    pop bc
+    pop af
     
     push hl
-    ld b, READY_FRAMES
+    push bc
+    ld b, a
     call WaitForFrames
     call WaitForFrames
+    pop bc
     pop hl
 
+    push bc
     call DeleteMSprite
+    pop bc
 
-    ld b, MIDDLE_FRAMES
+    push bc
     call WaitForFrames
+    call WaitForFrames
+    pop bc
 
+    push bc
     call PrintGo                ; Go!
+    pop bc
 
     push hl
-    ld b, GO_FRAMES
+    ld b, c
     call WaitForFrames
     call WaitForFrames
     pop hl
