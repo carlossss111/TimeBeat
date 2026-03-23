@@ -272,6 +272,26 @@ MainLoop:
 .EndIfDown:
     pop af
 
+    ; Inc offset
+    push af
+    ld b, JOYP_RIGHT << 4
+    and b
+    jr z, .EndIfRight
+.IfRight:
+    call IncMusicOffset
+.EndIfRight:
+    pop af
+
+    ; Dec offset
+    push af
+    ld b, JOYP_LEFT << 4
+    and b
+    jr z, .EndIfLeft
+.IfLeft:
+    call DecMusicOffset
+.EndIfLeft:
+    pop af
+
     ; Loop
     halt
 

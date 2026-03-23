@@ -13,9 +13,7 @@ ROM0
     ; Init
     ORG $150
     "Init"
-
     ; Main Functions
-    ORG $177
     "MainLoop"
     "MemoryFunctions"
     "VBlankHandler"

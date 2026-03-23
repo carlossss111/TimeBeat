@@ -6,6 +6,9 @@ DEF TICK_BITS EQU $3F           ; all other bits
 
 DEF TICKS_TO_CROSS_SCREEN EQU $89 ; probably
 
+DEF MAX_OFFSET EQU 9
+DEF MIN_OFFSET EQU -9
+
 
 /*******************************************************
 * BEAT TRACK VARIABLES AND CONSTS
@@ -20,10 +23,51 @@ DEF TICKS_TO_CROSS_SCREEN EQU $89 ; probably
 * SpritePtr - for pointing to the upcoming sprite for the game to spawn.
 * FinishPtr - constant pointer for measuring the length of the beat track.
 ********************************************************/
+SECTION "BeatTrackerVars", HRAM
+
+    hMusicOffset: dw            ; offset relative to the music being played
+
 SECTION "BeatTracker", ROM0
 
 
+; Initialises the music offset
+; @param a: Sets the offset between the beattrack and the music
+SetMusicOffset::
+    ldh [hMusicOffset], a
+    ldh [hMusicOffset + 1], a
+    ret
+
+
+; Increments the music offset up to a maximum
+IncMusicOffset::
+    ldh a, [hMusicOffset + 1]
+    cp MAX_OFFSET
+    jr z, .Ret
+    add 1                       ; inc/dec doesn't carry
+    ldh [hMusicOffset + 1], a
+    ldh a, [hMusicOffset]
+    adc 0
+    ldh [hMusicOffset], a
+.Ret:
+    ret
+
+
+; Decrements the music offset down to a minimum
+DecMusicOffset::
+    ldh a, [hMusicOffset + 1]
+    cp MIN_OFFSET 
+    jr z, .Ret
+    sub 1
+    ldh [hMusicOffset + 1], a
+    ldh a, [hMusicOffset]
+    sbc 0
+    ldh [hMusicOffset], a
+.Ret:
+    ret
+
+
 ; Initialises all the pointers and variables for the beat tracker
+; EXCEPT the offset (this should be done from a different caller)
 ; @param hl: pointer to beatstream struct
 ; @param a: button type (PAD_A, PAD_B, PAD_LEFT, PAD_RIGHT)
 ; @param bc: location in memory where the beat track begins
@@ -56,7 +100,7 @@ InitBeatStream::
 ; Gets the 'tick' value pointed to by the SpritePtr
 ; Subtracts by the time it takes to cross the screen
 ; @param hl: pointer to beatstream struct
-; @returns bc: next value needing to trigger a sprite change
+; @returns bc: next value needed to trigger a sprite change
 GetSpriteTick::
     ld bc, BEAT_STREAM_SPRITE
     add hl, bc
@@ -71,6 +115,14 @@ GetSpriteTick::
     
     inc hl                      ; low 8 bits
     ld c, [hl]
+
+    ldh a, [hMusicOffset]
+    ld h, a
+    ldh a, [hMusicOffset + 1]
+    ld l, a
+    add hl, bc                  ; hl = next value + offset
+    ld b, h
+    ld c, l
 
     ld hl, -TICKS_TO_CROSS_SCREEN
     add hl, bc                  ; subtract ticks to cross screen
@@ -101,6 +153,15 @@ GetHitTick::
     
     inc hl                      ; low 8 bits
     ld e, [hl]
+
+    ldh a, [hMusicOffset]
+    ld h, a
+    ldh a, [hMusicOffset + 1]
+    ld l, a
+    add hl, de                  ; hl = next value + offset
+    ld d, h
+    ld e, l
+
     ret
 
 

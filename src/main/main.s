@@ -34,6 +34,9 @@ EntryPoint:
     call InitInput              ; initialise input vars
     call InitScratchMemory      ; initialise scratch variables
 
+    xor a
+    call SetMusicOffset
+
     di                          ; disable interrupts for the main loop
     call InitVBlankHandling     ; init interrupt handling vars for later
     call InitStatHandling       ; init stat handling too
