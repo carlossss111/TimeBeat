@@ -36,6 +36,9 @@ SECTION "MenuTileMap", ROM0
     BackgroundTilemap: INCBIN "menu.tilemap.rl"
     BackgroundTilemapEnd:
 
+    WindowTilemap: INCBIN "offset.tilemap.rl"
+    WindowTilemapEnd:
+
 SECTION "MenuSpritesheet", ROM0
 
     ArrowData: INCBIN "menu_arrow.2bpp.rl"
@@ -64,6 +67,8 @@ MenuSceneEntrypoint::
     ld [wTitleYPosition], a
     ld a, TITLE_FRAMES
     ld [wTitleFrames], a
+
+    call InitMenuWindow
 
     ld hl, RenderLoop
     call SetVBlankHandler       ; set background animations
@@ -106,7 +111,6 @@ MenuSceneEntrypoint::
     call PositionMSprite
  
 
-
     ;; Background ;;
 
     ld de, BgdDataFirstHalf
@@ -124,18 +128,27 @@ MenuSceneEntrypoint::
     ld bc, BackgroundTilemapEnd
     call RlCopy
 
+
     ;; Animation ;;
 
     xor a
     call ReqStatOnScanline
     ld hl, ScreenYRaise
     call SetStatHandler
-    
+
+
+    ;; Window ;;
+
+    ld de, WindowTilemap
+    ld hl, $9c00
+    ld bc, WindowTilemapEnd
+    call RlCopy
+
 
     ;; LCD ;;
 
     xor a
-    ld a, LCDC_ON | LCDC_WIN_OFF | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_ON
+    ld a, LCDC_ON | LCDC_WIN_9C00 | LCDC_WIN_ON | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_ON
     ld [rLCDC], a               ; setup LCD
 
 
@@ -279,6 +292,7 @@ MainLoop:
     jr z, .EndIfRight
 .IfRight:
     call IncMusicOffset
+    call ShowMenuWindow
 .EndIfRight:
     pop af
 
@@ -289,6 +303,7 @@ MainLoop:
     jr z, .EndIfLeft
 .IfLeft:
     call DecMusicOffset
+    call ShowMenuWindow
 .EndIfLeft:
     pop af
 
@@ -329,6 +344,8 @@ RenderLoop:
     call nz, hUGE_TickSound     ; play music
 
     call RenderToOAM            ; draw sprites
+
+    call RenderMenuWindow       ; render menu window
 
     ld a, [wTitleFrames]
     cp a, 0

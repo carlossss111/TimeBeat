@@ -38,6 +38,16 @@ SetMusicOffset::
     ret
 
 
+; Loads the music offset
+; @returns bc: Music offset
+GetMusicOffset::
+    ldh a, [hMusicOffset]
+    ld b, a
+    ldh a, [hMusicOffset + 1]
+    ld c, a
+    ret
+
+
 ; Increments the music offset up to a maximum
 IncMusicOffset::
     ldh a, [hMusicOffset + 1]
