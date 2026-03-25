@@ -318,6 +318,7 @@ MainLoop:
     jr z, MainLoop
 
 .EndLoop:
+    call HideMenuWindow
     call MenuTransitionSound
 
     ld b, 0

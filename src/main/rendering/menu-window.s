@@ -43,6 +43,12 @@ ShowMenuWindow::
     ld [wDisplayCountdown], a
     ret
 
+; Hide the display
+HideMenuWindow::
+    xor a
+    ld [wDisplayCountdown], a
+    ret
+
 
 ; Render the offset +/-
 RenderOffset:

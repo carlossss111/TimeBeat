@@ -3,7 +3,7 @@ include "scenes.inc"
 include "macros.inc"
 include "beattracker.inc"
 
-DEF START_ANIM_LENGTH EQU 150
+DEF START_ANIM_LENGTH EQU 100
 
 /*******************************************************
 * SCENE DATA
