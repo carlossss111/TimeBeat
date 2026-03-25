@@ -67,18 +67,6 @@ VRAMCopyFast::
     
     ret
 
-; Loads a particular byte into a block of memory
-; @param bc: size of memory
-; @param d: value to be filled
-; @param hl: desination address
-Memset::
-    ld [hl], d
-    inc hl
-    dec bc
-    ld a, b
-    or a, c
-    jp nz, Memset               ; loop if remaining length != 0
-    ret
 
 ; Loads a particular byte into a block of memory, safe for VRAM
 ; @param bc: size of memory

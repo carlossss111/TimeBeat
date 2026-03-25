@@ -293,6 +293,7 @@ MainLoop:
 .IfRight:
     call IncMusicOffset
     call ShowMenuWindow
+    call MenuOffsetSound
 .EndIfRight:
     pop af
 
@@ -304,6 +305,7 @@ MainLoop:
 .IfLeft:
     call DecMusicOffset
     call ShowMenuWindow
+    call MenuOffsetSound
 .EndIfLeft:
     pop af
 

@@ -56,35 +56,22 @@ SECTION "MainLoop", ROM0
 ; Main loop that each game state returns to upon finishing
 ; @param bc: scene to load
 Main:
-    ld a, c
-    cp a, SWITCH_SIZE + 1       ; compare if bc is within the right range
-    jr nc, .SwitchEnd           ; if bc > switch size then we skip the switch
-    
     ld hl, .Switch
-    xor b
+    ld b, 0
     add hl, bc                  ; hl = scene enum value + switch starting location
     jp hl                       ; jump to the correct scene via the offset
 
 .Switch:
-    call TitleEntrypoint
-    jr .SwitchEnd
     call MenuSceneEntrypoint
-    jr .SwitchEnd
+    jr Main
     call FutureSceneEntrypoint
-    jr .SwitchEnd
+    jr Main
     call PastSceneEntrypoint
-    jr .SwitchEnd
+    jr Main
     call PresentSceneEntrypoint
-    jr .SwitchEnd
+    jr Main
     call SummarySceneEntrypoint
-    jr .SwitchEnd
-
-.SwitchEnd
-    jp Main                     ; while True
-
-
-TitleEntrypoint:
-    ret                         ; unimplemented
+    jr Main
 
 ENDSECTION
 

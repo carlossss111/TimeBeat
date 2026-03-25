@@ -54,19 +54,6 @@ InitWindow::
     call MiddleScreen
     ret
 
-; Adjust the window position and set interrupt at middle scanlines
-TopScreen:
-    ldh a, [rSTAT]
-    and %00000011
-    jr nz, TopScreen            ; wait for hblank
-
-    ld a, MIDDLE_FIRST_SCANLINE 
-    call ReqStatOnScanline      ; set scanline for next STAT interrupt
-
-    ld hl, MiddleScreen
-    call SetStatHandler         ; set handler for next STAT interrupt
-    ret
-
 ; Turn off the window and set the next interrupt at the bottom part of the screen
 MiddleScreen:
     ldh a, [rSTAT]
@@ -94,10 +81,10 @@ BottomScreen:
     or LCDC_WINDOW
     ldh [rLCDC], a               ; turn on window
 
-    xor a
+    ld a, MIDDLE_FIRST_SCANLINE 
     call ReqStatOnScanline      ; set scanline for next STAT interrupt
 
-    ld hl, TopScreen
+    ld hl, MiddleScreen
     call SetStatHandler         ; set handler for next STAT interrupt
     ret
 
