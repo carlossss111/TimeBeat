@@ -34,13 +34,6 @@ SECTION "PastTracks", ROM0
     BeatTrackRight: INCBIN "past.bin.r"
     BeatTrackRightEnd:
 
-SECTION "PastBeats", WRAM0
-
-    BeatStreamA: STRUCT_BEAT_STREAM
-    BeatStreamB: STRUCT_BEAT_STREAM
-    BeatStreamLeft: STRUCT_BEAT_STREAM
-    BeatStreamRight: STRUCT_BEAT_STREAM
-
 ENDSECTION
 
 
@@ -77,25 +70,25 @@ PastSceneEntrypoint::
     ;; Game ;;
     
     ld a, PAD_A
-    ld hl, BeatStreamA
+    ld hl, hBeatStreamA
     ld bc, BeatTrackA
     ld de, BeatTrackAEnd
     call InitBeatStream
 
     ld a, PAD_B
-    ld hl, BeatStreamB
+    ld hl, hBeatStreamB
     ld bc, BeatTrackB
     ld de, BeatTrackBEnd
     call InitBeatStream
 
     ld a, PAD_LEFT
-    ld hl, BeatStreamLeft
+    ld hl, hBeatStreamLeft
     ld bc, BeatTrackLeft
     ld de, BeatTrackLeftEnd
     call InitBeatStream
 
     ld a, PAD_RIGHT
-    ld hl, BeatStreamRight
+    ld hl, hBeatStreamRight
     ld bc, BeatTrackRight
     ld de, BeatTrackRightEnd
     call InitBeatStream
@@ -151,7 +144,7 @@ PastSceneEntrypoint::
     
     ;;
 
-    ld hl, RenderLoop
+    ld hl, GameRenderLoop
     call SetVBlankHandler       ; set background animations
 
     xor a
@@ -168,165 +161,9 @@ PastSceneEntrypoint::
     call StartSequence
 
 
-    jp MainLoop
+    ;; Play!
 
-ENDSECTION
-
-
-/*******************************************************
-* MAIN LOOP
-* Computes input here
-********************************************************/
-SECTION "PastSceneMain", ROM0
-
-; Main program loop wahhey
-MainLoop:
-    ; Update button presses
-    call UpdateInput
-
-    ; Spawn the beats!
-    ld hl, BeatStreamA
-    call SpawnBeats
-    ld hl, BeatStreamB
-    call SpawnBeats
-    ld hl, BeatStreamLeft
-    call SpawnBeats
-    ld hl, BeatStreamRight
-    call SpawnBeats
-
-    ; Handle inputs
-    call GetNewKeys
-
-    push af
-    ld b, JOYP_A
-    ld hl, BeatStreamA
-    call CheckInput
-    pop af
-    push af
-    ld b, JOYP_B
-    ld hl, BeatStreamB
-    call CheckInput
-    pop af
-    push af
-    ld b, JOYP_LEFT << 4
-    ld hl, BeatStreamLeft
-    call CheckInput
-    pop af
-    push af
-    ld b, JOYP_RIGHT << 4
-    ld hl, BeatStreamRight
-    call CheckInput
-    pop af
-
-    call GetReleasedKeys
-
-    push af
-    ld b, JOYP_A
-    ld hl, BeatStreamA
-    call CheckRelease
-    pop af
-    push af
-    ld b, JOYP_B
-    ld hl, BeatStreamB
-    call CheckRelease
-    pop af
-    push af
-    ld b, JOYP_LEFT << 4
-    ld hl, BeatStreamLeft
-    call CheckRelease
-    pop af
-    push af
-    ld b, JOYP_RIGHT << 4
-    ld hl, BeatStreamRight
-    call CheckRelease
-    pop af
-
-    ; Check for missed beats
-    ldh a, [hTick]
-    ld b, a
-    ldh a, [hTick + 1]
-    ld c, a
-
-    push bc
-    ld hl, BeatStreamA
-    call HandleMiss
-    pop bc
-    push bc
-    ld hl, BeatStreamB
-    call HandleMiss
-    pop bc
-    push bc
-    ld hl, BeatStreamLeft
-    call HandleMiss
-    pop bc
-    push bc
-    ld hl, BeatStreamRight
-    call HandleMiss
-    pop bc
-
-    ; Check if at end of beatmap
-    ld hl, BeatStreamA
-    call HasMoreBeatsToHit
-    cp TRUE
-    jr z, .EndIfAtFinish
-    ld hl, BeatStreamB
-    call HasMoreBeatsToHit
-    cp TRUE
-    jr z, .EndIfAtFinish
-    ld hl, BeatStreamLeft
-    call HasMoreBeatsToHit
-    cp TRUE
-    jr z, .EndIfAtFinish
-    ld hl, BeatStreamRight
-    call HasMoreBeatsToHit
-    cp TRUE
-    jr nz, .EndLoop
-.EndIfAtFinish:
-
-    ; Loop
-    halt
-    jp MainLoop
-.EndLoop:
-
-    call ClearAllButtonEffects
-
-    call EndSequence 
-
-    ld b, 3
-    call SlideDownVolume
-    call FadeOut
-
-    call UnsetStatInterrupt
-    call UnsetVBlankInterrupt
-    call InitBackgroundScroll
-
-    ld bc, SUMMARY_SCENE
-    ret
-
-ENDSECTION
-
-
-/*******************************************************
-* RENDER LOOP
-* Performs any rendering that requires a VBlank
-********************************************************/
-SECTION "PastSceneRenderer", ROM0
-
-; Render animations into VRAM using the render-queue
-RenderLoop:
-    ldh a, [hIsMusicReady]
-    and a
-    call nz, hUGE_TickSound     ; play music
-
-    call RenderToOAM            ; render sprites
-
-    ei                          ; allow stat register
-    call IncTick                ; increment tick counter once every frame
-    call MoveBeatSprites        ; move all sprites
-    call ClearOldText           ; clear old text
-    call ScrollBackground
-
-    ret
+    jp MainGameLoop             ; immediate return
 
 ENDSECTION
 

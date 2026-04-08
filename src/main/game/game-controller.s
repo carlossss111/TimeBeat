@@ -153,7 +153,160 @@ CheckRelease::
 
 .IfBeatTypeWasNotRelease:
     ret
- 
+
+/*******************************************************
+* MAIN LOOP
+* Computes input here
+********************************************************/
+
+SECTION "GameLoopVars", HRAM
+
+    hBeatStreamA:: STRUCT_BEAT_STREAM
+    hBeatStreamB:: STRUCT_BEAT_STREAM
+    hBeatStreamLeft:: STRUCT_BEAT_STREAM
+    hBeatStreamRight:: STRUCT_BEAT_STREAM
+
+SECTION "GameLoop", ROM0
+
+; Main game loop
+MainGameLoop::
+    ; Update button presses
+    call UpdateInput
+
+    ; Spawn the beats!
+    ld hl, hBeatStreamA
+    call SpawnBeats
+    ld hl, hBeatStreamB
+    call SpawnBeats
+    ld hl, hBeatStreamLeft
+    call SpawnBeats
+    ld hl, hBeatStreamRight
+    call SpawnBeats
+
+    ; Handle inputs
+    call GetNewKeys
+
+    push af
+    ld b, JOYP_A
+    ld hl, hBeatStreamA
+    call CheckInput
+    pop af
+    push af
+    ld b, JOYP_B
+    ld hl, hBeatStreamB
+    call CheckInput
+    pop af
+    push af
+    ld b, JOYP_LEFT << 4
+    ld hl, hBeatStreamLeft
+    call CheckInput
+    pop af
+    push af
+    ld b, JOYP_RIGHT << 4
+    ld hl, hBeatStreamRight
+    call CheckInput
+    pop af
+
+    call GetReleasedKeys
+
+    push af
+    ld b, JOYP_A
+    ld hl, hBeatStreamA
+    call CheckRelease
+    pop af
+    push af
+    ld b, JOYP_B
+    ld hl, hBeatStreamB
+    call CheckRelease
+    pop af
+    push af
+    ld b, JOYP_LEFT << 4
+    ld hl, hBeatStreamLeft
+    call CheckRelease
+    pop af
+    push af
+    ld b, JOYP_RIGHT << 4
+    ld hl, hBeatStreamRight
+    call CheckRelease
+    pop af
+
+    ; Check for missed beats
+    ldh a, [hTick]
+    ld b, a
+    ldh a, [hTick + 1]
+    ld c, a
+
+    push bc
+    ld hl, hBeatStreamA
+    call HandleMiss
+    pop bc
+    push bc
+    ld hl, hBeatStreamB
+    call HandleMiss
+    pop bc
+    push bc
+    ld hl, hBeatStreamLeft
+    call HandleMiss
+    pop bc
+    push bc
+    ld hl, hBeatStreamRight
+    call HandleMiss
+    pop bc
+
+    ; Check if at end of beatmap
+    ld hl, hBeatStreamA
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ld hl, hBeatStreamB
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ld hl, hBeatStreamLeft
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr z, .EndIfAtFinish
+    ld hl, hBeatStreamRight
+    call HasMoreBeatsToHit
+    cp TRUE
+    jr nz, .EndLoop
+.EndIfAtFinish:
+
+    ; Loop
+    halt
+    jp MainGameLoop
+.EndLoop:
+
+    call ClearAllButtonEffects
+
+    call EndSequence 
+
+    ld b, 3
+    call SlideDownVolume
+    call FadeOut
+
+    call UnsetStatInterrupt
+    call UnsetVBlankInterrupt
+    call InitBackgroundScroll
+
+    ld bc, SUMMARY_SCENE
+    ret
+
+; Render animations into VRAM using the render-queue
+GameRenderLoop::
+    ldh a, [hIsMusicReady]
+    and a
+    call nz, hUGE_TickSound     ; play music
+
+    call RenderToOAM            ; render sprites
+
+    ei                          ; allow stat register
+    call IncTick                ; increment tick counter once every frame
+    call MoveBeatSprites        ; move all sprites
+    call ClearOldText           ; clear old text
+    call ScrollBackground
+
+    ret
 
 
 
