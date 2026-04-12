@@ -11,15 +11,17 @@ DEF START_ANIM_LENGTH EQU 150
 *******************************************************/
 SECTION "FutureTileData", ROM0
 
-    ;BackgroundData: INCBIN "future_tiles_combined.2bpp.rl" ; shoutout to cat
-    ;BackgroundDataEnd:
+    BgdDataFirstHalf: INCBIN "future[first].2bpp.rl"
+    BgdDataFirstHalfEnd:
+    BgdDataSecondHalf: INCBIN "future[second].2bpp.rl"
+    BgdDataSecondHalfEnd:
 
 SECTION "FutureTileMap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    ;BackgroundTilemap: INCBIN "beatmap.tilemap.rl"
-    ;BackgroundTilemapEnd:
+    BackgroundTilemap: INCBIN "future.tilemap.rl"
+    BackgroundTilemapEnd:
 
 SECTION "FutureTracks", ROM0
 
@@ -78,15 +80,25 @@ FutureSceneEntrypoint::
 
     ;; Background ;;
 
-    ;ld de, BackgroundData
-    ;ld hl, $9000
-    ;ld bc, BackgroundDataEnd
-    ;call RlCopy
+    ld de, WindowTiles
+    ld hl, $9000
+    ld bc, WindowTilesEnd
+    call RlCopy
 
-    ;ld de, BackgroundTilemap
-    ;ld hl, TILEMAP0
-    ;ld bc, BackgroundTilemapEnd
-    ;call RlCopy
+    ld de, BgdDataFirstHalf
+    ld hl, $9000 + 480
+    ld bc, BgdDataFirstHalfEnd
+    call RlCopy
+
+    ld de, BgdDataSecondHalf
+    ld hl, $8800
+    ld bc, BgdDataSecondHalfEnd
+    call RlCopy
+
+    ld de, BackgroundTilemap
+    ld hl, TILEMAP0
+    ld bc, BackgroundTilemapEnd
+    call RlCopy
 
 
     ;; Audio, Window, LCD ;;
