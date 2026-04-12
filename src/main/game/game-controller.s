@@ -2,6 +2,7 @@ include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
 include "beattracker.inc"
+include "sugar.inc"
 
 
 /*******************************************************
@@ -34,6 +35,74 @@ InitGameWindow::
 
     call InitScore              ; draw the score after the window
     ret
+
+
+; Init interrupts, palette and sprites
+; Should be called before doing anything else
+PreGameEntrypointInit::
+
+    ;; Interrupts ;;
+
+    xor a
+    ldh [hIsMusicReady], a
+
+    call SetVBlankInterrupt
+    call SetStatInterrupt
+    ei
+
+
+    ;; Sprites ;;
+
+    call FadeOut                ; fade to black
+    call ClearShadowOAM         ; initialise shadow OAM
+
+    ld a, DEFAULT_PALETTE
+    ld [rOBP0], a               ; set sprite palette
+
+    ld hl, $8000
+    call InitGameSpriteVRAM     ; set spritesheets (VRAM = $8000)
+    jp InitBeatSprites          ; init circular queue
+    ;ret
+
+
+; Init scroll, window, LCD and audio
+; @param hl: music track
+PostGameEntrypointInit::
+    push hl
+
+    ;; Scroll ;;
+
+    call InitBackgroundScroll
+
+    
+    ;; Window ;;
+
+    call InitGameWindow
+
+
+    ;; LCD ;;
+
+    xor a
+    ld a, LCDC_ON | LCDC_WIN_9C00 | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
+    ld [rLCDC], a               ; setup LCD
+
+    call FadeIn                 ; fade back in after loading everything
+
+   
+    ;; Audio ;;
+
+    pop de
+    call PlayTrack
+    call VolumeUp
+
+    ld hl, GameRenderLoop
+    call SetVBlankHandler       ; set background animations
+
+    xor a
+    ld b, a
+    ld c, a
+    jp InitTick                 ; initialise tick counter
+    ;ret
 
 
 ; Spawn beats by reading the beat streams
@@ -182,7 +251,7 @@ MainGameLoop::
     call SpawnBeats
 
     ; Handle inputs
-    call GetNewKeys
+    call_GetNewKeys
 
     push af
     ld b, JOYP_A
@@ -205,7 +274,7 @@ MainGameLoop::
     call CheckInput
     pop af
 
-    call GetReleasedKeys
+    call_GetReleasedKeys
 
     push af
     ld b, JOYP_A

@@ -1,6 +1,7 @@
 include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
+include "sugar.inc"
 
 /*******************************************************
 * SCENE DATA
@@ -83,7 +84,7 @@ SECTION "SummarySceneMain", ROM0
 ; Main program 
 MainLoop:
     call UpdateInput
-    call GetNewKeys
+    call_GetNewKeys
 
 
     ; Loop

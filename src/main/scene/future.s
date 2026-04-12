@@ -43,28 +43,12 @@ SECTION "FutureSceneEntrypoint", ROM0
 
 ; Entrypoint for the game screen, initialises the screen
 FutureSceneEntrypoint::
-    xor a
-    ldh [hIsMusicReady], a
 
-    call SetVBlankInterrupt
-    call SetStatInterrupt
-    ei
+    ;; Sprites & Interrupts ;;
 
-    call FadeOut                ; fade to black
+    call PreGameEntrypointInit
 
 
-    ;; Sprites ;;
-
-    call ClearShadowOAM         ; initialise shadow OAM
-
-    ld a, DEFAULT_PALETTE
-    ld [rOBP0], a               ; set sprite palette
-
-    ld hl, $8000
-    call InitGameSpriteVRAM     ; set spritesheets (VRAM = $8000)
-    call InitBeatSprites        ; init circular queue
-
-    
     ;; Game ;;
     
     ld a, PAD_A
@@ -104,42 +88,14 @@ FutureSceneEntrypoint::
     ;ld bc, BackgroundTilemapEnd
     ;call RlCopy
 
-    call InitBackgroundScroll
+
+    ;; Audio, Window, LCD ;;
+
+    ld hl, FutureMusic 
+    call PostGameEntrypointInit
 
 
-    ;; Window ;;
-
-    call InitGameWindow
-
-
-    ;; LCD ;;
-
-    xor a
-    ld a, LCDC_ON | LCDC_WIN_9C00 | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
-    ld [rLCDC], a               ; setup LCD
-
-    call FadeIn                 ; fade back in after loading everything
-
-   
-    ;; Audio
-
-    ld de, FutureMusic
-    call PlayTrack
-    call VolumeUp
-
-    
-    ;;
-
-    ld hl, GameRenderLoop
-    call SetVBlankHandler       ; set background animations
-
-    xor a
-    ld b, a
-    ld c, a
-    call InitTick               ; initialise tick counter
-
-
-    ;; Start text
+    ;; Start text ;;
 
     ld a, START_ANIM_LENGTH
     ld b, START_ANIM_LENGTH
@@ -147,9 +103,10 @@ FutureSceneEntrypoint::
     call StartSequence
 
 
-    ;; Play!
+    ;; Play! ;;
 
     jp MainGameLoop             ; immediate ret
+    ;ret
 
 ENDSECTION
 

@@ -107,19 +107,14 @@ PrintFinish:
 
 ; Prints 'READY' and 'GO' to the screen on a timer
 ; This function is blocking
-; @param a: Frames to READY for
-; @param b: Frames to WAIT for
-; @param c: Frames to GO for
+; @param b: Frames to wait for
 StartSequence::
-    push af
     push bc
     call PrintReady             ; Ready?
     pop bc
-    pop af
     
     push hl
     push bc
-    ld b, a
     call WaitForFrames
     call WaitForFrames
     pop bc
@@ -139,13 +134,12 @@ StartSequence::
     pop bc
 
     push hl
-    ld b, c
     call WaitForFrames
     call WaitForFrames
     pop hl
 
-    call DeleteMSprite
-    ret
+    jp DeleteMSprite
+    ;ret
 
 
 ; Prints 'FIN.' to the screen
@@ -162,8 +156,8 @@ EndSequence::
     call WaitForFrames
     pop hl
 
-    call DeleteMSprite
-    ret
+    jp DeleteMSprite
+    ;ret
     
     
 ENDSECTION

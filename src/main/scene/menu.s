@@ -2,6 +2,7 @@ include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
 include "metasprite.inc"
+include "sugar.inc"
 
 
 DEF ARROW_WIDTH EQU 2
@@ -261,7 +262,7 @@ GoDown:
 MainLoop:
     call UpdateInput
 
-    call GetNewKeys
+    call_GetNewKeys
 
     ; Future scene
     push af

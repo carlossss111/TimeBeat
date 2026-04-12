@@ -45,28 +45,12 @@ SECTION "PresentSceneEntrypoint", ROM0
 
 ; Entrypoint for the game screen, initialises the screen
 PresentSceneEntrypoint::
-    xor a
-    ldh [hIsMusicReady], a
-
-    call SetVBlankInterrupt
-    call SetStatInterrupt
-    ei
-
-    call FadeOut                ; fade to black
-
-
-    ;; Sprites ;;
-
-    call ClearShadowOAM         ; initialise shadow OAM
-
-    ld a, DEFAULT_PALETTE
-    ld [rOBP0], a               ; set sprite palette
-
-    ld hl, $8000
-    call InitGameSpriteVRAM     ; set spritesheets (VRAM = $8000)
-    call InitBeatSprites        ; init circular queue
-
     
+    ;; Sprites & Interrupts ;;
+
+    call PreGameEntrypointInit
+
+   
     ;; Game ;;
     
     ld a, PAD_A
@@ -116,39 +100,14 @@ PresentSceneEntrypoint::
     ld bc, BackgroundTilemapEnd
     call RlCopy
 
-    call InitBackgroundScroll
 
-    
-    ;; Window
+    ;; Audio, Window, LCD ;;
 
-    call InitGameWindow
-
-
-    ;; LCD ;;
-
-    xor a
-    ld a, LCDC_ON | LCDC_WIN_9C00 | LCDC_BG_ON | LCDC_BLOCK21 | LCDC_OBJ_8 | LCDC_OBJ_ON
-    ld [rLCDC], a               ; setup LCD
-
-    call FadeIn                 ; fade back in after loading everything
-
-   
-    ;; Audio
-
-    ld de, PresentMusic 
-    call PlayTrack
-    call VolumeUp
-
-    ld hl, GameRenderLoop
-    call SetVBlankHandler       ; set background animations
-
-    xor a
-    ld b, a
-    ld c, a
-    call InitTick               ; initialise tick counter
+    ld hl, PresentMusic 
+    call PostGameEntrypointInit
 
 
-    ;; Start text
+    ;; Start text ;;
 
     ld a, START_ANIM_LENGTH
     ld b, START_ANIM_LENGTH
@@ -156,9 +115,10 @@ PresentSceneEntrypoint::
     call StartSequence
 
 
-    ; Play!
+    ; Play! ;;
 
     jp MainGameLoop             ; immediate ret
+    ;ret
 
 ENDSECTION
 

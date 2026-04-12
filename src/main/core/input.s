@@ -7,9 +7,9 @@ include "hardware.inc"
 ********************************************************/
 SECTION "InputVars", HRAM
 
-    hCurKeys: db
-    hNewKeys: db
-    hRelKeys: db
+    hCurKeys:: db
+    hNewKeys:: db
+    hRelKeys:: db
 
 SECTION "Input", ROM0
 
@@ -70,28 +70,6 @@ UpdateInput::
     ldh [hCurKeys], a           ; hCurKeys = inputs that are ON
 
     ret
-
-
-; Updates the inputs and returns current key
-; @returns a: current keypress
-GetCurrentKeys::
-    ldh a, [hCurKeys]
-    ret
-
-
-; Updates the inputs and returns new key
-; @returns a: new keypress
-GetNewKeys::
-    ldh a, [hNewKeys]
-    ret
-
-
-; Updates the inputs and returns released key
-; @returns a: new keypress
-GetReleasedKeys::
-    ldh a, [hRelKeys]
-    ret
-    
 
 
 ENDSECTION
