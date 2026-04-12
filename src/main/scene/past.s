@@ -137,9 +137,7 @@ PastSceneEntrypoint::
 
     ld de, PastMusic 
     call PlayTrack
-
-    ld b, 3
-    call SlideUpVolume
+    call VolumeUp 
 
     
     ;;

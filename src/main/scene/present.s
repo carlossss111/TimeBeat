@@ -137,9 +137,7 @@ PresentSceneEntrypoint::
 
     ld de, PresentMusic 
     call PlayTrack
-
-    ld b, 3
-    call SlideUpVolume
+    call VolumeUp
 
     ld hl, GameRenderLoop
     call SetVBlankHandler       ; set background animations

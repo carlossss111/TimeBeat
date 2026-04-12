@@ -1,5 +1,11 @@
 include "hardware.inc"
 
+DEF ENABLE_AUDIO EQU $80
+DEF AUDIO_TERM EQU $FF
+DEF MIN_VOLUME EQU $0
+DEF QUIET_VOLUME EQU $22
+DEF MAX_VOLUME EQU $77
+
 /*******************************************************
 * AUDIO FUNCTIONS
 * Simple multi-purpose audio functions
@@ -17,82 +23,33 @@ SECTION "AudioVars", WRAM0
 ********************************************************/
 SECTION "VolumeFunctions", ROM0
 
-; Fade the volume out until its muted
-; @param b: frames between volume decrease (speed)
-SlideDownVolume::
-    ld a, $77
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $55
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $44
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $33
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $22
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $11
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $00
-    ld [rAUDVOL], a
-    call WaitForFrames
-
+; Turn off the volume
+VolumeOff::
     xor a
     ld [rAUDENA], a
 
     ret
 
-; Fade the volume in its max
-; @param b: frames between volume increase (speed)
-SlideUpVolume::
-    ld a, $80
+; Turn on and increase the volume
+VolumeUp::
+    ld a, ENABLE_AUDIO
     ld [rAUDENA], a
-    ld a, $FF
+    ld a, AUDIO_TERM
     ld [rAUDTERM], a
 
-    ld a, $00
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $11
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $22
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $33
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $44
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $55
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $77
+    ld a, MAX_VOLUME
     ld [rAUDVOL], a
 
     ret
 
 ; Set the volume to quiet
 Quiet::
-    ld b, 3
-    ld a, $80
+    ld a, ENABLE_AUDIO
     ld [rAUDENA], a
-    ld a, $FF
+    ld a, AUDIO_TERM
     ld [rAUDTERM], a
 
-    ld a, $00
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $11
-    ld [rAUDVOL], a
-    call WaitForFrames
-    ld a, $22
+    ld a, QUIET_VOLUME
     ld [rAUDVOL], a
     ret
 

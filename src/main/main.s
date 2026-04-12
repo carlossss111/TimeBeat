@@ -24,11 +24,7 @@ EntryPoint:
     ld sp, StackStart           ; set stack pointer
 
     xor a
-    ld [rAUDENA], a             ; NR52 enable audio
-    ld a, $FF
-    ld [rAUDTERM], a            ; NR51 set sound panning to neutral
-    ld a, $00
-    ld [rAUDVOL], a             ; NR50 set master volume
+    ld [rAUDENA], a             ; disable audio at start (prevents pop)
 
     call InitDMA                ; loads DMA transfer code into HRAM
     call InitInput              ; initialise input vars

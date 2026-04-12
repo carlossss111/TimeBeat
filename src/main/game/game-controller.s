@@ -279,10 +279,9 @@ MainGameLoop::
 
     call ClearAllButtonEffects
 
+    call VolumeOff
     call EndSequence 
 
-    ld b, 3
-    call SlideDownVolume
     call FadeOut
 
     call UnsetStatInterrupt

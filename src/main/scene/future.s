@@ -11,15 +11,15 @@ DEF START_ANIM_LENGTH EQU 150
 *******************************************************/
 SECTION "FutureTileData", ROM0
 
-    BackgroundData: INCBIN "future_tiles_combined.2bpp.rl" ; shoutout to cat
-    BackgroundDataEnd:
+    ;BackgroundData: INCBIN "future_tiles_combined.2bpp.rl" ; shoutout to cat
+    ;BackgroundDataEnd:
 
 SECTION "FutureTileMap", ROM0
 
     DEF EMPTY_TILE EQU $0
 
-    BackgroundTilemap: INCBIN "beatmap.tilemap.rl"
-    BackgroundTilemapEnd:
+    ;BackgroundTilemap: INCBIN "beatmap.tilemap.rl"
+    ;BackgroundTilemapEnd:
 
 SECTION "FutureTracks", ROM0
 
@@ -94,15 +94,15 @@ FutureSceneEntrypoint::
 
     ;; Background ;;
 
-    ld de, BackgroundData
-    ld hl, $9000
-    ld bc, BackgroundDataEnd
-    call RlCopy
+    ;ld de, BackgroundData
+    ;ld hl, $9000
+    ;ld bc, BackgroundDataEnd
+    ;call RlCopy
 
-    ld de, BackgroundTilemap
-    ld hl, TILEMAP0
-    ld bc, BackgroundTilemapEnd
-    call RlCopy
+    ;ld de, BackgroundTilemap
+    ;ld hl, TILEMAP0
+    ;ld bc, BackgroundTilemapEnd
+    ;call RlCopy
 
     call InitBackgroundScroll
 
@@ -125,9 +125,7 @@ FutureSceneEntrypoint::
 
     ld de, FutureMusic
     call PlayTrack
-
-    ld b, 3
-    call SlideUpVolume
+    call VolumeUp
 
     
     ;;

@@ -159,9 +159,7 @@ MenuSceneEntrypoint::
 
     ld de, MenuMusic
     call PlayTrack
-
-    ld b, 3
-    call SlideUpVolume
+    call VolumeUp
 
 
     ;;
