@@ -1,7 +1,7 @@
 include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
-include "sugar.inc"
+include "input.inc"
 
 /*******************************************************
 * SCENE DATA

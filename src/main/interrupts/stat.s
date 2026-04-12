@@ -55,38 +55,10 @@ HandlerSelector:
     ld l, a
     ldh a, [hStatHandlerPtr + 1]
     ld h, a
-    ld bc, .ret
-    push bc
-    jp hl                       ; call handler function pointer
-.ret
-    pop hl
-    ld a, h
-    ldh [hScratchC], a
-    ld a, l
-    ldh [hScratchC + 1], a
+    call _hl_                   ; call handler function pointer
 
-    pop hl
-    ld a, h
-    ldh [hScratchB], a
-    ld a, l
-    ldh [hScratchB + 1], a
-
-    pop hl
-    ld a, h
-    ldh [hScratchA], a
-    ld a, l
-    ldh [hScratchA + 1], a
-
-    pop hl                      ; restore all register states
-    pop de
-    pop bc
-    pop af
-    reti                        ; interrupt return
-
-; Called by the STAT Interrupt
-; Doesn't do anything except implicitly wake up the CPU from the halt instr
-DefaultHandler:
-    ret
+    jp HandlerSelectorPop
+    ;reti                        ; interrupt return
 
 ; Should be called at startup to initialise member variables
 ; @uses hl

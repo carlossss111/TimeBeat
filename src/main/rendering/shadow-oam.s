@@ -49,7 +49,8 @@ InitDMA::
     ld bc, HramCode.End - HramCode
     ld de, HramCode
     ld hl, RenderToOAM
-    call Memcpy
+    jp VRAMCopy                 ; (VRAM safety is irrelevant)
+    ;ret
     
 ; Fill shadow OAM with null bytes
 ClearShadowOAM::

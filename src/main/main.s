@@ -1,5 +1,7 @@
 INCLUDE "hardware.inc"
 INCLUDE "scenes.inc"
+INCLUDE "input.inc"
+INCLUDE "scratch.inc"
 
 /*******************************************************
 * CARTRIDGE HEADER
@@ -27,8 +29,8 @@ EntryPoint:
     ld [rAUDENA], a             ; disable audio at start (prevents pop)
 
     call InitDMA                ; loads DMA transfer code into HRAM
-    call InitInput              ; initialise input vars
-    call InitScratchMemory      ; initialise scratch variables
+    call_InitInput              ; initialise input vars
+    call_InitScratchMemory      ; initialise scratch variables
 
     xor a
     call SetMusicOffset

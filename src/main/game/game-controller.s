@@ -2,7 +2,7 @@ include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
 include "beattracker.inc"
-include "sugar.inc"
+include "input.inc"
 
 
 /*******************************************************
@@ -53,8 +53,8 @@ PreGameEntrypointInit::
 
     ;; Sprites ;;
 
-    call FadeOut                ; fade to black
     call ClearShadowOAM         ; initialise shadow OAM
+    call FadeOut                ; fade to black
 
     ld a, DEFAULT_PALETTE
     ld [rOBP0], a               ; set sprite palette

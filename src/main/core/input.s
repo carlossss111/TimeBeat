@@ -13,15 +13,6 @@ SECTION "InputVars", HRAM
 
 SECTION "Input", ROM0
 
-; Initialises input variables
-InitInput::
-    xor a
-    ldh [hCurKeys], a
-    ldh [hNewKeys], a
-    ldh [hRelKeys], a
-    ret
-
-
 ; Returns the input as LOW bits
 ; @param a: button type (JOYP_GET_BUTTONS | JOYP_GET_CTRL_PAD)
 ; @returns a: user input, NIBBLE_HIGH(a) = $F, NIBBLE_LOW(a) = input

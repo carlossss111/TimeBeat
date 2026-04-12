@@ -5,6 +5,14 @@
 /*******************************************************
 * INPUT
 ********************************************************/
+; Initialises input variables
+MACRO call_InitInput
+    xor a
+    ldh [hCurKeys], a
+    ldh [hNewKeys], a
+    ldh [hRelKeys], a
+ENDM
+
 ; Updates the inputs and returns current key
 ; @returns a: current keypress
 MACRO call_GetCurrentKeys

@@ -2,7 +2,7 @@ include "hardware.inc"
 include "scenes.inc"
 include "macros.inc"
 include "metasprite.inc"
-include "sugar.inc"
+include "input.inc"
 
 
 DEF ARROW_WIDTH EQU 2
@@ -64,11 +64,11 @@ SECTION "MenuSceneEntrypoint", ROM0
 MenuSceneEntrypoint::
     xor a
     ldh [hIsMusicReady], a
-    xor a
     ld [wTitleYPosition], a
     ld a, TITLE_FRAMES
     ld [wTitleFrames], a
 
+    call ClearShadowOAM
     call InitMenuWindow
 
     ld hl, RenderLoop
@@ -82,7 +82,6 @@ MenuSceneEntrypoint::
 
     ;; Sprites ;;
 
-    call ClearShadowOAM
     call InitDMA
 
 
