@@ -12,42 +12,28 @@ DEF PERFECT_SCORE_L EQU $00
 * SCORE
 * Score Handling using binary coded decimal (BCD)
 ********************************************************/
-SECTION "ScoreVars", HRAM
+SECTION "ScoreCountVars", HRAM
 
+    hStart:
     hScore: ds 3                ; 6 digits, 3 bytes
-
-SECTION "CountVars", WRAM0
-
-    wMissCount: dw              ; 2 digits, 2 bytes
-    wOkCount: dw
-    wGoodCount: dw
-    wPerfectCount: dw
+    hMissCount: dw              ; 2 digits, 2 bytes
+    hOkCount: dw
+    hGoodCount: dw
+    hPerfectCount: dw
+    hEnd:
 
 SECTION "Score", ROM0
 
 ; Initialise the score to 0
 InitScore::
-    xor a
-    ldh [hScore], a
-    ldh [hScore + 1], a
-    ldh [hScore + 2], a
-
-    ld [wMissCount], a
-    ld [wMissCount + 1], a
-    
-    ld [wOkCount], a
-    ld [wOkCount + 1], a
-
-    ld [wGoodCount], a
-    ld [wGoodCount + 1], a
-
-    ld [wPerfectCount], a
-    ld [wPerfectCount + 1], a
-    
+    ld bc, hEnd - hStart        ; initialise all as zero
+    ld d, 0
+    ld hl, hStart
+    call VRAMMemset
+       
     ld de, hScore
-    call WriteScore
-
-    ret
+    jp WriteScore
+    ;ret
 
 
 ; Add BCD int to the score and draw to the window
@@ -70,9 +56,8 @@ AddScore:
     ldh [hScore], a
 
     ld de, hScore
-    call WriteScore
-    
-    ret
+    jp WriteScore
+    ;ret
 
 
 ; Increment the hit counter, BCD format
@@ -97,77 +82,73 @@ IncCount:
 
 ; Print the scorecard on the summary page
 PrintScoreCard::
-    ld a, [wMissCount]
+    ldh a, [hMissCount]
     ld b, a
-    ld a, [wMissCount + 1]
+    ldh a, [hMissCount + 1]
     ld c, a
     call PrintScoreCardMiss
 
-    ld a, [wOkCount]
+    ldh a, [hOkCount]
     ld b, a
-    ld a, [wOkCount + 1]
+    ldh a, [hOkCount + 1]
     ld c, a
     call PrintScoreCardOK
 
-    ld a, [wGoodCount]
+    ldh a, [hGoodCount]
     ld b, a
-    ld a, [wGoodCount + 1]
+    ldh a, [hGoodCount + 1]
     ld c, a
     call PrintScoreCardGood
 
-    ld a, [wPerfectCount]
+    ldh a, [hPerfectCount]
     ld b, a
-    ld a, [wPerfectCount + 1]
+    ldh a, [hPerfectCount + 1]
     ld c, a
     call PrintScoreCardPerfect
     
     ld bc, hScore
-    call PrintScoreCardTotal
-
-    ret
+    jp PrintScoreCardTotal
+    ;ret
 
 
 ; Add a miss score
 AddMissScore::
-    ld bc, wMissCount
-    call IncCount
-    ret
+    ld bc, hMissCount
+    jp IncCount
+    ;ret
 
 
 ; Add an OK score
 AddOKScore::
-    ld bc, wOkCount
+    ld bc, hOkCount
     call IncCount
 
     ld b, OK_SCORE_U
     ld c, OK_SCORE_L
-    call AddScore
+    jp AddScore
+    ;ret
 
-    ret
-    
 
 ; Add a good score
 AddGoodScore::
-    ld bc, wGoodCount
+    ld bc, hGoodCount
     call IncCount
 
     ld b, GOOD_SCORE_U
     ld c, GOOD_SCORE_L
-    call AddScore
-
-    ret
+    jp AddScore
+    ;ret
 
 
 ; Add a perfect score
 AddPerfectScore::
-    ld bc, wPerfectCount
+    ld bc, hPerfectCount
     call IncCount
 
     ld b, PERFECT_SCORE_U
     ld c, PERFECT_SCORE_L
-    call AddScore
-
-    ret
+    jp AddScore
+    ;ret
 
 ENDSECTION
 

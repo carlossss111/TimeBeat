@@ -21,28 +21,21 @@ DEF BLANK_EFFECT EQU $0
 DEF BTN_EFFECT_LEFT EQU $5
 DEF BTN_EFFECT_RIGHT EQU $6
 
+DEF WINDOW_TILEMAP EQU $9C00
+DEF EMPTY_TILE EQU $0
+
 /*******************************************************
 * WINDOW RENDERING
 * Render the game top and bottom window using stat ints
 *******************************************************/
 SECTION "WindowRendererVars", WRAM0
 
-    wTilemapPtr: dw             ; pointer to tilemap in use
-    wEmptyTile: db              ; tile index for empty tile
     wTextFade: db               ; countdown for when to clean text
 
 SECTION "WindowRenderer", ROM0
 
 ; Init the window
-; @param hl: pointer to tilemap in use
-; @param a: tile index for an empty tile
 InitWindow::
-    ld [wEmptyTile], a
-    ld a, h
-    ld [wTilemapPtr], a
-    ld a, l
-    ld [wTilemapPtr + 1], a
-
     ld a, WINDOW_X_OFFSET       ; fixes weird alignment issue
     ld [rWX], a
     ld a, WINDOW_Y_OFFSET       ; good for the vibes
@@ -51,8 +44,8 @@ InitWindow::
     ld a, TIME_TO_SHOW_STRING
     ld [wTextFade], a
 
-    call MiddleScreen
-    ret
+    jp MiddleScreen
+    ;ret
 
 ; Turn off the window and set the next interrupt at the bottom part of the screen
 MiddleScreen:
@@ -62,14 +55,14 @@ MiddleScreen:
 
     ldh a, [rLCDC]
     and ~LCDC_WINDOW
-    ldh [rLCDC], a               ; turn off window
+    ldh [rLCDC], a              ; turn off window
 
     ld a, MIDDLE_LAST_SCANLINE
     call ReqStatOnScanline      ; set scanline for next STAT interrupt
 
     ld hl, BottomScreen
-    call SetStatHandler         ; set handler for next STAT interrupt
-    ret
+    jp SetStatHandler         ; set handler for next STAT interrupt
+    ;ret
 
 ; Turn on the window, adjust the position, and set next interrupt for top of screen
 BottomScreen:
@@ -85,18 +78,15 @@ BottomScreen:
     call ReqStatOnScanline      ; set scanline for next STAT interrupt
 
     ld hl, MiddleScreen
-    call SetStatHandler         ; set handler for next STAT interrupt
-    ret
+    jp SetStatHandler         ; set handler for next STAT interrupt
+    ;ret
 
 
 ; Write text on the top bar at the top right
 ; @param de: pointer to packed binary-coded-decimal (BCD) number
 WriteScore::
 
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a                        ; hl = dst vram address
+    ld hl, WINDOW_TILEMAP          ; hl = dst vram address
     ld bc, SCORE_SCREEN_OFFSET
     add hl, bc
     ld b, SCORE_NUM_OF_DIGITS / 2  ; b = num bytes
@@ -137,14 +127,11 @@ WriteScore::
 ; Clears text displayed to the screen
 ClearText::
     ld bc, MAX_CHARS_IN_STRING 
-    ld a, [wEmptyTile]
+    ld a, EMPTY_TILE
     ld d, a
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
-    call VRAMMemset
-    ret
+    ld hl, WINDOW_TILEMAP
+    jp VRAMMemset
+    ;ret
 
 ; Write text on the top bar
 ; @param de: source string
@@ -156,10 +143,7 @@ WriteText::
     pop bc
     pop de
 
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
+    ld hl, WINDOW_TILEMAP
     call VRAMCopyFast           ; print new message
     
     ld a, TIME_TO_SHOW_STRING
@@ -196,10 +180,7 @@ SECTION "ButtonPressEffects", ROM0
 ; @param d: Tile to draw on the left (BLANK_EFFECT | BTN_EFFECT_LEFT)
 ; @param e: Tile to draw on the right (BLANK_EFFECT | BTN_EFFECT_LEFT)
 RenderButtonEffect:
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
+    ld hl, WINDOW_TILEMAP
 
 .CheckA:
     ld a, JOYP_A
@@ -265,6 +246,7 @@ DrawButtonEffect::
     ld d, BTN_EFFECT_LEFT
     ld e, BTN_EFFECT_RIGHT
     jr RenderButtonEffect       ; immediate return
+    ;ret
 
 
 ; Clears an effect around a button
@@ -273,6 +255,7 @@ ClearButtonEffect::
     ld d, BLANK_EFFECT
     ld e, BLANK_EFFECT
     jr RenderButtonEffect       ; immediate return
+    ;ret
 
 
 ; Clears all effects around a button
@@ -290,8 +273,8 @@ ClearAllButtonEffects::
     call RenderButtonEffect
 
     ld b, JOYP_RIGHT << 4
-    call RenderButtonEffect
-    ret
+    jp RenderButtonEffect
+    ;ret
 
 
 ENDSECTION

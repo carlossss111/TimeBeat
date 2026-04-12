@@ -62,9 +62,11 @@ SECTION "BeatQueueVars", WRAM0
     wSpriteQueue: ds META_SIZE * QUEUE_COUNT
     wSpriteQueueEnd:
 
-    wHeadPtr: dw
-    wTailPtr: dw
-    wOAMPtr: dw
+SECTION "BeatQueueVarsHigh", HRAM
+
+    hHeadPtr: dw
+    hTailPtr: dw
+    hOAMPtr: dw
 
 ENDSECTION
 
@@ -90,16 +92,16 @@ InitGameSpriteVRAM::
 ; Initialise the OAM pointer to the beginning of shadow OAM
 InitBeatSprites::
     ld a, HIGH(wSpriteQueue)    ; set dequeue and enqueue to start of array 
-    ld [wHeadPtr], a
-    ld [wTailPtr], a         
+    ldh [hHeadPtr], a
+    ldh [hTailPtr], a         
     ld a, LOW(wSpriteQueue)
-    ld [wHeadPtr + 1], a
-    ld [wTailPtr + 1], a
+    ldh [hHeadPtr + 1], a
+    ldh [hTailPtr + 1], a
 
     ld a, HIGH(ShadowOAM)       ; set shadow oam ptr
-    ld [wOAMPtr], a
+    ldh [hOAMPtr], a
     ld a, LOW(ShadowOAM)
-    ld [wOAMPtr + 1], a
+    ldh [hOAMPtr + 1], a
     ret
 
 
@@ -236,25 +238,25 @@ SpawnBeatSprite::
     push bc
 
     ; Init
-    ld a, [wHeadPtr]            ; place in memory for metasprite
+    ldh a, [hHeadPtr]            ; place in memory for metasprite
     ld h, a
-    ld a, [wHeadPtr + 1]  
+    ldh a, [hHeadPtr + 1]  
     ld l, a
 
     ld a, b                     ; param = sprite action type
     call GetTileIndexSize       ; d = width, e = height
 
-    ld a, [wOAMPtr]             ; place in OAM for real sprite
+    ldh a, [hOAMPtr]             ; place in OAM for real sprite
     ld b, a
-    ld a, [wOAMPtr + 1]
+    ldh a, [hOAMPtr + 1]
     ld c, a
 
     call InitMSprite
 
     ; Draw 
-    ld a, [wHeadPtr]         ; place in memory of metasprite
+    ldh a, [hHeadPtr]         ; place in memory of metasprite
     ld h, a
-    ld a, [wHeadPtr + 1]  
+    ldh a, [hHeadPtr + 1]  
     ld l, a
     
     pop bc
@@ -266,9 +268,9 @@ SpawnBeatSprite::
     call ColourMSprite
 
     ; Position
-    ld a, [wHeadPtr]         ; place in memory of metasprite
+    ldh a, [hHeadPtr]         ; place in memory of metasprite
     ld h, a
-    ld a, [wHeadPtr + 1]  
+    ldh a, [hHeadPtr + 1]  
     ld l, a
 
     pop af
@@ -290,22 +292,22 @@ SpawnBeatSprite::
     call PositionMSprite
 
     ; Increment pointers circularly
-    ld a, [wHeadPtr]
+    ldh a, [hHeadPtr]
     ld h, a
-    ld a, [wHeadPtr + 1]  
+    ldh a, [hHeadPtr + 1]  
     ld l, a
 
     ld bc, META_SIZE            ; increment queue ptr by 6
     add hl, bc
 
     ld a, h
-    ld [wHeadPtr], a
+    ldh [hHeadPtr], a
     ld a, l
-    ld [wHeadPtr + 1], a
+    ldh [hHeadPtr + 1], a
 
-    ld a, [wOAMPtr]
+    ldh a, [hOAMPtr]
     ld h, a
-    ld a, [wOAMPtr+ 1]  
+    ldh a, [hOAMPtr+ 1]  
     ld l, a
 
     pop bc
@@ -320,44 +322,44 @@ SpawnBeatSprite::
 .EndIfSpr:
     add hl, bc                  ; increase OAM ptr by sprite size
     ld a, h
-    ld [wOAMPtr], a
+    ldh [hOAMPtr], a
     ld a, l
-    ld [wOAMPtr + 1], a
+    ldh [hOAMPtr + 1], a
 
 .IfEndOfSpriteQueue:
-    ld a, [wHeadPtr]
+    ldh a, [hHeadPtr]
     cp HIGH(wSpriteQueueEnd)    ; check if at end of queue
     jr nz, .EndIfQueue
-    ld a, [wHeadPtr + 1]  
+    ldh a, [hHeadPtr + 1]  
     cp LOW(wSpriteQueueEnd)
     jr nz, .EndIfQueue
     ld a, HIGH(wSpriteQueue)    ; set enqueue to start of array 
-    ld [wHeadPtr], a
+    ldh [hHeadPtr], a
     ld a, LOW(wSpriteQueue)
-    ld [wHeadPtr + 1], a
+    ldh [hHeadPtr + 1], a
 .EndIfQueue:
 
 .IfEndOfOAM:
-    ld a, [wOAMPtr]
+    ldh a, [hOAMPtr]
     cp HIGH(ShadowOAMEnd)       ; check if at end of shadow OAM
     jr nz, .EndIfOAM
-    ld a, [wOAMPtr + 1]
+    ldh a, [hOAMPtr + 1]
     cp LOW(ShadowOAMEnd) - 4    ; 2 bytes, so check the OAM before too
     jr c, .EndIfOAM
     ld a, HIGH(ShadowOAM)       ; set shadow oam ptr to start of OAM
     ld a, HIGH(ShadowOAM)       ; set shadow oam ptr to start of OAM
-    ld [wOAMPtr], a
+    ldh [hOAMPtr], a
     ld a, LOW(ShadowOAM)
-    ld [wOAMPtr + 1], a
+    ldh [hOAMPtr + 1], a
 .EndIfOAM:
     ret
 
 
 ; Deletes a beatsprite and moves the dequeue pointer along
 DequeueBeatSprite:
-    ld a, [wTailPtr]
+    ldh a, [hTailPtr]
     ld h, a
-    ld a, [wTailPtr + 1]
+    ldh a, [hTailPtr + 1]
     ld l, a
     push hl                     ; delete sprite data from OAM
     call DeleteMSprite
@@ -366,38 +368,38 @@ DequeueBeatSprite:
     ld bc, META_SIZE
     add hl, bc                  ; move dequeue pointer along
     ld a, h
-    ld [wTailPtr], a
+    ldh [hTailPtr], a
     ld a, l
-    ld [wTailPtr + 1], a
+    ldh [hTailPtr + 1], a
 
 .IfEndOfArray:
-    ld a, [wTailPtr]
+    ldh a, [hTailPtr]
     cp HIGH(wSpriteQueueEnd)
     jr nz, .EndIf
-    ld a, [wTailPtr + 1]  
+    ldh a, [hTailPtr + 1]  
     cp LOW(wSpriteQueueEnd)
     jr nz, .EndIf
 
     ld a, HIGH(wSpriteQueue)    ; set enqueue to start of array 
-    ld [wTailPtr], a
+    ldh [hTailPtr], a
     ld a, LOW(wSpriteQueue)
-    ld [wTailPtr + 1], a
+    ldh [hTailPtr + 1], a
 .EndIf:
     ret
 
 
 ; Loop through the queue and move all sprites right
 MoveBeatSprites::
-    ld a, [wTailPtr]
+    ldh a, [hTailPtr]
     ld h, a
-    ld a, [wTailPtr + 1]
+    ldh a, [hTailPtr + 1]
     ld l, a                     ; hl starts at tail
 
 .While:                         ; while hl != head
-    ld a, [wHeadPtr]
+    ldh a, [hHeadPtr]
     cp h
     jr nz, .Inner
-    ld a, [wHeadPtr + 1]
+    ldh a, [hHeadPtr + 1]
     cp l
     jr z, .EndWhile
 .Inner:

@@ -30,8 +30,6 @@ InitGameWindow::
     ld bc, WindowTilemapEnd
     call RlCopy
 
-    ld hl, $9C00
-    ld a, EMPTY_TILE
     call InitWindow             ; init the stat interrupts
 
     call InitScore              ; draw the score after the window

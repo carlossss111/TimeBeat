@@ -49,8 +49,6 @@ SummarySceneEntrypoint::
     ld bc, BackgroundTilemapEnd
     call RlCopy
 
-    ld hl, TILEMAP0
-    call InitScoreCard
     call PrintScoreCard
 
 

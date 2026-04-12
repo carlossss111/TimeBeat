@@ -6,16 +6,16 @@ DEF FRAMES_PER_SCROLL EQU 4
 * BACKGROUND SCROLL
 * Slowly scrolls the background on a loop
 ********************************************************/
-SECTION "BackgroundScrollVars", WRAM0
+SECTION "BackgroundScrollVars", HRAM
 
-    wFramesUntilScroll: db
+    hFramesUntilScroll: db
 
 SECTION "BackgroundScroll", ROM0
 
 ; Init the frames until next scroll and reset the scroll
 InitBackgroundScroll::
     ld a, FRAMES_PER_SCROLL
-    ld [wFramesUntilScroll], a
+    ldh [hFramesUntilScroll], a
 
     xor a
     ld [rSCX], a
@@ -24,16 +24,16 @@ InitBackgroundScroll::
 
 ; Scroll the background if it is time to do so
 ScrollBackground::
-    ld a, [wFramesUntilScroll]
+    ldh a, [hFramesUntilScroll]
     dec a
 .IfTimeToScroll:
     jr z, .ScrollNow
-    ld [wFramesUntilScroll], a
+    ldh [hFramesUntilScroll], a
     ret
 
 .ScrollNow:
     ld a, FRAMES_PER_SCROLL
-    ld [wFramesUntilScroll], a
+    ldh [hFramesUntilScroll], a
     
     ld a, [rSCX]
     inc a

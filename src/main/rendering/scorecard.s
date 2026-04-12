@@ -9,14 +9,12 @@ DEF MISS_INDEX EQU 302
 
 DEF TOTAL_INDEX EQU $184
 
+DEF SCORECARD_TILEMAP EQU TILEMAP0
+
 /*******************************************************
 * SCORE CARD
 * Print the score on the summary
 ********************************************************/
-SECTION "ScoreCardVars", WRAM0
-
-    wTilemapPtr: dw             ; pointer to tilemap in use
-
 SECTION "ScoreCardBigDigits", ROM0
 
     BigZero: db $24, $25, $30, $31
@@ -32,20 +30,13 @@ SECTION "ScoreCardBigDigits", ROM0
 
 SECTION "ScoreCard", ROM0
 
-; Init the scorecard
-; @param hl: pointer to tilemap in use
-InitScoreCard::
-    ld a, h
-    ld [wTilemapPtr], a
-    ld a, l
-    ld [wTilemapPtr + 1], a
-    ret
-
-
 ; Prints a count on the scorecard
-; @param hl: tile index location
 ; @param bc: number of hits
+; @param de: tile index offset
 PrintScoreCardHit:
+    ld hl, SCORECARD_TILEMAP
+    add hl, de                  ; hl = tilemap index to print at
+
     ld a, b
     and $0F
     add a, FIRST_DIGIT_VRAM
@@ -88,57 +79,33 @@ PrintScoreCardHit:
 ; Prints the miss count on the scorecard
 ; @param bc: count
 PrintScoreCardMiss::
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
     ld de, MISS_INDEX
-    add hl, de
-    call PrintScoreCardHit
-
-    ret
+    jp PrintScoreCardHit
+    ;ret
 
 
 ; Prints the OK count on the scorecard
 ; @param bc: count
 PrintScoreCardOK::
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
     ld de, OK_INDEX
-    add hl, de
-    call PrintScoreCardHit
-
-    ret
+    jp PrintScoreCardHit
+    ;ret
 
 
 ; Prints the good count on the scorecard
 ; @param bc: count
 PrintScoreCardGood::
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
     ld de, GOOD_INDEX
-    add hl, de
-    call PrintScoreCardHit
-
-    ret
+    jp PrintScoreCardHit
+    ;ret
 
 
 ; Prints the perfect count on the scorecard
 ; @param bc: count
 PrintScoreCardPerfect::
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
     ld de, PERFECT_INDEX
-    add hl, de
-    call PrintScoreCardHit
-
-    ret
+    jp PrintScoreCardHit
+    ;ret
 
 
 ; Draws a big number
@@ -159,9 +126,8 @@ DrawBigNumber:
     ld b, 0
     add hl, bc
     ld b, 2
-    call VRAMCopyFast           ; draw bottom 2 tiles
-    
-    ret
+    jp VRAMCopyFast           ; draw bottom 2 tiles
+    ;ret
 
 
 ; Prints the score card total using 6 big digits
@@ -182,15 +148,10 @@ function(tilemap, digits) {
 }
 */
 PrintScoreCardTotal::
-    ld a, [wTilemapPtr]
-    ld h, a
-    ld a, [wTilemapPtr + 1]
-    ld l, a
-    ld de, TOTAL_INDEX
-    add hl, de                  ; hl = dest to draw at
+    ld hl, SCORECARD_TILEMAP + TOTAL_INDEX
 
     ld a, 3
-    ldh [hScratchA], a            ; loop three times
+    ldh [hScratchA], a          ; loop three times
 .LoopDigits:
     ld a, [bc]
     swap a
