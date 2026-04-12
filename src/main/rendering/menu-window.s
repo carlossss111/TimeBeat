@@ -9,10 +9,10 @@ DEF TEXT_Y EQU 0
 
 DEF PLUS_MINUS_TILE_LOC EQU $9c0d
 DEF COUNTER_TILE_LOC EQU $9c0e
-DEF ZERO EQU $8e
+DEF ZERO EQU $8f
 
-DEF PLUS EQU $8d
-DEF MINUS EQU $8c
+DEF PLUS EQU $8e
+DEF MINUS EQU $8d
 
 /*******************************************************
 * MENU WINDOW

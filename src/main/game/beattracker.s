@@ -31,9 +31,11 @@ SECTION "BeatTracker", ROM0
 
 
 ; Initialises the music offset
-; @param a: Sets the offset between the beattrack and the music
+; @param bc: Sets the offset between the beattrack and the music
 SetMusicOffset::
+    ld a, b
     ldh [hMusicOffset], a
+    ld a, c
     ldh [hMusicOffset + 1], a
     ret
 

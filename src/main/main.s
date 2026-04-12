@@ -3,6 +3,8 @@ INCLUDE "scenes.inc"
 INCLUDE "input.inc"
 INCLUDE "scratch.inc"
 
+DEF STARTING_MUSIC_OFFSET EQU -2
+
 /*******************************************************
 * CARTRIDGE HEADER
 * Populated by the rgbfix tool
@@ -32,7 +34,7 @@ EntryPoint:
     call_InitInput              ; initialise input vars
     call_InitScratchMemory      ; initialise scratch variables
 
-    xor a
+    ld bc, STARTING_MUSIC_OFFSET
     call SetMusicOffset
 
     di                          ; disable interrupts for the main loop

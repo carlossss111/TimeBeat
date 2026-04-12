@@ -4,6 +4,8 @@ include "macros.inc"
 include "beattracker.inc"
 include "input.inc"
 
+DEF DELAY_BEFORE_MUSIC_CUTOFF EQU 55
+
 
 /*******************************************************
 * GAME CONTROLLER
@@ -343,6 +345,8 @@ MainGameLoop::
     halt
     jp MainGameLoop
 .EndLoop:
+    ld b, DELAY_BEFORE_MUSIC_CUTOFF
+    call WaitForFrames
 
     call ClearAllButtonEffects
 

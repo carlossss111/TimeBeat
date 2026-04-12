@@ -164,7 +164,7 @@ MenuSceneEntrypoint::
 
     ;;
     
-    ld a, FUTURE_SCENE
+    ld a, PAST_SCENE
     ld [wSelected], a
     jp MainLoop
 
@@ -195,7 +195,7 @@ GoUp:
     jr .End
 
 .ToMiddle:
-    ld a, PAST_SCENE
+    ld a, FUTURE_SCENE
     ld [wSelected], a
 
     ld hl, ArrowStruct
@@ -205,7 +205,7 @@ GoUp:
     jr .End
 
 .ToTop:
-    ld a, FUTURE_SCENE
+    ld a, PAST_SCENE
     ld [wSelected], a
 
     ld hl, ArrowStruct
@@ -233,7 +233,7 @@ GoDown:
     jr .End
 
 .ToMiddle:
-    ld a, PAST_SCENE
+    ld a, FUTURE_SCENE
     ld [wSelected], a
 
     ld hl, ArrowStruct

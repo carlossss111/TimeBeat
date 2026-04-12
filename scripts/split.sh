@@ -9,8 +9,8 @@
 
 set -e
 
-readonly BYTES_BEFORE=480 # bytes of tiles from other places in VRAM, offset
-#readonly BYTES_BEFORE=0
+#readonly BYTES_BEFORE=480 # bytes of tiles from other places in VRAM, offset
+readonly BYTES_BEFORE=0
 
 if [ -z "$1" ]; then
     echo 'Usage: ./split.sh <image.2bpp>'
